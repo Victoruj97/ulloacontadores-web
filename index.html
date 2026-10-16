@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+    content="Ulloa Contadores. Servicios contables, fiscales y financieros, artículos especializados y herramientas digitales.">
+  <meta name="theme-color" content="#293F56">
+  <title>Ulloa Contadores | Soluciones contables y fiscales</title>
+  <style>
+    /* =========================================
+       COLORES CORPORATIVOS
+    ========================================= */
+    :root {
+      --azul: #293F56;
+      --azul-medio: #667F95;
+      --azul-claro: #ABBCC6;
+      --fondo: #ECEBE8;
+      --blanco: #FFFFFF;
+    }
+    /* =========================================
+       CONFIGURACIÓN GENERAL
+    ========================================= */
+    * {
+      box-sizing: border-box;
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+    body {
+      margin: 0;
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+      color: var(--azul);
+      background: var(--blanco);
+      line-height: 1.6;
+    }
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+    img {
+      max-width: 100%;
+    }
+    .contenedor {
+      width: min(1160px, 92%);
+      margin: 0 auto;
+    }
+    section {
+      scroll-margin-top: 100px;
+    }
+    /* =========================================
+       ENCABEZADO Y LOGOTIPO
+    ========================================= */
+    .encabezado {
+      background: var(--blanco);
+      border-bottom: 1px solid var(--azul-claro);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .barra {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+      min-height: 100px;
+    }
+    .marca {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .logo-oficial {
+      display: block;
+      width: 190px;
+      height: 75px;
+      object-fit: contain;
+      object-position: left center;
+    }
+    /* =========================================
+       MENÚ PRINCIPAL
+    ========================================= */
+    .menu {
+      display: flex;
+      align-items: center;
+      gap: 26px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .menu a {
+      transition: color 0.2s ease;
+    }
+    .menu a:hover {
+      color: var(--azul-medio);
+    }
+    /* =========================================
+       BOTONES
+    ========================================= */
+    .boton {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 13px 23px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 650;
+      transition:
+        transform 0.2s ease,
+background 0.2s ease;
+    }
+    .boton:hover {
+      transform: translateY(-2px);
+    }
+    .boton-primario {
+      background: var(--azul);
+      color: var(--blanco);
+    }
+    .boton-secundario {
+      background: var(--blanco);
+      color: var(--azul);
+      border: 1px solid var(--azul-claro);
+    }
+    /* =========================================
+       PRESENTACIÓN PRINCIPAL
+    ========================================= */
+    .hero {
+      background: var(--azul);
+      color: var(--blanco);
+      padding: 105px 0 115px;
+      overflow: hidden;
+    }
+    .hero-contenido {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      align-items: center;
+      gap: 65px;
+    }
+    .etiqueta {
+      display: inline-block;
+      color: var(--azul-claro);
+      text-transform: uppercase;
+      font-size: 12px;
+      letter-spacing: 2px;
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+    .hero h1 {
+      font-size: clamp(38px, 5vw, 62px);
+      line-height: 1.13;
+      letter-spacing: -1.8px;
+      margin: 0 0 25px;
+    }
+    .hero p {
+      font-size: 17px;
+      color: var(--fondo);
+      max-width: 550px;
+      margin-bottom: 32px;
+    }
+    .hero-acciones {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .hero .boton-primario {
+      background: var(--blanco);
+      color: var(--azul);
+    }
+    .hero .boton-secundario {
+      background: transparent;
+      color: var(--blanco);
+      border-color: var(--azul-claro);
+    }
+    /* =========================================
+       PANEL DE SOLUCIONES
+    ========================================= */
+    .panel-hero {
+      background: var(--blanco);
+      color: var(--azul);
+      padding: 28px;
+      border-radius: 14px;
+      box-shadow: 16px 16px 0 var(--azul-medio);
+    }
+    .panel-hero h3 {
+      margin: 0 0 20px;
+      font-size: 17px;
+    }
+    .panel-fila {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 15px 0;
+      border-top: 1px solid var(--fondo);
+    }
+    .panel-icono {
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      background: var(--fondo);
+      border-radius: 9px;
+      font-size: 19px;
+    }
+    .panel-fila strong {
+      display: block;
+      font-size: 14px;
+    }
+    .panel-fila small {
+      color: var(--azul-medio);
+      font-size: 12px;
+    }
+    /* =========================================
+       SECCIONES GENERALES
+    ========================================= */
+    .seccion {
+      padding: 95px 0;
+    }
+    .seccion-suave {
+      background: var(--fondo);
+    }
+    .encabezado-seccion {
+      max-width: 700px;
+      margin-bottom: 42px;
+    }
+    .encabezado-seccion h2 {
+      font-size: clamp(29px, 3.5vw, 40px);
+      line-height: 1.2;
+      letter-spacing: -0.7px;
+      margin: 8px 0 15px;
+    }
+    .encabezado-seccion p {
+      color: var(--azul-medio);
+      font-size: 16px;
+    }
+    .texto-etiqueta {
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: 12px;
+      font-weight: 750;
+      color: var(--azul-medio);
+    }
+    /* =========================================
+       TARJETAS
+    ========================================= */
+    .cuadricula {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+    .tarjeta {
+      padding: 30px;
+      border: 1px solid var(--azul-claro);
+      border-radius: 10px;
+      background: var(--blanco);
+      transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+    }
+    .tarjeta:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 28px rgba(41, 63, 86, 0.08);
+    }
+    .tarjeta-icono {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      background: var(--fondo);
+      border-radius: 10px;
+      font-size: 22px;
+      margin-bottom: 22px;
+    }
+    .tarjeta h3 {
+      font-size: 19px;
+      margin: 0 0 12px;
+    }
+    .tarjeta p {
+      color: var(--azul-medio);
+      font-size: 14px;
+      margin: 0;
+    }
+    .tarjeta-destacada {
+      background: var(--azul);
+      color: var(--blanco);
+      border-color: var(--azul);
+    }
+    .tarjeta-destacada p {
+      color: var(--fondo);
+    }
+    .tarjeta-destacada .tarjeta-icono {
+      color: var(--azul);
+      background: var(--blanco);
+    }
+    .etiqueta-estado {
+      display: inline-block;
+      margin-top: 16px;
+      padding: 5px 10px;
+      background: var(--fondo);
+      color: var(--azul);
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 4px;
+    }
+    /* =========================================
+       ARTÍCULOS
+    ========================================= */
+    .articulo {
+      overflow: hidden;
+      border-radius: 10px;
+      border: 1px solid var(--azul-claro);
+      background: var(--blanco);
+    }
+    .articulo-visual {
+      height: 135px;
+      background: var(--azul);
+      color: var(--blanco);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 38px;
+      font-weight: 700;
+    }
+    .articulo:nth-child(2) .articulo-visual {
+      background: var(--azul-medio);
+    }
+    .articulo:nth-child(3) .articulo-visual {
+      background: var(--azul-claro);
+      color: var(--azul);
+    }
+    .articulo-cuerpo {
+      padding: 25px;
+    }
+    .articulo-cuerpo small {
+      color: var(--azul-medio);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .articulo-cuerpo h3 {
+      font-size: 18px;
+      line-height: 1.4;
+      margin: 12px 0;
+    }
+    .articulo-cuerpo p {
+      color: var(--azul-medio);
+      font-size: 13px;
+    }
+    /* =========================================
+       CONTACTO
+    ========================================= */
+    .contacto { background: var(--azul); color: var(--blanco); }
+    .contacto-contenido { display: grid; grid-template-columns: .95fr 1.05fr; align-items: start; gap: 55px; }
+    .contacto h2 { font-size: clamp(28px, 3vw, 39px); line-height: 1.2; margin: 10px 0; }
+    .contacto p { color: var(--fondo); max-width: 600px; }
+    .contacto-enlaces { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+    .contacto .boton { background: var(--blanco); color: var(--azul); flex-shrink: 0; }
+    .contacto .boton-whatsapp { background: var(--azul-claro); color: var(--azul); }
+    .contacto-dato { display: block; color: var(--fondo); margin-top: 15px; overflow-wrap: anywhere; }
+    .formulario-contacto { background: var(--blanco); color: var(--azul); border-radius: 12px; padding: 32px; }
+    .formulario-contacto h3 { margin: 0 0 8px; font-size: 22px; }
+    .formulario-contacto p { color: var(--azul-medio); margin: 0 0 20px; font-size: 14px; }
+    .campo-contacto { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+    .campo-contacto label { font-size: 13px; font-weight: 700; }
+    .campo-contacto input, .campo-contacto select, .campo-contacto textarea {
+      width: 100%; border: 1px solid var(--azul-claro); border-radius: 6px;
+      padding: 11px 12px; font: inherit; color: var(--azul); background: var(--blanco);
+    }
+    .campo-contacto textarea { min-height: 100px; resize: vertical; }
+    .campo-contacto input:focus-visible, .campo-contacto select:focus-visible,
+    .campo-contacto textarea:focus-visible { outline: 2px solid var(--azul-medio); outline-offset: 2px; }
+    .formulario-contacto .boton-enviar { display: flex; width: 100%; background: var(--azul); color: var(--blanco); border: 0; cursor: pointer; text-align: center; }
+    .nota-formulario { font-size: 12px !important; line-height: 1.5; margin-top: 12px !important; }
+    @media (max-width: 900px) { .contacto-contenido { grid-template-columns: 1fr; gap: 30px; } }
+    @media (max-width: 600px) { .formulario-contacto { padding: 22px; } .contacto-enlaces { flex-direction: column; align-items: stretch; } }
+    /* =========================================
+       PIE DE PÁGINA Y LOGOTIPO CLARO
+    ========================================= */
+    footer {
+      background: var(--azul);
+      color: var(--blanco);
+      padding: 45px 0;
+      border-top: 1px solid var(--azul-medio);
+    }
+    .pie {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 30px;
+    }
+    .logo-pie {
+      display: block;
+      width: 175px;
+      height: 85px;
+      object-fit: contain;
+      object-position: left center;
+    }
+    .pie-texto {
+      color: var(--azul-claro);
+      font-size: 13px;
+      text-align: right;
+    }
+    /* =========================================
+       TABLETAS
+    ========================================= */
+    @media (max-width: 900px) {
+      .barra {
+        flex-direction: column;
+        padding: 15px 0;
+      }
+      .menu {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px 18px;
+      }
+      .hero-contenido {
+        grid-template-columns: 1fr;
+        gap: 45px;
+      }
+      .cuadricula {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    /* =========================================
+       CELULARES
+    ========================================= */
+    @media (max-width: 600px) {
+      .barra {
+        min-height: auto;
+      }
+      .logo-oficial {
+        width: 160px;
+        height: 65px;
+      }
+      .menu {
+        font-size: 12px;
+        gap: 10px 15px;
+      }
+      .hero {
+        padding: 65px 0;
+      }
+      .hero h1 {
+        font-size: 38px;
+      }
+      .panel-hero {
+        box-shadow: 8px 8px 0 var(--azul-medio);
+      }
+      .seccion {
+        padding: 65px 0;
+      }
+      .cuadricula {
+        grid-template-columns: 1fr;
+      }
+      .contacto-contenido,
+      .pie {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .pie-texto {
+        text-align: left;
+      }
+      .logo-pie {
+        width: 160px;
+        height: 75px;
+      }
+    }
+    .enlace-articulo {display:inline-flex; margin-top:17px; font-weight:700; color:var(--azul); border-bottom:2px solid var(--azul-claro); padding-bottom:3px;}
+    .enlace-articulo:hover {color:var(--azul-medio);}
+  </style>
+</head>
+<body>
+  <!-- ======================================
+       ENCABEZADO
+  ======================================= -->
+  <header class="encabezado">
+    <div class="contenedor barra">
+      <a href="#inicio"
+         class="marca"
+         aria-label="Ulloa Contadores - Inicio">
+        <img
+          src="PNG%20OBSCURO.png"
+          alt="Logotipo oficial de Ulloa Contadores"
+          class="logo-oficial"
+        >
+      </a>
+      <nav class="menu" aria-label="Menú principal">
+        <a href="#inicio">Inicio</a>
+        <a href="#servicios">Servicios</a>
+        <a href="#herramientas">Herramientas</a>
+        <a href="#articulos">Artículos</a>
+        <a href="#contacto">Contacto</a>
+      </nav>
+    </div>
+  </header>
+  <main>
+    <!-- ======================================
+         PRESENTACIÓN PRINCIPAL
+    ======================================= -->
+    <section class="hero" id="inicio">
+      <div class="contenedor hero-contenido">
+        <div>
+          <span class="etiqueta">
+            Contabilidad · Impuestos · Finanzas
+          </span>
+          <h1>
+            La tranquilidad de tus finanzas
+            comienza con una buena asesoría.
+          </h1>
+          <p>
+            En Ulloa Contadores ofrecemos soluciones contables,
+            fiscales y financieras, combinando atención profesional
+            con herramientas digitales para facilitar tus procesos.
+          </p>
+          <div class="hero-acciones">
+            <a href="#servicios"
+               class="boton boton-primario">
+              Conoce nuestros servicios →
+            </a>
+            <a href="#herramientas"
+               class="boton boton-secundario">
+              Explorar herramientas
+            </a>
+          </div>
+        </div>
+        <div class="panel-hero">
+          <h3>Soluciones para tus necesidades</h3>
+          <div class="panel-fila">
+            <div class="panel-icono">▤</div>
+            <div>
+              <strong>Contabilidad profesional</strong>
+              <small>
+                Organización e información financiera
+              </small>
+            </div>
+          </div>
+          <div class="panel-fila">
+            <div class="panel-icono">%</div>
+            <div>
+              <strong>Asesoría fiscal</strong>
+              <small>
+                Cumplimiento y orientación tributaria
+              </small>
+            </div>
+          </div>
+          <div class="panel-fila">
+            <div class="panel-icono">⌘</div>
+            <div>
+              <strong>Herramientas digitales</strong>
+              <small>
+                Soluciones tecnológicas en desarrollo
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- ======================================
+         SERVICIOS
+    ======================================= -->
+    <section class="seccion" id="servicios">
+      <div class="contenedor">
+        <div class="encabezado-seccion">
+          <span class="texto-etiqueta">
+            Nuestros servicios
+          </span>
+          <h2>
+            Asesoría especializada para tomar
+            mejores decisiones.
+          </h2>
+          <p>
+            Servicios enfocados en el cumplimiento de obligaciones
+            y la administración financiera de personas y empresas.
+          </p>
+        </div>
+        <div class="cuadricula">
+          <article class="tarjeta">
+            <div class="tarjeta-icono">▤</div>
+            <h3>Contabilidad</h3>
+            <p>
+              Registro contable, elaboración de estados financieros
+              y seguimiento de información administrativa.
+            </p>
+          </article>
+          <article class="tarjeta">
+            <div class="tarjeta-icono">%</div>
+            <h3>Asesoría fiscal</h3>
+            <p>
+              Determinación de contribuciones, declaraciones
+              y orientación sobre obligaciones fiscales.
+            </p>
+          </article>
+          <article class="tarjeta">
+            <div class="tarjeta-icono">↗</div>
+            <h3>Consultoría financiera</h3>
+            <p>
+              Análisis de información financiera y apoyo
+              para la toma de decisiones.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+    <!-- ======================================
+         HERRAMIENTAS DIGITALES
+    ======================================= -->
+    <section class="seccion seccion-suave"
+             id="herramientas">
+      <div class="contenedor">
+        <div class="encabezado-seccion">
+          <span class="texto-etiqueta">
+            Innovación y tecnología
+          </span>
+          <h2>
+            Herramientas digitales para simplificar
+            tu trabajo.
+          </h2>
+          <p>
+            Estamos desarrollando aplicaciones especializadas
+            para facilitar tareas contables y fiscales.
+          </p>
+        </div>
+        <div class="cuadricula">
+          <article class="tarjeta tarjeta-destacada">
+            <div class="tarjeta-icono">▦</div>
+            <h3>Lector CFDI</h3>
+            <p>
+              Procesamiento de archivos XML,
+              exportación a Excel y generación
+              de reportes contables.
+            </p>
+            <span class="etiqueta-estado">
+              Próximamente
+            </span>
+          </article>
+          <article class="tarjeta">
+            <div class="tarjeta-icono">∑</div>
+            <h3>Calculadora fiscal</h3>
+            <p>
+              Cálculo de actualización y recargos
+              mediante índices y tasas aplicables.
+            </p>
+            <span class="etiqueta-estado">
+              Próximamente
+            </span>
+          </article>
+          <article class="tarjeta">
+            <div class="tarjeta-icono">▥</div>
+            <h3>Consulta del INPC</h3>
+            <p>
+              Consulta de índices nacionales de precios
+              al consumidor y datos históricos.
+            </p>
+            <span class="etiqueta-estado">
+              Próximamente
+            </span>
+          </article>
+        </div>
+      </div>
+    </section>
+    <!-- ======================================
+         ARTÍCULOS
+    ======================================= -->
+    <section class="seccion" id="articulos">
+      <div class="contenedor">
+        <div class="encabezado-seccion">
+          <span class="texto-etiqueta">
+            Información y conocimiento
+          </span>
+          <h2>
+            Actualidad fiscal, contable y financiera.
+          </h2>
+          <p>
+            Consulta nuestros artículos y recursos sobre temas fiscales, contables y financieros.
+          </p>
+        </div>
+        <div class="cuadricula">
+          <article class="articulo">
+            <div class="articulo-visual">01</div>
+            <div class="articulo-cuerpo">
+              <small>Fiscal</small>
+              <h3>RESICO 2026: beneficios y obligaciones para personas físicas</h3>
+              <p>Conoce las tasas de ISR, los requisitos, las obligaciones fiscales y cuándo puede convenirte este régimen.</p>
+              <a class="enlace-articulo" href="articulos/resico-personas-fisicas-2026.html">Leer artículo →</a>
+            </div>
+          </article>
+          <article class="articulo">
+            <div class="articulo-visual">02</div>
+            <div class="articulo-cuerpo">
+              <small>Contabilidad</small>
+              <h3>
+                La importancia de la información financiera
+              </h3>
+              <p>Contenido en preparación.</p>
+            </div>
+          </article>
+          <article class="articulo">
+            <div class="articulo-visual">03</div>
+            <div class="articulo-cuerpo">
+              <small>Finanzas</small>
+              <h3>
+                Herramientas para una mejor administración
+              </h3>
+              <p>Contenido en preparación.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+    <!-- ======================================
+         CONTACTO
+    ======================================= -->
+    <section class="seccion contacto" id="contacto">
+      <div class="contenedor contacto-contenido">
+        <div>
+          <span class="etiqueta">Ulloa Contadores</span>
+          <h2>Estamos para ayudarte a avanzar.</h2>
+          <p>Cuéntanos qué necesitas. Te orientaremos sobre nuestros servicios contables, fiscales y financieros.</p>
+          <a class="contacto-dato" href="mailto:contacto@ulloacontadores.com.mx">✉ contacto@ulloacontadores.com.mx</a>
+          <a class="contacto-dato" href="tel:+523118761619">☎ 311 876 1619</a>
+          <div class="contacto-enlaces">
+            <a class="boton boton-whatsapp" href="https://wa.me/523118761619?text=Hola%2C%20buen%20d%C3%ADa.%20Me%20gustar%C3%ADa%20recibir%20informaci%C3%B3n%20sobre%20los%20servicios%20de%20Ulloa%20Contadores." target="_blank" rel="noopener noreferrer">Escribir por WhatsApp →</a>
+            <a class="boton" href="mailto:contacto@ulloacontadores.com.mx">Enviar un correo →</a>
+          </div>
+        </div>
+        <form class="formulario-contacto" id="formulario-contacto">
+          <h3>Solicita información</h3>
+          <p>Completa tus datos para preparar un mensaje por WhatsApp.</p>
+          <div class="campo-contacto">
+            <label for="contacto-nombre">Nombre completo *</label>
+            <input id="contacto-nombre" name="nombre" type="text" autocomplete="name" maxlength="100" required>
+          </div>
+          <div class="campo-contacto">
+            <label for="contacto-email">Correo electrónico *</label>
+            <input id="contacto-email" name="email" type="email" autocomplete="email" maxlength="150" required>
+          </div>
+          <div class="campo-contacto">
+            <label for="contacto-servicio">Servicio de interés *</label>
+            <select id="contacto-servicio" name="servicio" required>
+              <option value="">Selecciona un servicio</option>
+              <option>Contabilidad</option>
+              <option>Asesoría fiscal</option>
+              <option>Consultoría financiera</option>
+              <option>Otro servicio</option>
+            </select>
+          </div>
+          <div class="campo-contacto">
+            <label for="contacto-mensaje">¿En qué podemos ayudarte? *</label>
+            <textarea id="contacto-mensaje" name="mensaje" maxlength="1500" required></textarea>
+          </div>
+          <a class="boton boton-enviar" id="enlace-formulario-whatsapp" href="https://wa.me/523118761619" target="_blank" rel="noopener noreferrer">Continuar en WhatsApp →</a>
+          <p class="nota-formulario">Se abrirá WhatsApp con tu solicitud preparada. Revisa el mensaje y pulsa Enviar para compartirlo con el despacho. No incluyas contraseñas, RFC ni información fiscal confidencial.</p>
+        </form>
+      </div>
+    </section>
+  </main>
+  <!-- ======================================
+       PIE DE PÁGINA
+  ======================================= -->
+  <footer>
+    <div class="contenedor pie">
+      <a href="#inicio"
+         aria-label="Volver al inicio de Ulloa Contadores">
+        <img
+          src="PNG%20CLARO.png"
+          alt="Ulloa Contadores"
+          class="logo-pie"
+        >
+      </a>
+      <div class="pie-texto">
+        <p>
+          © <span id="anio"></span>
+          Ulloa Contadores.
+          Todos los derechos reservados.
+        </p>
+        <p>
+          Soluciones contables, fiscales y financieras.
+        </p>
+      </div>
+    </div>
+  </footer>
+  <!-- ======================================
+       JAVASCRIPT
+  ======================================= -->
+  <script>
+    document.getElementById("anio").textContent =
+      new Date().getFullYear();
+    const formularioContacto = document.getElementById("formulario-contacto");
+    const enlaceWhatsapp = document.getElementById("enlace-formulario-whatsapp");
+
+    function actualizarEnlaceWhatsapp() {
+      const nombre = document.getElementById("contacto-nombre").value.trim();
+      const email = document.getElementById("contacto-email").value.trim();
+      const servicio = document.getElementById("contacto-servicio").value;
+      const mensaje = document.getElementById("contacto-mensaje").value.trim();
+      const texto = [
+        "Hola, Ulloa Contadores. Me gustaría solicitar información.",
+        "",
+        "Nombre: " + nombre,
+        "Correo: " + email,
+        "Servicio: " + servicio,
+        "Mensaje: " + mensaje
+      ].join("\n");
+      enlaceWhatsapp.href = "https://wa.me/523118761619?text=" + encodeURIComponent(texto);
+    }
+
+    formularioContacto.addEventListener("input", actualizarEnlaceWhatsapp);
+    formularioContacto.addEventListener("change", actualizarEnlaceWhatsapp);
+    enlaceWhatsapp.addEventListener("click", function (event) {
+      if (!formularioContacto.reportValidity()) {
+        event.preventDefault();
+        return;
+      }
+      const campos = ["contacto-nombre", "contacto-email", "contacto-servicio", "contacto-mensaje"];
+      for (const id of campos) {
+        if (!document.getElementById(id).value.trim()) {
+          event.preventDefault();
+          document.getElementById(id).focus();
+          return;
+        }
+      }
+      actualizarEnlaceWhatsapp();
+    });
+    actualizarEnlaceWhatsapp();
+  </script>
+</body>
+</html>

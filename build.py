@@ -154,6 +154,19 @@ def article_html(item, related_html):
     word_count = len(re.findall(r'\b[\wÁÉÍÓÚÜÑáéíóúüñ]+\b', plain_text))
     reading_minutes = max(1, (word_count + 199) // 200)
 
+    # Fuentes registradas en Pages CMS: no se generan referencias ficticias.
+    sources = item.get('sources') or ''
+    if isinstance(sources, list):
+        sources = '\n'.join('- ' + str(source) for source in sources if source)
+    sources = str(sources).strip()
+    sources_html = (
+        '<section class="sources" aria-label="Fuentes de información">'
+        '<h2>Fuentes de información</h2>'
+        + markdown.markdown(sources, extensions=['extra', 'sane_lists'])
+        + '</section>'
+        if sources else ''
+    )
+
     cover = item.get('cover', '')
     cover_html = (
         '<figure class="figure-portada"><img class="portada" src="' +
@@ -189,6 +202,10 @@ def article_html(item, related_html):
     .sidebar{align-self:start;position:sticky;top:120px;border:1px solid #ABBCC6;border-radius:10px;padding:20px;background:#ECEBE8}
     .sidebar a{display:block;margin:12px 0;font-size:14px;text-decoration:none;overflow-wrap:anywhere}
     .sidebar a:hover{text-decoration:underline}
+    .sources{border-top:1px solid #ABBCC6;margin-top:42px;padding-top:20px;font-size:14px}
+    .sources h2{font-size:22px;margin:10px 0 15px}
+    .sources a{overflow-wrap:anywhere;text-decoration:underline}
+    .sources ul,.sources ol{padding-left:24px}
     .articulos-relacionados{border-top:1px solid #ABBCC6;margin-top:48px;padding-top:10px}
     .articulos-relacionados h2{font-size:25px;margin:25px 0}
     .relacionados-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
@@ -221,7 +238,7 @@ def article_html(item, related_html):
 <section class="hero"><div class="wrap"><span class="eyebrow">{category}</span><h1>{title}</h1>
 {description_html}<div class="meta">Ulloa Contadores{' · ' + publication if publication else ''} · Lectura aproximada: {reading_minutes} min</div>
 </div></section>
-<div class="wrap {layout_class}"><main class="content">{cover_html}<article>{body}</article>{related_html}</main>{sidebar}</div>
+<div class="wrap {layout_class}"><main class="content">{cover_html}<article>{body}</article>{sources_html}{related_html}</main>{sidebar}</div>
 <footer><div class="wrap foot"><a href="/index.html#inicio"><img src="/PNG%20CLARO.png" alt="Ulloa Contadores"></a>
 <p>© Ulloa Contadores.<br>Soluciones contables, fiscales y financieras.</p></div></footer></body></html>'''
 
@@ -277,6 +294,7 @@ def main():
                 'cover': get_cover(meta),
                 'url': f'articulos/{slug}.html',
                 'body': body,
+                'sources': meta.get('sources') or meta.get('fuentes') or '',
                 'existing_html': (ARTICLES / f'{slug}.html').exists(),
             })
 

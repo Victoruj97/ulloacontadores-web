@@ -47,3 +47,11 @@ content:
       - name: body
         label: Contenido del artículo
         type: rich-text
+
+        # Agregar este bloque dentro de content > fields en .pages.yml,
+# al mismo nivel de los campos title, date, category, image y body.
+      - name: sources
+        label: Fuentes de información
+        type: rich-text
+        required: false
+

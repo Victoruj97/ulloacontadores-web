@@ -5,21 +5,16 @@ date: 2026-10-16
 category: Fiscal
 description: Guía práctica para profesionistas, emprendedores y arrendadores que
   desean comprender el Régimen Simplificado de Confianza en México.
-sources: |+
+sources: |-
   
 
   - [SAT: artículo 113-E de la Ley del ISR]([https://wwwmat.sat.gob.mx/articulo/58780/articulo-113-e](https://wwwmat.sat.gob.mx/articulo/58780/articulo-113-e))
-
   - [SAT: retención del 1.25 % (artículo 113-J)]([https://wwwmat.sat.gob.mx/articulo/59511/articulo-113-j](https://wwwmat.sat.gob.mx/articulo/59511/articulo-113-j))
-
   - [SAT: Resolución Miscelánea Fiscal 2026]([https://wwwnp.sat.gob.mx/minisitio/NormatividadRMFyRGCE/normatividad_rmf_rgce2026.html](https://wwwnp.sat.gob.mx/minisitio/NormatividadRMFyRGCE/normatividad_rmf_rgce2026.html))
-
   - [SAT: Régimen Simplificado de Confianza]([https://www.sat.gob.mx/portal/public/personas-fisicas/pf-simplificado-de-confianza](https://www.sat.gob.mx/portal/public/personas-fisicas/pf-simplificado-de-confianza))
 
   Revisión: 16 de octubre de 2026. Información general; no sustituye una asesoría individualizada.
 ---
-
-
 El **Régimen Simplificado de Confianza (RESICO)** busca facilitar el cumplimiento fiscal de determinadas personas físicas mediante tasas reducidas del Impuesto sobre la Renta (ISR). Sin embargo, no implica que todos los contribuyentes paguen menos ni que desaparezcan sus obligaciones ante el SAT.
 
 Antes de elegirlo conviene revisar los ingresos, la actividad económica, las restricciones y el tratamiento del IVA.
@@ -35,16 +30,15 @@ No todas las personas físicas pueden optar por él: existen restricciones para 
 ## Principales beneficios
 
 - **Tasas reducidas:** el ISR mensual se determina con porcentajes del 1 % al 2.5 %.
-
 - **Base de ingresos cobrados:** se consideran los CFDI efectivamente cobrados, sin incluir IVA.
-
 - **Cálculo más sencillo:** no se restan gastos ni deducciones para determinar el ISR del régimen.
-
 - **Declaraciones precargadas:** los aplicativos del SAT incorporan información de CFDI, que debe revisarse y conciliarse.
 
 ## ¿Cuánto ISR se paga?
 
 La tasa mensual depende del total de ingresos efectivamente cobrados en el mes, sin IVA:
+
+
 
 | Ingresos mensuales | Tasa de ISR |
 
@@ -59,6 +53,8 @@ La tasa mensual depende del total de ingresos efectivamente cobrados en el mes, 
 | Hasta $208,333.33 | 2.00 % |
 
 | Hasta $3,500,000.00 | 2.50 % |
+
+
 
 La última fila corresponde al límite superior de la tabla mensual; el requisito general de permanencia se evalúa respecto del límite anual de ingresos.
 
@@ -75,15 +71,10 @@ Si una persona moral paga servicios o actividades comprendidas en RESICO, por re
 ## Obligaciones fiscales principales
 
 - Mantener actualizado el RFC y la información de actividades y obligaciones.
-
 - Emitir los CFDI correspondientes y verificar su correcta emisión y cobro.
-
 - Presentar las declaraciones mensuales de ISR y, cuando corresponda, IVA.
-
 - Contar con e.firma y atender las obligaciones del Buzón Tributario, considerando las facilidades y plazos vigentes.
-
 - Conservar documentación y comprobantes relacionados con las operaciones.
-
 - Revisar las retenciones efectuadas por personas morales.
 
 Como regla general, el ISR mensual se declara a más tardar el **día 17 del mes siguiente**, sin perjuicio de las facilidades de plazo que correspondan.
@@ -118,5 +109,5 @@ En Ulloa Contadores te ayudamos a revisar tu situación fiscal y determinar las 
 
 [Solicitar asesoría por WhatsApp →]([https://wa.me/523118761619?text=Hola%2C%20me%20gustar%C3%ADa%20recibir%20asesor%C3%ADa%20sobre%20RESICO](https://wa.me/523118761619?text=Hola%2C%20me%20gustar%C3%ADa%20recibir%20asesor%C3%ADa%20sobre%20RESICO).)
 
-[[contacto@ulloacontadores.com.mx](mailto:contacto@ulloacontadores.com.mx)]([mailto:contacto@ulloacontadores.com.mx](mailto:contacto@ulloacontadores.com.mx))
+[contacto@ulloacontadores.com.mx]([mailto:contacto@ulloacontadores.com.mx](mailto:contacto@ulloacontadores.com.mx))
 

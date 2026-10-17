@@ -3,7 +3,7 @@
 from pathlib import Path
 from datetime import date, datetime
 from html import escape
-from urllib.parse import quote
+from urllib.parse import quote, urlencode
 import re
 import shutil
 import sys
@@ -129,7 +129,20 @@ def article_html(item, related_html):
 
     # TOC asigna identificadores estables a los encabezados para el índice lateral.
     md = markdown.Markdown(extensions=['extra', 'sane_lists', 'toc'])
-    body = md.convert(item['body'])
+    # La invitación de asesoría se genera desde la plantilla, sin duplicarla.
+    raw_body = re.sub(
+        r'(?ims)^#{2,3}\s*¿RESICO es conveniente para ti\?\s*$.*?(?=^#{2}\s+|\Z)',
+        '', item['body']
+    )
+    body = md.convert(raw_body)
+    # Las tablas generadas por Markdown se desplazan horizontalmente en móviles.
+    body = re.sub(r'(<table>.*?</table>)', r'<div class="table-wrap">\1</div>', body, flags=re.S)
+    # La conversión de algunos enlaces del editor puede dejar el Markdown literal.
+    body = re.sub(
+        r'\[([^\]<>]+)\]\((mailto:[^\s<>]+)\)',
+        lambda m: '<a href="' + escape(m.group(2), quote=True) + '">' + escape(m.group(1)) + '</a>',
+        body
+    )
     toc_entries = md.toc_tokens
 
     def toc_links(tokens):
@@ -167,6 +180,21 @@ def article_html(item, related_html):
         if sources else ''
     )
 
+    # CTA editorial uniforme para todos los artículos.
+    whatsapp = 'https://wa.me/523118761619?' + urlencode({
+        'text': 'Hola, me gustaría recibir asesoría sobre ' + item['category'].lower() + '.'
+    })
+    cta_html = (
+        '<section class="cta" aria-label="Asesoría Ulloa Contadores">'
+        '<h2>¿Necesitas asesoría especializada?</h2>'
+        '<p>En Ulloa Contadores te ayudamos a analizar tu situación y encontrar soluciones '
+        'contables, fiscales y financieras para tu negocio.</p>'
+        '<a class="btn" target="_blank" rel="noopener noreferrer" href="' +
+        escape(whatsapp, quote=True) + '">Solicitar asesoría por WhatsApp →</a>'
+        '<p><a href="mailto:contacto@ulloacontadores.com.mx">'
+        'contacto@ulloacontadores.com.mx</a></p></section>'
+    )
+
     cover = item.get('cover', '')
     cover_html = (
         '<figure class="figure-portada"><img class="portada" src="' +
@@ -197,7 +225,13 @@ def article_html(item, related_html):
     .content th{background:#293F56;color:white;text-align:left}
     .content td,.content th{padding:12px 14px;border:1px solid #ABBCC6}
     .content tr:nth-child(even){background:#ECEBE8}
-    .table-wrap{overflow-x:auto}.content blockquote{border-left:4px solid #ABBCC6;padding-left:18px;margin-left:0}
+    .table-wrap{overflow-x:auto;max-width:100%;margin:22px 0}
+    .content table{min-width:410px}
+    .cta{background:#293F56;color:#ECEBE8;padding:30px;border-radius:10px;margin:44px 0}
+    .cta h2{color:#fff;margin:0 0 12px;font-size:26px}
+    .cta p{color:#ECEBE8}.cta a:not(.btn){color:#ECEBE8;text-decoration:underline;overflow-wrap:anywhere}
+    .btn{display:inline-block;background:#ECEBE8;color:#293F56!important;border-radius:6px;text-decoration:none;font-weight:750;padding:12px 20px;margin-top:8px}
+    .content blockquote{border-left:4px solid #ABBCC6;padding-left:18px;margin-left:0}
     .figure-portada{margin:0 0 36px}.portada{display:block;width:100%;max-height:430px;object-fit:cover;border-radius:10px}
     .sidebar{align-self:start;position:sticky;top:120px;border:1px solid #ABBCC6;border-radius:10px;padding:20px;background:#ECEBE8}
     .sidebar a{display:block;margin:12px 0;font-size:14px;text-decoration:none;overflow-wrap:anywhere}
@@ -238,7 +272,7 @@ def article_html(item, related_html):
 <section class="hero"><div class="wrap"><span class="eyebrow">{category}</span><h1>{title}</h1>
 {description_html}<div class="meta">Ulloa Contadores{' · ' + publication if publication else ''} · Lectura aproximada: {reading_minutes} min</div>
 </div></section>
-<div class="wrap {layout_class}"><main class="content">{cover_html}<article>{body}</article>{sources_html}{related_html}</main>{sidebar}</div>
+<div class="wrap {layout_class}"><main class="content">{cover_html}<article>{body}</article>{cta_html}{sources_html}{related_html}</main>{sidebar}</div>
 <footer><div class="wrap foot"><a href="/index.html#inicio"><img src="/PNG%20CLARO.png" alt="Ulloa Contadores"></a>
 <p>© Ulloa Contadores.<br>Soluciones contables, fiscales y financieras.</p></div></footer></body></html>'''
 
@@ -300,7 +334,11 @@ def main():
 
     # Conserva el artículo RESICO creado previamente como HTML independiente.
     resico = ARTICLES / 'resico-personas-fisicas-2026.html'
-    if resico.exists() and not any(x['url'].endswith(resico.name) for x in entries):
+    has_new_resico = any(
+        x['url'].endswith('resico-2026-beneficios-requisitos-y-obligaciones-fiscales-para-personas-fisicas.html')
+        for x in entries
+    )
+    if resico.exists() and not has_new_resico and not any(x['url'].endswith(resico.name) for x in entries):
         entries.append({
             'title': 'RESICO 2026: beneficios y obligaciones para personas físicas',
             'category': 'Fiscal',
@@ -312,6 +350,26 @@ def main():
             'body': '',
             'existing_html': True,
         })
+
+    # Preserva enlaces existentes al RESICO antiguo sin mostrar tarjetas duplicadas.
+    if resico.exists() and has_new_resico:
+        new_resico = next(
+            x for x in entries
+            if x['url'].endswith('resico-2026-beneficios-requisitos-y-obligaciones-fiscales-para-personas-fisicas.html')
+        )
+        destination = '/' + new_resico['url']
+        redirect_html = (
+            '<!doctype html><html lang="es"><head><meta charset="utf-8">'
+            '<meta name="robots" content="noindex">'
+            '<meta http-equiv="refresh" content="0;url=' + escape(destination, quote=True) + '">'
+            '<link rel="canonical" href="https://ulloacontadores.com.mx' + escape(destination, quote=True) + '">'
+            '<title>Artículo trasladado | Ulloa Contadores</title></head><body>'
+            '<p>El artículo se encuentra en <a href="' + escape(destination, quote=True) + '">'
+            'su nueva dirección</a>.</p></body></html>'
+        )
+        old_target = OUT / 'articulos' / 'resico-personas-fisicas-2026.html'
+        old_target.parent.mkdir(parents=True, exist_ok=True)
+        old_target.write_text(redirect_html, encoding='utf-8')
 
     entries.sort(key=lambda x: x['sort'], reverse=True)
     for item in entries:

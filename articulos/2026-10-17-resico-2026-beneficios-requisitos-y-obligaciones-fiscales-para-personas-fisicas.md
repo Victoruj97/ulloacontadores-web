@@ -40,9 +40,11 @@ La tasa mensual depende del total de ingresos efectivamente cobrados en el mes, 
 
 
 
+&nbsp;
+
 | Ingresos mensuales | Tasa de ISR |
 
-| --- | --- |
+| :--- | ---: |
 
 | Hasta $25,000.00 | 1.00 % |
 
@@ -56,15 +58,23 @@ La tasa mensual depende del total de ingresos efectivamente cobrados en el mes, 
 
 
 
+&nbsp;
+
 La última fila corresponde al límite superior de la tabla mensual; el requisito general de permanencia se evalúa respecto del límite anual de ingresos.
 
 ### Ejemplo de ISR mensual
 
-Un profesionista cobra **$40,000** durante el mes, sin IVA. Le corresponde la tasa de **1.10 %**.
 
-ISR determinado: **$440.00**
+
+Un profesionista cobra **$40,000.00** durante el mes, sin IVA. Le corresponde una tasa del **1.10 %**.
+
+**Cálculo del ISR:**
+
+$40,000.00 × 1.10 % = **$440.00**
 
 El ejemplo es ilustrativo, antes de considerar retenciones acreditables u otras particularidades.
+
+
 
 Si una persona moral paga servicios o actividades comprendidas en RESICO, por regla general debe retener **1.25 % de ISR** sobre el pago sin IVA. Esa retención se considera en la declaración mensual de la persona física.
 

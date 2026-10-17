@@ -3,6 +3,7 @@ title: "RESICO 2026: beneficios, requisitos y obligaciones fiscales para
   personas físicas"
 date: 2026-10-16
 category: Fiscal
+image: /articulos/imagenes/Escritorio profesional con RESICO y finanzas.png
 description: Guía práctica para profesionistas, emprendedores y arrendadores que
   desean comprender el Régimen Simplificado de Confianza en México.
 sources: |-

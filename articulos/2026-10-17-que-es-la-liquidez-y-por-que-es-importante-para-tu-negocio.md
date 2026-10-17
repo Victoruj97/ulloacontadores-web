@@ -2,6 +2,7 @@
 title: ¿Qué es la liquidez y por qué es importante para tu negocio?
 date: 2026-10-17
 category: Finanzas
+image: /articulos/imagenes/Monedas y gráficos financieros en la oficina.png
 description: Conoce qué es la liquidez y cómo influye en la capacidad de una
   empresa para cumplir sus obligaciones financieras.
 ---

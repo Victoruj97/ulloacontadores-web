@@ -1,0 +1,43 @@
+
+media:
+  input: articulos/imagenes
+  output: /articulos/imagenes
+
+content:
+  - name: articulos
+    label: Artículos
+    type: collection
+    path: articulos
+    view:
+      fields: [title, date, category]
+    fields:
+      - name: title
+        label: Título
+        type: string
+        required: true
+
+      - name: date
+        label: Fecha de publicación
+        type: date
+        required: true
+
+      - name: category
+        label: Categoría
+        type: select
+        options:
+          values:
+            - value: Fiscal
+              label: Fiscal
+            - value: Contabilidad
+              label: Contabilidad
+            - value: Finanzas
+              label: Finanzas
+        required: true
+
+      - name: description
+        label: Descripción breve
+        type: text
+
+      - name: body
+        label: Contenido del artículo
+        type: rich-text

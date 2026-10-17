@@ -5,6 +5,10 @@ category: Finanzas
 image: /articulos/imagenes/Monedas y gráficos financieros en la oficina.png
 description: Conoce qué es la liquidez y cómo influye en la capacidad de una
   empresa para cumplir sus obligaciones financieras.
+sources: |+
+  - OpenStax. *Principles of Accounting, Volume 1: Financial Accounting*. [Liquidez y análisis financiero](https://openstax.org/books/principles-financial-accounting/pages/2-3-prepare-an-income-statement-statement-of-owners-equity-and-balance-sheet).
+  - CFA Institute. *Financial Analysis Techniques*. [Consultar publicación](https://www.cfainstitute.org/insights/professional-learning/refresher-readings/2026/financial-analysis-techniques).
+  - Corporate Finance Institute. *Current Ratio vs. Quick Ratio: Key Liquidity Ratios*. [Consultar publicación](https://corporatefinanceinstitute.com/resources/accounting/current-ratio-vs-quick-ratio/).
 ---
 La liquidez es la capacidad de una empresa para disponer de efectivo y otros recursos que puedan convertirse rápidamente en dinero, con el propósito de cumplir sus obligaciones financieras de corto plazo.
 

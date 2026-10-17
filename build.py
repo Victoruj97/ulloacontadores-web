@@ -120,61 +120,110 @@ def related_articles(current, entries, limit=3):
 
 
 def article_html(item, related_html):
+    # Genera artículos con el diseño editorial RESICO.
     title = escape(item['title'])
-    desc = escape(item['description'], quote=True)
+    description = escape(item['description'])
+    desc_attribute = escape(item['description'], quote=True)
     category = escape(item['category'])
     publication = escape(formatted_date(item['date']))
-    body = markdown.markdown(item['body'], extensions=['extra', 'sane_lists'])
+
+    # TOC asigna identificadores estables a los encabezados para el índice lateral.
+    md = markdown.Markdown(extensions=['extra', 'sane_lists', 'toc'])
+    body = md.convert(item['body'])
+    toc_entries = md.toc_tokens
+
+    def toc_links(tokens):
+        links = []
+        for token in tokens:
+            if token.get('level') == 2:
+                links.append(
+                    '<a href="#' + escape(token['id'], quote=True) + '">' +
+                    escape(re.sub(r'<[^>]+>', '', token['name'])) + '</a>'
+                )
+        return ''.join(links)
+
+    sidebar_links = toc_links(toc_entries)
+    sidebar = (
+        '<aside class="sidebar" aria-label="Índice del artículo">'
+        '<strong>En este artículo</strong>' + sidebar_links + '</aside>'
+        if sidebar_links else ''
+    )
+
+    # Estimación aproximada basada en 200 palabras por minuto.
+    plain_text = re.sub(r'<[^>]*>', ' ', body)
+    word_count = len(re.findall(r'\b[\wÁÉÍÓÚÜÑáéíóúüñ]+\b', plain_text))
+    reading_minutes = max(1, (word_count + 199) // 200)
+
     cover = item.get('cover', '')
     cover_html = (
-        f'<img class="portada" src="{escape(cover, quote=True)}" '
-        f'alt="Imagen de portada del artículo: {escape(item["title"], quote=True)}">'
+        '<figure class="figure-portada"><img class="portada" src="' +
+        escape(cover, quote=True) + '" alt="Imagen de portada de ' +
+        escape(item['title'], quote=True) + '"></figure>'
         if cover else ''
     )
+
+    # Se conservan los cuatro colores oficiales y las proporciones del artículo fiscal.
     styles = '''
-    :root{--azul:#293F56;--medio:#667F95;--claro:#ABBCC6;--fondo:#ECEBE8}
     *{box-sizing:border-box}html{scroll-behavior:smooth}
-    body{margin:0;color:var(--azul);font:16px/1.75 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
-    .contenedor{width:min(880px,92%);margin:auto}
-    .cabecera{border-bottom:1px solid var(--claro);padding:15px 0}
-    .cabecera img{width:190px;height:75px;object-fit:contain;object-position:left}
-    .cabecera a{text-decoration:none;color:inherit}
-    .volver{display:inline-block;margin:38px 0 14px;color:var(--medio);font-weight:650}
-    .categoria{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--medio)}
-    h1{font-size:clamp(30px,4vw,45px);line-height:1.2;margin:12px 0 20px}
-    h2{margin-top:40px;line-height:1.3}h3{margin-top:28px;line-height:1.4}
-    .intro{font-size:19px;color:var(--medio);margin-bottom:30px}
-    .portada{display:block;width:100%;max-height:430px;object-fit:cover;border-radius:12px;margin:30px 0 34px}
-    .contenido{padding:0 0 40px}.contenido p{margin:0 0 18px}
-    .contenido a{color:var(--azul);text-decoration:underline}
-    .contenido img{max-width:100%;height:auto;border-radius:8px}
-    .contenido table{border-collapse:collapse;width:100%;display:block;overflow-x:auto}
-    .contenido th,.contenido td{padding:10px;border:1px solid var(--claro);text-align:left}
-    .contenido blockquote{border-left:4px solid var(--claro);padding-left:18px;margin-left:0}
-    .articulos-relacionados{border-top:1px solid var(--claro);padding:10px 0 65px}
+    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#293F56;background:#fff;line-height:1.75}
+    a{color:inherit}header{border-bottom:1px solid #ABBCC6;background:#fff;position:sticky;top:0;z-index:5}
+    .wrap{width:min(1020px,91%);margin:auto}
+    .nav{min-height:90px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .logo{width:185px;max-height:76px;object-fit:contain}.nav a{text-decoration:none;font-weight:650}
+    .hero{background:#293F56;color:#ECEBE8;padding:65px 0 70px}
+    .eyebrow{text-transform:uppercase;letter-spacing:2px;font-size:12px;color:#ABBCC6;font-weight:750}
+    h1{font-size:clamp(32px,5vw,52px);line-height:1.18;letter-spacing:-1px;max-width:850px;margin:15px 0}
+    .hero p{max-width:800px;color:#ECEBE8;font-size:17px}.meta{font-size:13px;color:#ABBCC6}
+    .layout{display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:55px;padding:58px 0 90px}
+    .layout.no-sidebar{grid-template-columns:minmax(0,1fr)}
+    .content{min-width:0}.content h2{font-size:26px;line-height:1.3;margin:40px 0 14px}
+    .content h3{font-size:20px;margin-top:30px}.content p,.content li{font-size:16px}
+    .content li{margin:8px 0}.content ul,.content ol{padding-left:24px}
+    .content img{max-width:100%;height:auto}
+    .content table{border-collapse:collapse;width:100%;font-size:14px}
+    .content th{background:#293F56;color:white;text-align:left}
+    .content td,.content th{padding:12px 14px;border:1px solid #ABBCC6}
+    .content tr:nth-child(even){background:#ECEBE8}
+    .table-wrap{overflow-x:auto}.content blockquote{border-left:4px solid #ABBCC6;padding-left:18px;margin-left:0}
+    .figure-portada{margin:0 0 36px}.portada{display:block;width:100%;max-height:430px;object-fit:cover;border-radius:10px}
+    .sidebar{align-self:start;position:sticky;top:120px;border:1px solid #ABBCC6;border-radius:10px;padding:20px;background:#ECEBE8}
+    .sidebar a{display:block;margin:12px 0;font-size:14px;text-decoration:none;overflow-wrap:anywhere}
+    .sidebar a:hover{text-decoration:underline}
+    .articulos-relacionados{border-top:1px solid #ABBCC6;margin-top:48px;padding-top:10px}
     .articulos-relacionados h2{font-size:25px;margin:25px 0}
-    .relacionados-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
-    .relacionado{display:block;overflow:hidden;border:1px solid var(--claro);border-radius:10px;text-decoration:none;color:var(--azul)}
+    .relacionados-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+    .relacionado{display:block;overflow:hidden;border:1px solid #ABBCC6;border-radius:10px;text-decoration:none;color:#293F56}
     .relacionado img,.relacionado-sin-imagen{width:100%;height:120px;object-fit:cover;display:block}
-    .relacionado-sin-imagen{background:var(--medio);color:white;display:flex;align-items:center;justify-content:center;font-size:14px}
-    .relacionado-texto{padding:16px}.relacionado small{color:var(--medio);text-transform:uppercase;letter-spacing:1px}
+    .relacionado-sin-imagen{background:#667F95;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px}
+    .relacionado-texto{padding:16px}.relacionado small{color:#667F95;text-transform:uppercase;letter-spacing:1px}
     .relacionado h3{font-size:16px;margin:8px 0 16px}.relacionado span{font-weight:650}
-    .relacionado:hover{border-color:var(--medio)}
-    footer{background:var(--azul);color:white;padding:32px 0}
-    footer img{width:175px;height:75px;object-fit:contain;object-position:left}
-    @media(max-width:650px){.relacionados-grid{grid-template-columns:1fr}.relacionado img,.relacionado-sin-imagen{height:170px}}
+    .relacionado:hover{border-color:#667F95}
+    footer{background:#293F56;color:#ABBCC6;padding:35px 0}
+    .foot{display:flex;justify-content:space-between;align-items:center;gap:20px}
+    .foot img{width:165px;max-height:75px;object-fit:contain}.foot p{font-size:13px;text-align:right}
+    @media(max-width:800px){.layout{grid-template-columns:1fr;padding-top:30px;gap:28px}
+      .sidebar{position:static;order:-1}.sidebar a{display:inline-block;margin-right:15px}
+      .nav{min-height:75px}.logo{width:150px}.hero{padding:45px 0}
+      .foot{flex-direction:column;align-items:flex-start}.foot p{text-align:left}}
+    @media(max-width:550px){.relacionados-grid{grid-template-columns:1fr}
+      .relacionado img,.relacionado-sin-imagen{height:170px}}
     '''
-    return f'''<!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="{desc}"><meta name="theme-color" content="#293F56">
+    description_html = '<p>' + description + '</p>' if description else ''
+    layout_class = 'layout' if sidebar else 'layout no-sidebar'
+    canonical = 'https://ulloacontadores.com.mx/' + item['url'].lstrip('/')
+    return f'''<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#293F56"><meta name="description" content="{desc_attribute}">
+<link rel="canonical" href="{escape(canonical, quote=True)}">
 <title>{title} | Ulloa Contadores</title><style>{styles}</style></head><body>
-<header class="cabecera"><div class="contenedor"><a href="/index.html#inicio"><img src="/PNG%20OBSCURO.png" alt="Ulloa Contadores"></a></div></header>
-<main class="contenedor"><a class="volver" href="/index.html#articulos">← Volver a artículos</a>
-<p class="categoria">{category}{' · '+publication if publication else ''}</p><h1>{title}</h1>
-{f'<p class="intro">{escape(item["description"])}</p>' if item['description'] else ''}
-{cover_html}<article class="contenido">{body}</article>{related_html}</main>
-<footer><div class="contenedor"><a href="/index.html#inicio"><img src="/PNG%20CLARO.png" alt="Ulloa Contadores"></a>
-<p>© Ulloa Contadores. Todos los derechos reservados.</p></div></footer></body></html>'''
+<header><div class="wrap nav"><a href="/index.html#inicio" aria-label="Inicio de Ulloa Contadores"><img class="logo" src="/PNG%20OBSCURO.png" alt="Ulloa Contadores"></a>
+<a href="/index.html#articulos">← Volver a artículos</a></div></header>
+<section class="hero"><div class="wrap"><span class="eyebrow">{category}</span><h1>{title}</h1>
+{description_html}<div class="meta">Ulloa Contadores{' · ' + publication if publication else ''} · Lectura aproximada: {reading_minutes} min</div>
+</div></section>
+<div class="wrap {layout_class}"><main class="content">{cover_html}<article>{body}</article>{related_html}</main>{sidebar}</div>
+<footer><div class="wrap foot"><a href="/index.html#inicio"><img src="/PNG%20CLARO.png" alt="Ulloa Contadores"></a>
+<p>© Ulloa Contadores.<br>Soluciones contables, fiscales y financieras.</p></div></footer></body></html>'''
 
 
 def card(item, number):

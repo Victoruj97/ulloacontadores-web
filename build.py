@@ -226,6 +226,8 @@ def article_html(item, related_html):
     .content td,.content th{padding:12px 14px;border:1px solid #ABBCC6}
     .content tr:nth-child(even){background:#ECEBE8}
     .table-wrap{overflow-x:auto;max-width:100%;margin:22px 0}
+    .example{border:1px solid #ABBCC6;background:#ECEBE8;padding:22px;border-radius:9px;margin:25px 0}
+    .example h3{margin:0 0 12px}.example p:last-child{margin-bottom:0}
     .content table{min-width:410px}
     .cta{background:#293F56;color:#ECEBE8;padding:30px;border-radius:10px;margin:44px 0}
     .cta h2{color:#fff;margin:0 0 12px;font-size:26px}

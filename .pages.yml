@@ -1,4 +1,5 @@
 
+
 media:
   input: articulos/imagenes
   output: /articulos/imagenes
@@ -33,6 +34,11 @@ content:
             - value: Finanzas
               label: Finanzas
         required: true
+
+      - name: image
+        label: Imagen de portada
+        type: image
+        required: false
 
       - name: description
         label: Descripción breve

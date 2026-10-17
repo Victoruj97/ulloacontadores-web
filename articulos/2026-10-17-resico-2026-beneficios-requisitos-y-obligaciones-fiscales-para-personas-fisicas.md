@@ -5,24 +5,20 @@ category: Fiscal
 image: /articulos/imagenes/Escritorio profesional con RESICO y finanzas.png
 description: Guía práctica para profesionistas, emprendedores y arrendadores que
   desean comprender el Régimen Simplificado de Confianza en México.
-sources: |+
+sources: |-
   
 
-  SAT — Artículo 113-E de la Ley del ISR:
+  [SAT — Artículo 113-E de la Ley del ISR:](https://wwwmat.sat.gob.mx/articulo/58780/articulo-113-e)
 
-  [https://wwwmat.sat.gob.mx/articulo/58780/articulo-113-e](https://wwwmat.sat.gob.mx/articulo/58780/articulo-113-e)
+  [SAT — Artículo 113-J de la Ley del ISR:](https://wwwmat.sat.gob.mx/articulo/59511/articulo-113-j)
 
-  SAT — Artículo 113-J de la Ley del ISR:
+  [SAT — Resolución Miscelánea Fiscal 2026:](https://wwwnp.sat.gob.mx/minisitio/NormatividadRMFyRGCE/normatividad_rmf_rgce2026.html)
 
-  [https://wwwmat.sat.gob.mx/articulo/59511/articulo-113-j](https://wwwmat.sat.gob.mx/articulo/59511/articulo-113-j)
+  [SAT — Régimen Simplificado de Confianza:](https://www.sat.gob.mx/portal/public/personas-fisicas/pf-simplificado-de-confianza)
 
-  SAT — Resolución Miscelánea Fiscal 2026:
 
-  [https://wwwnp.sat.gob.mx/minisitio/NormatividadRMFyRGCE/normatividad_rmf_rgce2026.html](https://wwwnp.sat.gob.mx/minisitio/NormatividadRMFyRGCE/normatividad_rmf_rgce2026.html)
 
-  SAT — Régimen Simplificado de Confianza:
-
-  [https://www.sat.gob.mx/portal/public/personas-fisicas/pf-simplificado-de-confianza](https://www.sat.gob.mx/portal/public/personas-fisicas/pf-simplificado-de-confianza)
+  &nbsp;
 ---
 El **Régimen Simplificado de Confianza (RESICO)** busca facilitar el cumplimiento fiscal de determinadas personas físicas mediante tasas reducidas del Impuesto sobre la Renta (ISR). Sin embargo, no implica que todos los contribuyentes paguen menos ni que desaparezcan sus obligaciones ante el SAT.
 

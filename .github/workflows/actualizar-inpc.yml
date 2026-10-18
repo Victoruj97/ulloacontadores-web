@@ -18,7 +18,7 @@ jobs:
       - name: Descargar repositorio
         uses: actions/checkout@v4
         with:
-          ref: principal
+          ref: main
 
       - name: Preparar Python
         uses: actions/setup-python@v5
@@ -41,5 +41,5 @@ jobs:
             echo "Sin cambios en el INPC"
           else
             git commit -m "Actualizar INPC oficial"
-            git push origin HEAD:principal
+            git push origin HEAD:main
           fi

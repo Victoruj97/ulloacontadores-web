@@ -82,7 +82,7 @@ def descargar_csv():
     if not contenido:
         raise RuntimeError("El INEGI devolvió un archivo vacío")
 
-    return contenido.decode("cp1252-sig")
+    return contenido.decode("cp1252")
 
 
 def extraer_indices(contenido):

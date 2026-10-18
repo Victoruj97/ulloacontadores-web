@@ -1,0 +1,45 @@
+
+name: Actualizar INPC
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    - cron: "20 14 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+        with:
+          ref: principal
+
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Consultar INPC del INEGI
+        env:
+          INEGI_TOKEN: ${{ secrets.INEGI_TOKEN }}
+        run: python scripts/actualizar_inpc.py
+
+      - name: Guardar datos actualizados
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add herramientas/inpc/inpc.json
+
+          if git diff --cached --quiet; then
+            echo "Sin cambios en el INPC"
+          else
+            git commit -m "Actualizar INPC oficial"
+            git push origin HEAD:principal
+          fi

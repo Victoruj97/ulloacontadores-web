@@ -25,10 +25,14 @@ jobs:
         with:
           python-version: "3.12"
 
+      
       - name: Consultar INPC del INEGI
         env:
           INEGI_TOKEN: ${{ secrets.INEGI_TOKEN }}
+          INEGI_INPC_INDICADOR: ${{ vars.INEGI_INPC_INDICADOR }}
+          INEGI_INPC_FUENTE: BIE-BISE
         run: python scripts/actualizar_inpc.py
+
 
       - name: Guardar datos actualizados
         run: |

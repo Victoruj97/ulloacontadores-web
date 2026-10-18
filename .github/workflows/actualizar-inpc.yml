@@ -25,6 +25,18 @@ jobs:
         with:
           python-version: "3.12"
 
+    
+      - name: Verificar disponibilidad del token
+        env:
+          INEGI_TOKEN: ${{ secrets.INEGI_TOKEN }}
+        run: |
+          if [ -z "$INEGI_TOKEN" ]; then
+            echo "ERROR: GitHub Actions no recibió INEGI_TOKEN"
+            exit 1
+          else
+            echo "OK: GitHub Actions recibió INEGI_TOKEN"
+          fi
+
       
       - name: Consultar INPC del INEGI
         env:

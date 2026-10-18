@@ -19,14 +19,35 @@ TOKEN = os.environ.get("INEGI_TOKEN", "").strip()
 INDICADOR = os.environ.get("INEGI_INPC_INDICADOR", "").strip()
 FUENTE = os.environ.get("INEGI_INPC_FUENTE", "BIE-BISE").strip()
 
+
 def consultar(url):
     try:
         with urlopen(url, timeout=40) as respuesta:
             return json.load(respuesta)
-    except (HTTPError, URLError, ValueError) as error:
+
+    except HTTPError as error:
+        print(f"Error HTTP del INEGI: {error.code}")
+
+        # Nunca imprimir la URL completa porque contiene el token.
+        try:
+            detalle = error.read(2000).decode(
+                "utf-8", errors="replace"
+            )
+            if TOKEN:
+                detalle = detalle.replace(TOKEN, "[TOKEN OCULTO]")
+            print("Respuesta del servidor:", detalle)
+        except Exception:
+            pass
+
+        raise RuntimeError(
+            f"El INEGI rechazó la solicitud (HTTP {error.code})"
+        ) from error
+
+    except (URLError, ValueError) as error:
         raise RuntimeError(
             "No se pudo consultar la API del INEGI"
         ) from error
+
 
 def main():
     if not TOKEN:

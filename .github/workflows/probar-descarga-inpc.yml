@@ -1,0 +1,140 @@
+
+name: Probar descarga INPC
+
+on:
+  workflow_dispatch:
+
+jobs:
+  probar-descarga:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Preparar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Consultar exportación CSV del INEGI
+        run: |
+          python - <<'PY'
+          import csv
+          import io
+          import urllib.parse
+          import urllib.request
+          from datetime import date
+
+          url = (
+              "https://www.inegi.org.mx/app/"
+              "indicesdeprecios/Exportacion.aspx"
+              "?INPTipoExporta=CSV"
+          )
+
+          anio_actual = date.today().year
+
+          parametros = {
+              "idEstructura": "112001700010",
+              "_formato": "CSV",
+              "_anioI": str(anio_actual - 10),
+              "_anioF": str(anio_actual),
+              "_meta": "0",
+              "_tipo": "Niveles",
+              "_info": "Índices",
+              "_orient": "vertical",
+              "_esquema": "0",
+              "_of": "inp",
+              "_cuadro": "112001700010",
+              "_series": "e|865541,1380001,865546,865547,865555,",
+              "_cveEstructura": "112001700010",
+          }
+
+          cuerpo = urllib.parse.urlencode(
+              parametros
+          ).encode("utf-8")
+
+          solicitud = urllib.request.Request(
+              url,
+              data=cuerpo,
+              headers={
+                  "User-Agent": "Mozilla/5.0",
+                  "Content-Type": (
+                      "application/x-www-form-urlencoded"
+                  ),
+                  "Referer": (
+                      "https://www.inegi.org.mx/app/"
+                      "indicesdeprecios/"
+                  ),
+              },
+              method="POST",
+          )
+
+          try:
+              with urllib.request.urlopen(
+                  solicitud, timeout=60
+              ) as respuesta:
+                  contenido = respuesta.read()
+                  tipo = respuesta.headers.get(
+                      "Content-Type", ""
+                  )
+                  print("HTTP:", respuesta.status)
+                  print("Tipo de respuesta:", tipo)
+                  print("Bytes recibidos:", len(contenido))
+          except Exception as error:
+              raise SystemExit(
+                  "Falló la solicitud al INEGI: "
+                  + str(error)
+              )
+
+          texto = contenido.decode(
+              "utf-8-sig", errors="replace"
+          )
+
+          if "865541" not in texto:
+              texto_alt = contenido.decode(
+                  "cp1252", errors="replace"
+              )
+              if "865541" in texto_alt:
+                  texto = texto_alt
+
+          filas = list(csv.reader(io.StringIO(texto)))
+
+          encabezados = [
+              fila for fila in filas
+              if fila and fila[0].strip() == "Fecha"
+          ]
+
+          if not encabezados:
+              raise SystemExit(
+                  "La respuesta no contiene el encabezado "
+                  "Fecha. No se confirmó la descarga CSV."
+              )
+
+          if "865541" not in encabezados[0]:
+              raise SystemExit(
+                  "El CSV no contiene la serie 865541."
+              )
+
+          print("Serie 865541 encontrada.")
+
+          meses = [
+              fila for fila in filas
+              if fila and len(fila) > 1
+              and any(
+                  fila[0].startswith(m + " ")
+                  for m in (
+                      "Ene", "Feb", "Mar", "Abr",
+                      "May", "Jun", "Jul", "Ago",
+                      "Sep", "Oct", "Nov", "Dic"
+                  )
+              )
+          ]
+
+          print("Meses encontrados:", len(meses))
+
+          if len(meses) < 100:
+              raise SystemExit(
+                  "El CSV contiene menos meses "
+                  "de los esperados."
+              )
+
+          print("PRUEBA EXITOSA: CSV recibido y validado.")
+          PY

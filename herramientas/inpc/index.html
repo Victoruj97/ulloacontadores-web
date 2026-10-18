@@ -1,1 +1,259 @@
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>INPC Histórico | Ulloa Contadores</title>
+  <meta name="description" content="Consulta el Índice Nacional de Precios al Consumidor (INPC) histórico por año y mes. Ulloa Contadores, Tepic, Nayarit.">
+
+  <style>
+    :root {
+      --azul: #293F56;
+      --azul-medio: #667F95;
+      --azul-claro: #ABBCC6;
+      --marfil: #ECEBE8;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--marfil);
+      color: var(--azul);
+      font-family: Montserrat, Arial, sans-serif;
+    }
+
+    header {
+      background: var(--azul);
+      color: var(--marfil);
+      padding: 28px 6%;
+    }
+
+    header a {
+      color: var(--marfil);
+      text-decoration: none;
+    }
+
+    main {
+      max-width: 1250px;
+      margin: 45px auto;
+      padding: 0 20px;
+    }
+
+    h1 {
+      font-size: clamp(26px, 4vw, 38px);
+      margin-bottom: 12px;
+    }
+
+    .descripcion {
+      line-height: 1.7;
+      color: var(--azul-medio);
+      margin-bottom: 28px;
+    }
+
+    .panel {
+      background: white;
+      border: 1px solid var(--azul-claro);
+      border-radius: 12px;
+      padding: 22px;
+    }
+
+    .controles {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    input {
+      padding: 12px;
+      border: 1px solid var(--azul-claro);
+      border-radius: 7px;
+      font: inherit;
+      max-width: 100%;
+    }
+
+    .tabla-contenedor {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      min-width: 950px;
+      border-collapse: collapse;
+      text-align: center;
+      font-size: 13px;
+    }
+
+    th, td {
+      padding: 13px 9px;
+      border: 1px solid var(--azul-claro);
+      white-space: nowrap;
+    }
+
+    thead th {
+      background: var(--azul);
+      color: white;
+    }
+
+    tbody th {
+      background: var(--azul-medio);
+      color: white;
+    }
+
+    tbody tr:nth-child(even) {
+      background: var(--marfil);
+    }
+
+    .reciente {
+      font-weight: 700;
+      background: var(--azul-claro);
+    }
+
+    .estado {
+      margin-top: 18px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    footer {
+      text-align: center;
+      padding: 35px 20px;
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <a href="/">← Volver a Ulloa Contadores</a>
+  </header>
+
+  <main>
+    <h1>Consulta histórica del INPC</h1>
+
+    <p class="descripcion">
+      Consulta el Índice Nacional de Precios al Consumidor
+      por año y mes, con información oficial del INEGI.
+    </p>
+
+    <section class="panel">
+      <div class="controles">
+        <h2>Índices mensuales</h2>
+        <input
+          type="search"
+          id="buscar"
+          placeholder="Buscar año, ej. 2025"
+          aria-label="Buscar año"
+        >
+      </div>
+
+      <div class="tabla-contenedor">
+        <table>
+          <thead>
+            <tr>
+              <th>AÑO</th>
+              <th>ENE</th><th>FEB</th><th>MAR</th>
+              <th>ABR</th><th>MAY</th><th>JUN</th>
+              <th>JUL</th><th>AGO</th><th>SEP</th>
+              <th>OCT</th><th>NOV</th><th>DIC</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-inpc"></tbody>
+        </table>
+      </div>
+
+      <p id="estado" class="estado" role="status">
+        Cargando índices oficiales...
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    Ulloa Contadores · Tepic, Nayarit
+    <p>Fuente: Instituto Nacional de Estadística y Geografía (INEGI).</p>
+  </footer>
+
+  <script>
+    const tabla = document.getElementById("tabla-inpc");
+    const estado = document.getElementById("estado");
+    const buscar = document.getElementById("buscar");
+
+    let registros = [];
+
+    function mostrarTabla() {
+      const consulta = buscar.value.trim();
+      tabla.replaceChildren();
+
+      const actual = new Date().getFullYear();
+      const inicio = actual - 10;
+
+      const visibles = registros.filter(registro =>
+        registro.anio >= inicio &&
+        registro.anio <= actual &&
+        String(registro.anio).includes(consulta)
+      );
+
+      visibles.sort((a, b) => b.anio - a.anio);
+
+      for (const registro of visibles) {
+        const fila = document.createElement("tr");
+        const anio = document.createElement("th");
+        anio.textContent = registro.anio;
+        fila.appendChild(anio);
+
+        for (let mes = 0; mes < 12; mes++) {
+          const celda = document.createElement("td");
+          const valor = registro.meses[mes];
+
+          celda.textContent =
+            typeof valor === "number"
+              ? valor.toFixed(3)
+              : "—";
+
+          fila.appendChild(celda);
+        }
+
+        tabla.appendChild(fila);
+      }
+    }
+
+    async function cargarINPC() {
+      try {
+        const respuesta = await fetch(
+          "./inpc.json",
+          { cache: "no-store" }
+        );
+
+        if (!respuesta.ok) {
+          throw new Error("No se encontró el archivo de datos.");
+        }
+
+        const datos = await respuesta.json();
+
+        if (!Array.isArray(datos.registros)) {
+          throw new Error("Formato de datos no válido.");
+        }
+
+        registros = datos.registros;
+        mostrarTabla();
+
+        estado.textContent =
+          "Fuente: INEGI. Última actualización: " +
+          (datos.actualizado || "No disponible");
+
+      } catch (error) {
+        estado.textContent =
+          "Los datos del INPC todavía no están disponibles. " +
+          "Estamos preparando la conexión oficial.";
+      }
+    }
+
+    buscar.addEventListener("input", mostrarTabla);
+    cargarINPC();
+  </script>
+</body>
+</html>
+

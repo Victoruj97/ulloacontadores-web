@@ -1,302 +1,171 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>INPC Histórico | Ulloa Contadores</title>
-  <meta name="description" content="Consulta el Índice Nacional de Precios al Consumidor (INPC) histórico por año y mes. Ulloa Contadores, Tepic, Nayarit.">
-
-  <style>
-    :root {
-      --azul: #293F56;
-      --azul-medio: #667F95;
-      --azul-claro: #ABBCC6;
-      --marfil: #ECEBE8;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      background: var(--marfil);
-      color: var(--azul);
-      font-family: Montserrat, Arial, sans-serif;
-    }
-
-    header {
-      background: var(--azul);
-      color: var(--marfil);
-      padding: 28px 6%;
-    }
-
-    header a {
-      color: var(--marfil);
-      text-decoration: none;
-    }
-
-    main {
-      max-width: 1250px;
-      margin: 45px auto;
-      padding: 0 20px;
-    }
-
-    h1 {
-      font-size: clamp(26px, 4vw, 38px);
-      margin-bottom: 12px;
-    }
-
-    .descripcion {
-      line-height: 1.7;
-      color: var(--azul-medio);
-      margin-bottom: 28px;
-    }
-
-    .panel {
-      background: white;
-      border: 1px solid var(--azul-claro);
-      border-radius: 12px;
-      padding: 22px;
-    }
-
-    .controles {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      gap: 15px;
-      margin-bottom: 20px;
-    }
-
-    input {
-      padding: 12px;
-      border: 1px solid var(--azul-claro);
-      border-radius: 7px;
-      font: inherit;
-      max-width: 100%;
-    }
-
-    .tabla-contenedor {
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      min-width: 950px;
-      border-collapse: collapse;
-      text-align: center;
-      font-size: 13px;
-    }
-
-    th, td {
-      padding: 13px 9px;
-      border: 1px solid var(--azul-claro);
-      white-space: nowrap;
-    }
-
-    thead th {
-      background: var(--azul);
-      color: white;
-    }
-
-    tbody th {
-      background: var(--azul-medio);
-      color: white;
-    }
-
-    tbody tr:nth-child(even) {
-      background: var(--marfil);
-    }
-
-    .reciente {
-      font-weight: 700;
-      background: var(--azul-claro);
-    }
-
-    .estado {
-      margin-top: 18px;
-      font-size: 13px;
-      line-height: 1.6;
-    }
-
-    footer {
-      text-align: center;
-      padding: 35px 20px;
-      font-size: 13px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Consulta histórica del INPC | Ulloa Contadores</title>
+<meta name="description" content="Consulta los índices históricos del INPC por año y mes con datos oficiales del INEGI. Ulloa Contadores, Tepic, Nayarit.">
+<meta name="theme-color" content="#293F56">
+<style>
+:root{--azul:#293F56;--medio:#667F95;--claro:#ABBCC6;--fondo:#ECEBE8;--blanco:#fff}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--fondo);color:var(--azul);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;line-height:1.55}
+a{color:inherit;text-decoration:none}.contenedor{width:min(1160px,92%);margin:auto}
+.encabezado{background:var(--blanco);border-bottom:1px solid var(--claro);position:sticky;top:0;z-index:10}
+.barra{display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:94px}
+.logo{display:block;width:185px;height:74px;object-fit:contain;object-position:left center}
+.menu{display:flex;flex-wrap:wrap;align-items:center;gap:9px}
+.menu a{padding:10px 13px;border-radius:8px;font-size:14px;font-weight:650;transition:background .2s,color .2s}
+.menu a:hover,.menu a:focus-visible{background:var(--fondo);color:var(--medio)}
+.menu a[aria-current="page"]{background:var(--azul);color:var(--blanco)}
+.hero{background:var(--azul);color:var(--blanco);position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-105px;top:-165px;width:440px;height:440px;border:1px solid var(--medio);border-radius:50%;opacity:.5;pointer-events:none}
+.hero-interior{padding:51px 0 57px;position:relative;z-index:1}
+.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:2.1px;font-weight:750;color:var(--claro)}
+h1{font-size:clamp(30px,4vw,46px);line-height:1.15;letter-spacing:-1px;margin:12px 0}
+.hero p{max-width:660px;color:var(--fondo);font-size:16px;margin:0}
+main{padding:34px 0 64px}
+.resumen{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:16px;margin-bottom:22px}
+.metrica{background:var(--blanco);border:1px solid var(--claro);border-radius:13px;padding:20px 23px;min-height:116px;box-shadow:0 7px 22px rgba(41,63,86,.035)}
+.metrica.destacada{background:var(--azul);color:var(--blanco);border-color:var(--azul)}
+.metrica .rotulo{font-size:12px;color:var(--medio);font-weight:650}
+.metrica.destacada .rotulo{color:var(--claro)}
+.metrica strong{display:block;font-size:clamp(22px,2.6vw,30px);line-height:1.3;letter-spacing:-.6px;margin-top:7px}
+.metrica .detalle{font-size:12px;color:var(--medio);margin-top:4px}
+.metrica.destacada .detalle{color:var(--fondo)}
+.panel{background:var(--blanco);border:1px solid var(--claro);border-radius:14px;padding:25px;box-shadow:0 12px 35px rgba(41,63,86,.045)}
+.controles{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:18px;margin-bottom:21px}
+.controles h2{font-size:21px;letter-spacing:-.3px;margin:0}
+.controles p{margin:4px 0 0;font-size:13px;color:var(--medio)}
+.busqueda{min-width:min(100%,245px)}.busqueda label{display:block;font-size:12px;font-weight:700;margin-bottom:6px}
+.busqueda input{width:100%;padding:12px 14px;border:1px solid var(--claro);border-radius:9px;font:inherit;color:var(--azul);background:var(--blanco);outline-offset:2px}
+.busqueda input:focus{outline:2px solid var(--medio);border-color:transparent}
+.tabla-contenedor{overflow-x:auto;border:1px solid var(--claro);border-radius:10px}
+table{width:100%;min-width:900px;border-collapse:separate;border-spacing:0;text-align:center;font-size:12px;font-variant-numeric:tabular-nums}
+th,td{padding:13px 9px;white-space:nowrap;border-right:1px solid var(--claro);border-bottom:1px solid var(--claro)}
+tr>*:last-child{border-right:0}tbody tr:last-child>*{border-bottom:0}
+thead th{background:var(--azul);color:var(--blanco);font-size:11px;letter-spacing:.5px}
+tbody th{background:var(--medio);color:var(--blanco);font-weight:750;position:sticky;left:0}
+tbody tr:nth-child(even) td{background:var(--fondo)}tbody tr:hover td{background:#e2e7eb}
+tbody td.reciente{background:var(--claro)!important;font-weight:800;color:var(--azul);box-shadow:inset 0 0 0 1px var(--medio)}
+.estado{margin:18px 0 0;font-size:12px;color:var(--medio);line-height:1.65}
+.nota{font-size:12px;color:var(--medio);margin:12px 0 0}
+footer{background:var(--azul);color:var(--blanco);padding:30px 0}
+.pie{display:flex;justify-content:space-between;align-items:center;gap:16px;font-size:12px}.pie p{margin:4px 0;color:var(--claro)}
+@media(max-width:850px){.barra{flex-direction:column;padding:10px 0 15px;gap:5px}.menu{justify-content:center}.resumen{grid-template-columns:1fr 1fr}.resumen .destacada{grid-column:1/-1}}
+@media(max-width:550px){.logo{width:155px;height:60px}.menu{gap:2px;justify-content:center}.menu a{font-size:12px;padding:8px}.hero-interior{padding:38px 0}.resumen{grid-template-columns:1fr}.resumen .destacada{grid-column:auto}.panel{padding:16px}.controles{align-items:stretch}.busqueda{width:100%}.pie{flex-direction:column;align-items:flex-start}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+</style>
 </head>
-
 <body>
-  <header>
-    <a href="/">← Volver a Ulloa Contadores</a>
-  </header>
-
-  <main>
-    <h1>Consulta histórica del INPC</h1>
-
-    <p class="descripcion">
-      Consulta el Índice Nacional de Precios al Consumidor
-      por año y mes, con información oficial del INEGI.
-    </p>
-
-    <section class="panel">
-      <div class="controles">
-        <h2>Índices mensuales</h2>
-        <input
-          type="search"
-          id="buscar"
-          placeholder="Buscar año, ej. 2025"
-          aria-label="Buscar año"
-        >
-      </div>
-
-      <div class="tabla-contenedor">
-        <table>
-          <thead>
-            <tr>
-              <th>AÑO</th>
-              <th>ENE</th><th>FEB</th><th>MAR</th>
-              <th>ABR</th><th>MAY</th><th>JUN</th>
-              <th>JUL</th><th>AGO</th><th>SEP</th>
-              <th>OCT</th><th>NOV</th><th>DIC</th>
-            </tr>
-          </thead>
-          <tbody id="tabla-inpc"></tbody>
-        </table>
-      </div>
-
-      <p id="estado" class="estado" role="status">
-        Cargando índices oficiales...
-      </p>
-    </section>
-  </main>
-
-  <footer>
-    Ulloa Contadores · Tepic, Nayarit
-    <p>Fuente: Instituto Nacional de Estadística y Geografía (INEGI).</p>
-  </footer>
-
-  <script>
-    const tabla = document.getElementById("tabla-inpc");
-    const estado = document.getElementById("estado");
-    const buscar = document.getElementById("buscar");
-
-    let registros = [];
-
-    function mostrarTabla() {
-      const consulta = buscar.value.trim();
-      tabla.replaceChildren();
-
-      const actual = new Date().getFullYear();
-      const inicio = actual - 10;
-
-      const visibles = registros.filter(registro =>
-        registro.anio >= inicio &&
-        registro.anio <= actual &&
-        String(registro.anio).includes(consulta)
-      );
-
-      visibles.sort((a, b) => b.anio - a.anio);
-
-      for (const registro of visibles) {
-        const fila = document.createElement("tr");
-        const anio = document.createElement("th");
-        anio.textContent = registro.anio;
-        fila.appendChild(anio);
-
-        for (let mes = 0; mes < 12; mes++) {
-          const celda = document.createElement("td");
-          const valor = registro.meses[mes];
-
-          celda.textContent =
-            typeof valor === "number"
-              ? valor.toFixed(3)
-              : "—";
-
-          fila.appendChild(celda);
-        }
-
-        tabla.appendChild(fila);
-      }
+<header class="encabezado">
+  <div class="contenedor barra">
+    <a href="/" aria-label="Ulloa Contadores, ir al inicio"><img class="logo" src="/PNG%20OBSCURO.png" alt="Ulloa Contadores"></a>
+    <nav class="menu" aria-label="Navegación principal">
+      <a href="/#inicio">Inicio</a><a href="/#servicios">Servicios</a><a href="/#herramientas" aria-current="page">Herramientas</a><a href="/#articulos">Artículos</a><a href="/#contacto">Contacto</a>
+    </nav>
+  </div>
+</header>
+<section class="hero" aria-labelledby="titulo">
+  <div class="contenedor hero-interior">
+    <span class="eyebrow">Ulloa Contadores · Herramientas digitales</span>
+    <h1 id="titulo">Consulta histórica del INPC</h1>
+    <p>Explora el Índice Nacional de Precios al Consumidor por año y mes, con información oficial del INEGI.</p>
+  </div>
+</section>
+<main class="contenedor">
+  <section class="resumen" aria-label="Resumen de índices">
+    <div class="metrica destacada"><div class="rotulo">Último INPC disponible</div><strong id="ultimo-valor">—</strong><div class="detalle" id="ultimo-periodo">Cargando información…</div></div>
+    <div class="metrica"><div class="rotulo">Año más reciente</div><strong id="anio-reciente">—</strong><div class="detalle">En el archivo oficial consultado</div></div>
+    <div class="metrica"><div class="rotulo">Años en consulta</div><strong id="total-anios">—</strong><div class="detalle">Hasta 11 ejercicios visibles</div></div>
+  </section>
+  <section class="panel" aria-labelledby="tabla-titulo">
+    <div class="controles">
+      <div><h2 id="tabla-titulo">Índices mensuales</h2><p>Consulta y compara los valores históricos del INPC.</p></div>
+      <div class="busqueda"><label for="buscar">Buscar por año</label><input type="search" id="buscar" placeholder="Ej. 2025" inputmode="numeric" aria-label="Buscar año"></div>
+    </div>
+    <div class="tabla-contenedor">
+      <table aria-label="Histórico mensual del INPC">
+        <thead><tr><th scope="col">AÑO</th><th scope="col">ENE</th><th scope="col">FEB</th><th scope="col">MAR</th><th scope="col">ABR</th><th scope="col">MAY</th><th scope="col">JUN</th><th scope="col">JUL</th><th scope="col">AGO</th><th scope="col">SEP</th><th scope="col">OCT</th><th scope="col">NOV</th><th scope="col">DIC</th></tr></thead>
+        <tbody id="tabla-inpc"></tbody>
+      </table>
+    </div>
+    <p id="estado" class="estado" role="status">Cargando índices oficiales...</p>
+    <p class="nota">Los valores se muestran con tres decimales. Desliza horizontalmente la tabla en pantallas pequeñas.</p>
+  </section>
+</main>
+<footer><div class="contenedor pie"><div><strong>Ulloa Contadores</strong><p>Tepic, Nayarit · Soluciones contables, fiscales y financieras.</p></div><div><p>Fuente: Instituto Nacional de Estadística y Geografía (INEGI).</p><p>© <span id="anio-pie"></span> Ulloa Contadores.</p></div></div></footer>
+<script>
+const tabla=document.getElementById("tabla-inpc");
+const estado=document.getElementById("estado");
+const buscar=document.getElementById("buscar");
+const nombresMeses=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+let registros=[];
+let ultimoIndice=null;
+document.getElementById("anio-pie").textContent=new Date().getFullYear();
+function mostrarTabla(){
+  const consulta=buscar.value.trim();
+  tabla.replaceChildren();
+  const actual=new Date().getFullYear();
+  const inicio=actual-10;
+  const visibles=registros.filter(registro=>registro.anio>=inicio&&registro.anio<=actual&&String(registro.anio).includes(consulta)).sort((a,b)=>b.anio-a.anio);
+  for(const registro of visibles){
+    const fila=document.createElement("tr");
+    const anio=document.createElement("th");
+    anio.scope="row";
+    anio.textContent=registro.anio;
+    fila.appendChild(anio);
+    for(let mes=0;mes<12;mes++){
+      const celda=document.createElement("td");
+      const valor=registro.meses[mes];
+      celda.textContent=typeof valor==="number"?valor.toFixed(3):"—";
+      if(ultimoIndice&&registro.anio===ultimoIndice.anio&&mes===ultimoIndice.mes){celda.classList.add("reciente");celda.title="Último índice disponible";}
+      fila.appendChild(celda);
     }
-
-    async function cargarINPC() {
-      try {
-        const respuesta = await fetch(
-          "./inpc.json",
-          { cache: "no-store" }
-        );
-
-        if (!respuesta.ok) {
-          throw new Error("No se encontró el archivo de datos.");
-        }
-
-        const datos = await respuesta.json();
-
-        if (!Array.isArray(datos.registros)) {
-          throw new Error("Formato de datos no válido.");
-        }
-
-        registros = datos.registros;
-        mostrarTabla();
-
-        
-const nombresMeses = [
-  "enero", "febrero", "marzo", "abril",
-  "mayo", "junio", "julio", "agosto",
-  "septiembre", "octubre", "noviembre", "diciembre"
-];
-
-let ultimoPeriodo = "No disponible";
-
-const registrosOrdenados = [...datos.registros].sort(
-  (a, b) => b.anio - a.anio
-);
-
-for (const registro of registrosOrdenados) {
-  for (let mes = 11; mes >= 0; mes--) {
-    const valor = registro.meses[mes];
-
-    if (valor !== null && valor !== undefined) {
-      ultimoPeriodo =
-        nombresMeses[mes] + " de " + registro.anio;
-      break;
-    }
+    tabla.appendChild(fila);
   }
-
-  if (ultimoPeriodo !== "No disponible") {
-    break;
+  if(!visibles.length&&registros.length){const fila=document.createElement("tr");const celda=document.createElement("td");celda.colSpan=13;celda.textContent="No se encontraron resultados para ese año.";fila.appendChild(celda);tabla.appendChild(fila);}
+}
+async function cargarINPC(){
+  try{
+    const respuesta=await fetch("./inpc.json",{cache:"no-store"});
+    if(!respuesta.ok)throw new Error("No se encontró el archivo de datos.");
+    const datos=await respuesta.json();
+    if(!Array.isArray(datos.registros))throw new Error("Formato de datos no válido.");
+    registros=datos.registros;
+    const ordenados=[...registros].sort((a,b)=>b.anio-a.anio);
+    let ultimoPeriodo="No disponible";
+    for(const registro of ordenados){
+      if(!Array.isArray(registro.meses))continue;
+      for(let mes=11;mes>=0;mes--){
+        const valor=registro.meses[mes];
+        if(typeof valor==="number"&&Number.isFinite(valor)){
+          ultimoIndice={anio:registro.anio,mes,valor};
+          ultimoPeriodo=nombresMeses[mes]+" de "+registro.anio;
+          break;
+        }
+      }
+      if(ultimoIndice)break;
+    }
+    document.getElementById("ultimo-valor").textContent=ultimoIndice?ultimoIndice.valor.toFixed(3):"—";
+    document.getElementById("ultimo-periodo").textContent=ultimoPeriodo;
+    document.getElementById("anio-reciente").textContent=ordenados.length?ordenados[0].anio:"—";
+    const actual=new Date().getFullYear();
+    document.getElementById("total-anios").textContent=registros.filter(r=>r.anio>=actual-10&&r.anio<=actual).length;
+    mostrarTabla();
+    let fechaConsulta="No disponible";
+    if(typeof datos.actualizado==="string"){
+      const partes=datos.actualizado.split("-");
+      if(partes.length===3)fechaConsulta=partes[2]+"/"+partes[1]+"/"+partes[0];
+    }
+    estado.textContent="Fuente: INEGI | Último periodo disponible: "+ultimoPeriodo+" | Datos consultados: "+fechaConsulta;
+  }catch(error){
+    estado.textContent="Los datos del INPC no están disponibles en este momento. Intenta nuevamente más tarde.";
+    document.getElementById("ultimo-periodo").textContent="Sin información disponible";
   }
 }
-
-let fechaConsulta = "No disponible";
-
-if (datos.actualizado) {
-  const partes = datos.actualizado.split("-");
-
-  if (partes.length === 3) {
-    fechaConsulta =
-      partes[2] + "/" + partes[1] + "/" + partes[0];
-  }
-}
-
-estado.textContent =
-  "Fuente: INEGI | Último periodo disponible: " +
-  ultimoPeriodo +
-  " | Datos consultados: " +
-  fechaConsulta;
-
-
-      } catch (error) {
-        estado.textContent =
-          "Los datos del INPC todavía no están disponibles. " +
-          "Estamos preparando la conexión oficial.";
-      }
-    }
-
-    buscar.addEventListener("input", mostrarTabla);
-    cargarINPC();
-  </script>
+buscar.addEventListener("input",mostrarTabla);
+cargarINPC();
+</script>
 </body>
 </html>
-

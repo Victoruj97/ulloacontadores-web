@@ -405,6 +405,7 @@ function calcularRecargos(vencimiento, pago) {
 
   let tasa = 0;
   const desglose = {};
+  const detalleMensual = [];
 
   for (let i = 0; i < meses; i++) {
     const fechaPeriodo = new Date(
@@ -425,12 +426,19 @@ function calcularRecargos(vencimiento, pago) {
       (desglose[anio] || 0) + TASAS[anio];
   }
 
+  detalleMensual.push({
+   anio,
+   mes: fechaPeriodo.getUTCMonth() + 1,
+   tasaMensual: TASAS[anio],
+   tasaAcumulada: tasa
+  });
+
   return {
-    tasa,
-    meses,
-    desglose
-  };
-}
+  tasa,
+  meses,
+  desglose,
+  detalleMensual
+};
 
 
 
@@ -598,14 +606,29 @@ seccion("1. Actualización de la contribución", [
   ]
 ]);
 
+    const nombresMeses = [
+  "enero", "febrero", "marzo", "abril",
+  "mayo", "junio", "julio", "agosto",
+  "septiembre", "octubre", "noviembre",
+  "diciembre"
+];
+
+const filasMensuales = (rec.detalleMensual || []).map(
+  periodo => [
+    nombresMeses[periodo.mes - 1] + " " + periodo.anio,
+    periodo.tasaMensual.toFixed(2) + "% | Acumulado: " +
+    periodo.tasaAcumulada.toFixed(2) + "%"
+  ]
+);
+    
 seccion("2. Cálculo de recargos", [
   ["Meses de mora", rec.meses],
-  ["Tasas acumuladas por ejercicio", tramos],
+  ...filasMensuales,
   ["Tasa acumulada", rec.tasa.toFixed(2) + "%"],
   [
     "Operación",
     dinero(contribucionActualizada) +
-      " × " + rec.tasa.toFixed(2) + "%"
+    " × " + rec.tasa.toFixed(2) + "%"
   ],
   ["Recargos", dinero(recargos)]
 ]);

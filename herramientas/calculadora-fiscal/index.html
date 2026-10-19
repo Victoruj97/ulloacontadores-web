@@ -1,0 +1,449 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora fiscal | Ulloa Contadores</title>
+<style>
+:root {
+  --azul:#293F56;
+  --medio:#667F95;
+  --claro:#ABBCC6;
+  --fondo:#ECEBE8;
+}
+* {box-sizing:border-box}
+body {
+  margin:0;
+  background:var(--fondo);
+  color:var(--azul);
+  font-family:Arial,sans-serif;
+}
+header {
+  background:var(--azul);
+  color:var(--fondo);
+  padding:35px 22px;
+}
+.contenedor {
+  max-width:950px;
+  margin:auto;
+  padding:30px 20px;
+}
+header .contenedor {padding:0 20px}
+h1 {font-size:30px;margin:10px 0}
+h2 {font-size:21px}
+.subtitulo {color:var(--claro)}
+.panel {
+  background:white;
+  border-radius:12px;
+  padding:26px;
+  margin-bottom:22px;
+}
+.campos {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:20px;
+}
+label {
+  display:block;
+  font-weight:600;
+  margin-bottom:8px;
+}
+input,select {
+  width:100%;
+  padding:12px;
+  border:1px solid var(--claro);
+  border-radius:6px;
+  font-size:16px;
+}
+button {
+  background:var(--azul);
+  color:white;
+  border:0;
+  padding:14px 24px;
+  border-radius:7px;
+  cursor:pointer;
+  font-size:16px;
+  margin-top:22px;
+}
+button:hover {background:var(--medio)}
+.resultados {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+}
+.dato {
+  padding:17px;
+  border:1px solid var(--claro);
+  border-radius:8px;
+}
+.dato span {
+  display:block;
+  color:var(--medio);
+  font-size:13px;
+  margin-bottom:8px;
+}
+.dato strong {font-size:23px}
+.total {
+  background:var(--azul);
+  color:white;
+  grid-column:1/-1;
+}
+.total span {color:var(--claro)}
+.aviso {
+  font-size:13px;
+  line-height:1.6;
+  color:var(--medio);
+}
+.error {
+  color:#9b2525;
+  font-weight:600;
+}
+.detalle {
+  line-height:1.9;
+  overflow-wrap:anywhere;
+}
+a {color:inherit}
+@media(max-width:650px) {
+  .campos,.resultados {grid-template-columns:1fr}
+  h1 {font-size:25px}
+  .panel {padding:18px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="contenedor">
+    <a href="/" style="color:#ECEBE8">← Volver al inicio</a>
+    <h1>Calculadora fiscal</h1>
+    <div class="subtitulo">
+      Actualización y recargos por mora de ISR e IVA
+    </div>
+  </div>
+</header>
+
+<main class="contenedor">
+  <section class="panel">
+    <h2>Datos de la contribución</h2>
+    <div class="campos">
+      <div>
+        <label for="impuesto">Contribución</label>
+        <select id="impuesto">
+          <option value="ISR">ISR</option>
+          <option value="IVA">IVA</option>
+        </select>
+      </div>
+      <div>
+        <label for="importe">Importe original (MXN)</label>
+        <input id="importe" type="number"
+               min="0.01" step="0.01"
+               placeholder="Ej. 15000.00">
+      </div>
+      <div>
+        <label for="vencimiento">Fecha de vencimiento</label>
+        <input id="vencimiento" type="date">
+      </div>
+      <div>
+        <label for="pago">Fecha de pago</label>
+        <input id="pago" type="date">
+      </div>
+    </div>
+    <button id="calcular" type="button">
+      Calcular actualización y recargos
+    </button>
+    <p id="mensaje" role="status"></p>
+  </section>
+
+  <section class="panel" id="panelResultados" hidden>
+    <h2>Resultado del cálculo</h2>
+    <div class="resultados">
+      <div class="dato">
+        <span>Importe original</span>
+        <strong id="rOriginal"></strong>
+      </div>
+      <div class="dato">
+        <span>Factor de actualización</span>
+        <strong id="rFactor"></strong>
+      </div>
+      <div class="dato">
+        <span>Actualización</span>
+        <strong id="rActualizacion"></strong>
+      </div>
+      <div class="dato">
+        <span>Contribución actualizada</span>
+        <strong id="rActualizado"></strong>
+      </div>
+      <div class="dato">
+        <span>Tasa acumulada de recargos</span>
+        <strong id="rTasa"></strong>
+      </div>
+      <div class="dato">
+        <span>Recargos</span>
+        <strong id="rRecargos"></strong>
+      </div>
+      <div class="dato total">
+        <span>Total estimado a pagar</span>
+        <strong id="rTotal"></strong>
+      </div>
+    </div>
+    <h2>Procedimiento</h2>
+    <div id="detalle" class="detalle"></div>
+  </section>
+
+  <p class="aviso">
+    Herramienta informativa para contribuciones federales
+    vencidas. No contempla multas, gastos de ejecución,
+    pagos parciales, créditos fiscales con reglas especiales
+    ni convenios de parcialidades. El resultado debe
+    verificarse antes de utilizarse para efectuar un pago.
+  </p>
+</main>
+
+<script>
+"use strict";
+
+const TASAS = {
+  2018:1.47, 2019:1.47, 2020:1.47,
+  2021:1.47, 2022:1.47, 2023:1.47,
+  2024:1.47, 2025:1.47, 2026:2.07
+};
+
+const $ = id => document.getElementById(id);
+
+const dinero = n => new Intl.NumberFormat("es-MX", {
+  style:"currency",
+  currency:"MXN"
+}).format(n);
+
+const redondear = n =>
+  Math.round((n + Number.EPSILON) * 100) / 100;
+
+const fecha = valor => {
+  const [a,m,d] = valor.split("-").map(Number);
+  return new Date(Date.UTC(a,m-1,d));
+};
+
+const claveMes = (anio,mes) => anio * 12 + mes;
+
+const anterior = (anio,mes) =>
+  mes === 1 ? [anio-1,12] : [anio,mes-1];
+
+let indices = null;
+
+async function cargarIndices() {
+  const respuesta = await fetch(
+    "/herramientas/inpc/inpc.json",
+    {cache:"no-store"}
+  );
+
+  if (!respuesta.ok) {
+    throw new Error("No se pudo cargar el INPC.");
+  }
+
+  const datos = await respuesta.json();
+  const mapa = new Map();
+
+  for (const registro of datos.registros || []) {
+    registro.meses.forEach((valor,i) => {
+      if (valor !== null && Number.isFinite(Number(valor))
+          && Number(valor) > 0) {
+        mapa.set(
+          claveMes(Number(registro.anio),i+1),
+          Number(valor)
+        );
+      }
+    });
+  }
+
+  if (!mapa.size) {
+    throw new Error("El archivo INPC no contiene índices.");
+  }
+
+  return mapa;
+}
+
+function indiceExacto(anio,mes) {
+  return indices.get(claveMes(anio,mes));
+}
+
+function indiceFinal(anio,mes) {
+  const limite = claveMes(anio,mes);
+  const disponibles = [...indices.keys()]
+    .filter(k => k <= limite)
+    .sort((a,b) => b-a);
+
+  if (!disponibles.length) {
+    throw new Error("No hay INPC disponible para el pago.");
+  }
+
+  const clave = disponibles[0];
+
+  return {
+    valor:indices.get(clave),
+    anio:Math.floor((clave-1)/12),
+    mes:((clave-1)%12)+1
+  };
+}
+
+function calcularRecargos(vencimiento,pago) {
+  // Cada mes o fracción desde el vencimiento
+  // hasta el mes en que se efectúa el pago.
+  const inicio = claveMes(
+    vencimiento.getUTCFullYear(),
+    vencimiento.getUTCMonth()+1
+  );
+
+  const fin = claveMes(
+    pago.getUTCFullYear(),
+    pago.getUTCMonth()+1
+  );
+
+  const totalMeses = fin - inicio + 1;
+  const meses = Math.min(totalMeses,60);
+
+  let tasa = 0;
+  const desglose = {};
+
+  for (let i=0;i<meses;i++) {
+    const clave = inicio+i;
+    const anio = Math.floor((clave-1)/12);
+
+    if (TASAS[anio] === undefined) {
+      throw new Error(
+        "No hay tasa de recargos verificada para " + anio
+      );
+    }
+
+    tasa += TASAS[anio];
+    desglose[anio] = (desglose[anio] || 0)
+      + TASAS[anio];
+  }
+
+  return {tasa,meses,desglose};
+}
+
+async function calcular() {
+  $("panelResultados").hidden = true;
+  $("mensaje").textContent = "";
+  $("mensaje").className = "";
+
+  try {
+    const importe = Number($("importe").value);
+    const vencimientoTexto = $("vencimiento").value;
+    const pagoTexto = $("pago").value;
+
+    if (!Number.isFinite(importe) || importe <= 0 ||
+        !$("importe").value) {
+      throw new Error("Captura un importe válido.");
+    }
+
+    if (!vencimientoTexto || !pagoTexto) {
+      throw new Error("Selecciona ambas fechas.");
+    }
+
+    const vencimiento = fecha(vencimientoTexto);
+    const pago = fecha(pagoTexto);
+
+    if (pago <= vencimiento) {
+      throw new Error(
+        "La fecha de pago debe ser posterior al vencimiento."
+      );
+    }
+
+    if (pago.getUTCFullYear() > 2026) {
+      throw new Error(
+        "Aún no están verificadas las tasas posteriores a 2026."
+      );
+    }
+
+    indices = await cargarIndices();
+
+    const anioInicial = vencimiento.getUTCFullYear();
+    const mesInicial = vencimiento.getUTCMonth()+1;
+    const anioFinal = pago.getUTCFullYear();
+    const mesFinal = pago.getUTCMonth()+1;
+
+    const [ai,mi] = anterior(anioInicial,mesInicial);
+    const [af,mf] = anterior(anioFinal,mesFinal);
+
+    const inpcInicial = indiceExacto(ai,mi);
+
+    if (!inpcInicial) {
+      throw new Error(
+        "No está disponible el INPC del mes anterior "
+        + "al vencimiento."
+      );
+    }
+
+    const final = indiceFinal(af,mf);
+
+    // Factor con cuatro decimales y mínimo de 1.
+    const factor = Math.max(
+      1,
+      Math.floor(
+        (final.valor/inpcInicial)*10000 + 0.00000001
+      ) / 10000
+    );
+
+    const contribucionActualizada =
+      redondear(importe * factor);
+
+    const actualizacion =
+      redondear(contribucionActualizada - importe);
+
+    const rec = calcularRecargos(vencimiento,pago);
+
+    const recargos = redondear(
+      contribucionActualizada * rec.tasa / 100
+    );
+
+    const total = redondear(
+      contribucionActualizada + recargos
+    );
+
+    $("rOriginal").textContent = dinero(importe);
+    $("rFactor").textContent = factor.toFixed(4);
+    $("rActualizacion").textContent =
+      dinero(actualizacion);
+    $("rActualizado").textContent =
+      dinero(contribucionActualizada);
+    $("rTasa").textContent =
+      rec.tasa.toFixed(2) + "%";
+    $("rRecargos").textContent = dinero(recargos);
+    $("rTotal").textContent = dinero(total);
+
+    const tramos = Object.entries(rec.desglose)
+      .map(([anio,tasa]) =>
+        anio + ": " + tasa.toFixed(2) + "%"
+      ).join("; ");
+
+    $("detalle").textContent =
+      "Contribución: " + $("impuesto").value +
+      ". INPC inicial (" + mi + "/" + ai + "): " +
+      inpcInicial.toFixed(3) +
+      ". INPC final utilizado (" +
+      final.mes + "/" + final.anio + "): " +
+      final.valor.toFixed(3) +
+      ". Factor: " + final.valor.toFixed(3) +
+      " ÷ " + inpcInicial.toFixed(3) +
+      " = " + factor.toFixed(4) +
+      ". Meses o fracciones de mora considerados: " +
+      rec.meses +
+      ". Tasas por ejercicio: " + tramos +
+      ". Recargos: " +
+      dinero(contribucionActualizada) +
+      " × " + rec.tasa.toFixed(2) +
+      "% = " + dinero(recargos) + ".";
+
+    $("panelResultados").hidden = false;
+
+  } catch (error) {
+    $("mensaje").className = "error";
+    $("mensaje").textContent = error.message;
+  }
+}
+
+$("calcular").addEventListener("click",calcular);
+</script>
+</body>
+</html>

@@ -408,10 +408,40 @@ function calcularRecargos(vencimiento, pago) {
   const desglose = {};
   const detalleMensual = [];
 
-  for (let i = 0; i < meses; i++) {
-    const fechaPeriodo = new Date(
-      Date.UTC(anioInicio, mesInicio + i, 1)
-    );
+  
+const inicioMora = new Date(
+  Date.UTC(
+    vencimiento.getUTCFullYear(),
+    vencimiento.getUTCMonth(),
+    vencimiento.getUTCDate() + 1
+  )
+);
+
+for (let i = 0; i < meses; i++) {
+  const anioBase = inicioMora.getUTCFullYear();
+  const mesBase = inicioMora.getUTCMonth();
+  const diaBase = inicioMora.getUTCDate();
+
+  const primerDia = new Date(
+    Date.UTC(anioBase, mesBase + i, 1)
+  );
+
+  const ultimoDia = new Date(
+    Date.UTC(
+      primerDia.getUTCFullYear(),
+      primerDia.getUTCMonth() + 1,
+      0
+    )
+  ).getUTCDate();
+
+  const fechaPeriodo = new Date(
+    Date.UTC(
+      primerDia.getUTCFullYear(),
+      primerDia.getUTCMonth(),
+      Math.min(diaBase, ultimoDia)
+    )
+  );
+
 
     const anio = fechaPeriodo.getUTCFullYear();
 

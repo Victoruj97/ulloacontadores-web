@@ -403,7 +403,17 @@ function calcularRecargos(vencimiento, pago) {
     meses++;
   }
 
-  meses = Math.max(1, Math.min(meses, 60));
+  
+meses = Math.max(1, meses);
+
+if (meses > 60) {
+  throw new Error(
+    "El periodo supera 60 meses de mora. " +
+    "Este caso requiere revisión fiscal individual " +
+    "por las excepciones previstas en el artículo 67 del CFF."
+  );
+}
+
 
   
   let tasa = 0;

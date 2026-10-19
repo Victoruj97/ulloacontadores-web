@@ -6,198 +6,159 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Calculadora fiscal | Ulloa Contadores</title>
 <style>
-:root {
-  --azul:#293F56;
-  --medio:#667F95;
-  --claro:#ABBCC6;
-  --fondo:#ECEBE8;
-}
-* {box-sizing:border-box}
-body {
-  margin:0;
-  background:var(--fondo);
-  color:var(--azul);
-  font-family:Arial,sans-serif;
-}
-header {
-  background:var(--azul);
-  color:var(--fondo);
-  padding:35px 22px;
-}
-.contenedor {
-  max-width:950px;
-  margin:auto;
-  padding:30px 20px;
-}
-header .contenedor {padding:0 20px}
-h1 {font-size:30px;margin:10px 0}
-h2 {font-size:21px}
-.subtitulo {color:var(--claro)}
-.panel {
-  background:white;
-  border-radius:12px;
-  padding:26px;
-  margin-bottom:22px;
-}
-.campos {
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:20px;
-}
-label {
-  display:block;
-  font-weight:600;
-  margin-bottom:8px;
-}
-input,select {
-  width:100%;
-  padding:12px;
-  border:1px solid var(--claro);
-  border-radius:6px;
-  font-size:16px;
-}
-button {
-  background:var(--azul);
-  color:white;
-  border:0;
-  padding:14px 24px;
-  border-radius:7px;
-  cursor:pointer;
-  font-size:16px;
-  margin-top:22px;
-}
-button:hover {background:var(--medio)}
-.resultados {
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:14px;
-}
-.dato {
-  padding:17px;
-  border:1px solid var(--claro);
-  border-radius:8px;
-}
-.dato span {
-  display:block;
-  color:var(--medio);
-  font-size:13px;
-  margin-bottom:8px;
-}
-.dato strong {font-size:23px}
-.total {
-  background:var(--azul);
-  color:white;
-  grid-column:1/-1;
-}
-.total span {color:var(--claro)}
-.aviso {
-  font-size:13px;
-  line-height:1.6;
-  color:var(--medio);
-}
-.error {
-  color:#9b2525;
-  font-weight:600;
-}
-.detalle {
-  line-height:1.9;
-  overflow-wrap:anywhere;
-}
-a {color:inherit}
-@media(max-width:650px) {
-  .campos,.resultados {grid-template-columns:1fr}
-  h1 {font-size:25px}
-  .panel {padding:18px}
-}
-  
-.detalle {
-  display: grid;
-  gap: 18px;
-  line-height: 1.5;
-}
+:root{--azul:#293F56;--medio:#667F95;--claro:#ABBCC6;--fondo:#ECEBE8;--blanco:#fff}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--fondo);color:var(--azul);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;line-height:1.55}
+a{color:inherit;text-decoration:none}.contenedor{width:min(1380px,94%);margin:auto}
+.encabezado{background:var(--blanco);border-bottom:1px solid var(--claro);position:sticky;top:0;z-index:10}
+.barra{display:flex;align-items:center;justify-content:space-between;gap:34px;min-height:100px}
+.logo{display:block;width:198px;height:78px;object-fit:contain;object-position:left center}
+.menu{display:flex;flex-wrap:wrap;align-items:center;gap:13px}
+.menu a{padding:11px 15px;border-radius:8px;font-size:14px;font-weight:650;transition:background .2s,color .2s}
+.menu a:hover,.menu a:focus-visible{background:var(--fondo);color:var(--medio)}
+.menu a[aria-current="page"]{background:var(--azul);color:var(--blanco)}
+.hero{background:var(--azul);color:var(--blanco);position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-105px;top:-165px;width:440px;height:440px;border:1px solid var(--medio);border-radius:50%;opacity:.5;pointer-events:none}
+.hero-interior{padding:51px 0 57px;position:relative;z-index:1}
+.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:2.1px;font-weight:750;color:var(--claro)}
+h1{font-size:clamp(30px,4vw,46px);line-height:1.15;letter-spacing:-1px;margin:12px 0}
+.hero p{max-width:660px;color:var(--fondo);font-size:16px;margin:0}
+main{padding:34px 0 64px}
+.resumen{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:20px;margin-bottom:25px}
+.metrica{background:var(--blanco);border:1px solid var(--claro);border-radius:14px;padding:24px 28px;min-height:135px;box-shadow:0 7px 22px rgba(41,63,86,.035)}
+.metrica.destacada{background:var(--azul);color:var(--blanco);border-color:var(--azul)}
+.metrica .rotulo{font-size:12px;color:var(--medio);font-weight:650}
+.metrica.destacada .rotulo{color:var(--claro)}
+.metrica strong{display:block;font-size:clamp(22px,2.6vw,30px);line-height:1.3;letter-spacing:-.6px;margin-top:7px}
+.metrica .detalle{font-size:12px;color:var(--medio);margin-top:4px}
+.metrica.destacada .detalle{color:var(--fondo)}
+.panel{background:var(--blanco);border:1px solid var(--claro);border-radius:15px;padding:30px;box-shadow:0 12px 35px rgba(41,63,86,.045)}
+.controles{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:18px;margin-bottom:21px}
+.controles h2{font-size:21px;letter-spacing:-.3px;margin:0}
+.controles p{margin:4px 0 0;font-size:13px;color:var(--medio)}
+.busqueda{min-width:min(100%,245px)}.busqueda label{display:block;font-size:12px;font-weight:700;margin-bottom:6px}
+.busqueda input{width:100%;padding:12px 14px;border:1px solid var(--claro);border-radius:9px;font:inherit;color:var(--azul);background:var(--blanco);outline-offset:2px}
+.busqueda input:focus{outline:2px solid var(--medio);border-color:transparent}
+.tabla-contenedor{overflow-x:auto;border:1px solid var(--claro);border-radius:10px}
+table{width:100%;min-width:1000px;border-collapse:separate;border-spacing:0;text-align:center;font-size:13px;font-variant-numeric:tabular-nums}
+th,td{padding:15px 10px;white-space:nowrap;border-right:1px solid var(--claro);border-bottom:1px solid var(--claro)}
+tr>*:last-child{border-right:0}tbody tr:last-child>*{border-bottom:0}
+thead th{background:var(--azul);color:var(--blanco);font-size:12px;letter-spacing:.5px}
+tbody th{background:var(--medio);color:var(--blanco);font-weight:750;position:sticky;left:0}
+tbody tr:nth-child(even) td{background:var(--fondo)}tbody tr:hover td{background:#e2e7eb}
+tbody td.reciente{background:var(--claro)!important;font-weight:800;color:var(--azul);box-shadow:inset 0 0 0 1px var(--medio)}
+.estado{margin:18px 0 0;font-size:12px;color:var(--medio);line-height:1.65}
+.nota{font-size:12px;color:var(--medio);margin:12px 0 0}
+footer{background:var(--azul);color:var(--blanco);padding:30px 0}
+.pie{display:flex;justify-content:space-between;align-items:center;gap:16px;font-size:12px}.pie p{margin:4px 0;color:var(--claro)}
+@media(max-width:850px){.barra{flex-direction:column;padding:10px 0 15px;gap:5px}.menu{justify-content:center}.resumen{grid-template-columns:1fr 1fr}.resumen .destacada{grid-column:1/-1}}
+@media(max-width:550px){.logo{width:155px;height:60px}.menu{gap:2px;justify-content:center}.menu a{font-size:12px;padding:8px}.hero-interior{padding:38px 0}.resumen{grid-template-columns:1fr}.resumen .destacada{grid-column:auto}.panel{padding:16px}.metrica{padding:20px;min-height:110px}.controles{align-items:stretch}.busqueda{width:100%}.pie{flex-direction:column;align-items:flex-start}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
 
-.detalle-seccion {
-  border: 1px solid #ABBCC6;
-  border-radius: 9px;
-  padding: 18px;
-  background: #fff;
-}
+/* Calculadora fiscal: estilos específicos */
+.calculadora-contenido{max-width:1100px;margin:0 auto;padding:32px 0 60px}
+.panel{background:var(--blanco);border:1px solid var(--claro);border-radius:14px;padding:28px;margin-bottom:22px;box-shadow:0 12px 35px rgba(41,63,86,.045)}
+.panel h2{font-size:21px;letter-spacing:-.35px;margin:0 0 20px}
+.campos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 24px}
+.campo label{display:block;font-size:13px;font-weight:700;margin-bottom:8px}
+.campos input,.campos select{width:100%;min-width:0;padding:13px 14px;border:1px solid var(--claro);border-radius:9px;background:#fff;color:var(--azul);font:inherit;font-size:15px}
+.campos input:focus,.campos select:focus{outline:2px solid var(--medio);outline-offset:1px}
+#calcular{background:var(--azul);color:#fff;border:0;border-radius:9px;padding:14px 22px;font:inherit;font-size:14px;font-weight:700;cursor:pointer;margin-top:24px;transition:background .2s,transform .2s}
+#calcular:hover{background:var(--medio);transform:translateY(-1px)}
+#calcular:focus-visible{outline:3px solid var(--medio);outline-offset:3px}
+#mensaje{margin:14px 0 0;font-size:13px}
+#mensaje:empty{display:none}
+.error{color:#9b2525;font-weight:700}
+.resultados{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin-bottom:30px}
+.dato{padding:19px 20px;border:1px solid var(--claro);border-radius:11px;background:#fff;min-width:0}
+.dato span{display:block;color:var(--medio);font-size:12px;font-weight:650;margin-bottom:7px}
+.dato strong{display:block;color:var(--azul);font-size:clamp(19px,2.2vw,25px);line-height:1.3;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.dato.total{grid-column:1/-1;background:var(--azul);border-color:var(--azul);padding:23px 25px}
+.dato.total span{color:var(--claro)}
+.dato.total strong{color:#fff;font-size:clamp(26px,3vw,34px)}
+.detalle{display:grid;gap:17px;line-height:1.5;overflow-wrap:anywhere}
+.detalle-seccion{border:1px solid var(--claro);border-radius:11px;padding:20px 22px;background:#fff}
+.detalle-seccion h3{margin:0 0 14px;font-size:16px;color:var(--azul)}
+.detalle-fila{display:flex;align-items:baseline;justify-content:space-between;gap:18px;padding:11px 0;border-bottom:1px solid var(--fondo)}
+.detalle-fila:last-child{border-bottom:0}
+.detalle-fila span{color:var(--medio)}
+.detalle-fila strong{color:var(--azul);text-align:right;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.aviso{font-size:12px;line-height:1.8;color:var(--medio);max-width:1000px;margin:12px 0 0}
+[hidden]{display:none!important}
+@media(max-width:800px){.resultados{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.calculadora-contenido{padding:22px 0 40px}.panel{padding:19px}.campos,.resultados{grid-template-columns:1fr}.detalle-seccion{padding:16px}.detalle-fila{flex-direction:column;gap:4px}.detalle-fila strong{text-align:left}#calcular{width:100%}}
 
-.detalle-seccion h3 {
-  margin: 0 0 14px;
-  color: #293F56;
-  font-size: 17px;
-}
-
-.detalle-fila {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 18px;
-  padding: 10px 0;
-  border-bottom: 1px solid #ECEBE8;
-}
-
-.detalle-fila:last-child {
-  border-bottom: none;
-}
-
-.detalle-fila span {
-  color: #667F95;
-}
-
-.detalle-fila strong {
-  color: #293F56;
-  text-align: right;
-  overflow-wrap: anywhere;
-}
-
-@media (max-width: 600px) {
-  .detalle-fila {
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .detalle-fila strong {
-    text-align: left;
-  }
-}
-
+/* Diseño de dos columnas basado en la maqueta aprobada */
+.calculadora-contenido{max-width:1380px}
+.calculadora-columnas{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.04fr);gap:18px;align-items:start}
+.columna-izquierda,.columna-derecha{min-width:0}
+.calculadora-columnas .panel{padding:25px 24px;margin-bottom:18px}
+.calculadora-columnas .panel h2{margin-bottom:5px;font-size:22px}
+.campos{gap:18px 22px;margin-top:23px}
+.resultados{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:22px 0 0}
+.dato{padding:15px 18px}
+.dato strong{font-size:25px}
+.dato.total{padding:19px 23px}
+.procedimiento-subtitulo{margin:0 0 18px;color:var(--medio);font-size:13px}
+.procedimiento-panel{min-height:470px}
+.procedimiento-espera{color:var(--medio);font-size:14px;background:var(--fondo);border-radius:10px;padding:22px;line-height:1.7}
+.detalle{gap:18px}
+.detalle-seccion{padding:0;border:0;background:transparent}
+.detalle-seccion h3{background:var(--fondo);border-radius:8px;padding:11px 13px;margin:0 0 5px;font-size:15px}
+.detalle-fila{padding:9px 10px;font-size:12.5px;gap:12px;align-items:center}
+.detalle-fila span{flex:1;min-width:0}
+.detalle-fila strong{flex:0 0 auto;max-width:58%;font-size:12.5px}
+.detalle-seccion:last-child .detalle-fila:last-child{background:var(--fondo);border-radius:7px;font-weight:700}
+@media(max-width:960px){.calculadora-columnas{grid-template-columns:1fr}.procedimiento-panel{min-height:0}}
+@media(max-width:600px){.calculadora-columnas .panel{padding:18px}.resultados{grid-template-columns:repeat(2,minmax(0,1fr))}.dato{padding:13px}.dato strong{font-size:19px}.detalle-fila{flex-direction:row}.detalle-fila strong{text-align:right}}
+@media(max-width:380px){.resultados{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<header>
-  <div class="contenedor">
-    <a href="/" style="color:#ECEBE8">← Volver al inicio</a>
-    <h1>Calculadora fiscal</h1>
-    <div class="subtitulo">
-      Actualización y recargos por mora de ISR e IVA
-    </div>
+<header class="encabezado">
+  <div class="contenedor barra">
+    <a href="/" aria-label="Ulloa Contadores, ir al inicio"><img class="logo" src="/PNG%20OBSCURO.png" alt="Ulloa Contadores"></a>
+    <nav class="menu" aria-label="Navegación principal">
+      <a href="/#inicio">Inicio</a>
+      <a href="/#servicios">Servicios</a>
+      <a href="/#herramientas" aria-current="page">Herramientas</a>
+      <a href="/#articulos">Artículos</a>
+      <a href="/#contacto">Contacto</a>
+    </nav>
   </div>
 </header>
+<section class="hero" aria-labelledby="titulo">
+  <div class="contenedor hero-interior">
+    <span class="eyebrow">Herramientas digitales</span>
+    <h1 id="titulo">Calculadora fiscal</h1>
+    <p>Actualización y recargos por mora de ISR e IVA.</p>
+  </div>
+</section>
 
-<main class="contenedor">
+<main class="contenedor calculadora-contenido">
+ <div class="calculadora-columnas">
+ <div class="columna-izquierda">
   <section class="panel">
     <h2>Datos de la contribución</h2>
     <div class="campos">
-      <div>
+      <div class="campo">
         <label for="impuesto">Contribución</label>
         <select id="impuesto">
           <option value="ISR">ISR</option>
           <option value="IVA">IVA</option>
         </select>
       </div>
-      <div>
+      <div class="campo">
         <label for="importe">Importe original (MXN)</label>
         <input id="importe" type="number"
                min="0.01" step="0.01"
                placeholder="Ej. 15000.00">
       </div>
-      <div>
+      <div class="campo">
         <label for="vencimiento">Fecha de vencimiento</label>
         <input id="vencimiento" type="date">
       </div>
-      <div>
+      <div class="campo">
         <label for="pago">Fecha de pago</label>
         <input id="pago" type="date">
       </div>
@@ -242,10 +203,16 @@ a {color:inherit}
         <strong id="rTotal"></strong>
       </div>
     </div>
-    <h2>Procedimiento del cálculo</h2>
-    <div id="detalle" class="detalle"></div>
-
   </section>
+ </div>
+ <aside class="columna-derecha" aria-label="Procedimiento del cálculo">
+  <section class="panel procedimiento-panel" id="panelProcedimiento">
+   <h2>Procedimiento del cálculo</h2>
+   <p class="procedimiento-subtitulo">Detalle de la actualización y los recargos calculados.</p>
+   <div id="detalle" class="detalle"><p class="procedimiento-espera">Captura los datos de la contribución y selecciona «Calcular actualización y recargos» para consultar el procedimiento.</p></div>
+  </section>
+ </aside>
+ </div>
 
   <p class="aviso">
     Herramienta informativa para contribuciones federales
@@ -255,6 +222,8 @@ a {color:inherit}
     verificarse antes de utilizarse para efectuar un pago.
   </p>
 </main>
+<footer><div class="contenedor pie"><div><strong>Ulloa Contadores</strong><p>Tepic, Nayarit · Soluciones contables, fiscales y financieras.</p></div><div><p>Herramientas digitales · Calculadora fiscal</p><p>© 2026 Ulloa Contadores.</p></div></div></footer>
+
 
 <script>
 "use strict";
@@ -487,6 +456,7 @@ for (let i = 0; i < meses; i++) {
 
 async function calcular() {
   $("panelResultados").hidden = true;
+  $("panelProcedimiento").classList.remove("con-resultados");
   $("mensaje").textContent = "";
   $("mensaje").className = "";
 
@@ -692,6 +662,7 @@ seccion("3. Resultado", [
 
 
     $("panelResultados").hidden = false;
+    $("panelProcedimiento").classList.add("con-resultados");
 
   } catch (error) {
     $("mensaje").className = "error";

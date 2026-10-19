@@ -201,6 +201,23 @@ a {color:inherit}
         <label for="pago">Fecha de pago</label>
         <input id="pago" type="date">
       </div>
+      
+<div>
+  <label for="vencimientoEfectivo">
+    Vencimiento legal efectivo
+  </label>
+  <input
+    id="vencimientoEfectivo"
+    type="date"
+  >
+  <p class="aviso">
+    Indica la fecha límite legal de pago,
+    considerando las prórrogas aplicables.
+    Si no hubo prórroga, utiliza la misma
+    fecha de vencimiento original.
+  </p>
+</div>
+
     </div>
     <button id="calcular" type="button">
       Calcular actualización y recargos
@@ -479,9 +496,31 @@ async function calcular() {
   $("mensaje").className = "";
 
   try {
-    const importe = Number($("importe").value);
-    const vencimientoTexto = $("vencimiento").value;
-    const pagoTexto = $("pago").value;
+    
+const importe = Number($("importe").value);
+const vencimientoTexto = $("vencimientoEfectivo").value;
+const pagoTexto = $("pago").value;
+
+if (!vencimientoTexto) {
+  throw new Error(
+    "Captura la fecha de vencimiento legal efectivo."
+  );
+}
+
+const vencimientoOriginalTexto = $("vencimiento").value;
+
+if (!vencimientoOriginalTexto) {
+  throw new Error(
+    "Captura la fecha de vencimiento original."
+  );
+}
+
+if (vencimientoTexto < vencimientoOriginalTexto) {
+  throw new Error(
+    "El vencimiento legal efectivo no puede ser anterior al original."
+  );
+}
+
 
     if (!Number.isFinite(importe) || importe <= 0 ||
         !$("importe").value) {

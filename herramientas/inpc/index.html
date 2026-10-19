@@ -240,9 +240,52 @@
         registros = datos.registros;
         mostrarTabla();
 
-        estado.textContent =
-          "Fuente: INEGI. Última actualización: " +
-          (datos.actualizado || "No disponible");
+        
+const nombresMeses = [
+  "enero", "febrero", "marzo", "abril",
+  "mayo", "junio", "julio", "agosto",
+  "septiembre", "octubre", "noviembre", "diciembre"
+];
+
+let ultimoPeriodo = "No disponible";
+
+const registrosOrdenados = [...datos.registros].sort(
+  (a, b) => b.anio - a.anio
+);
+
+for (const registro of registrosOrdenados) {
+  for (let mes = 11; mes >= 0; mes--) {
+    const valor = registro.meses[mes];
+
+    if (valor !== null && valor !== undefined) {
+      ultimoPeriodo =
+        nombresMeses[mes] + " de " + registro.anio;
+      break;
+    }
+  }
+
+  if (ultimoPeriodo !== "No disponible") {
+    break;
+  }
+}
+
+let fechaConsulta = "No disponible";
+
+if (datos.actualizado) {
+  const partes = datos.actualizado.split("-");
+
+  if (partes.length === 3) {
+    fechaConsulta =
+      partes[2] + "/" + partes[1] + "/" + partes[0];
+  }
+}
+
+estado.textContent =
+  "Fuente: INEGI | Último periodo disponible: " +
+  ultimoPeriodo +
+  " | Datos consultados: " +
+  fechaConsulta;
+
 
       } catch (error) {
         estado.textContent =

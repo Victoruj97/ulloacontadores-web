@@ -10,12 +10,12 @@
 :root{--azul:#293F56;--medio:#667F95;--claro:#ABBCC6;--fondo:#ECEBE8;--blanco:#fff}
 *{box-sizing:border-box}html{scroll-behavior:smooth}
 body{margin:0;background:var(--fondo);color:var(--azul);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;line-height:1.55}
-a{color:inherit;text-decoration:none}.contenedor{width:min(1160px,92%);margin:auto}
+a{color:inherit;text-decoration:none}.contenedor{width:min(1380px,94%);margin:auto}
 .encabezado{background:var(--blanco);border-bottom:1px solid var(--claro);position:sticky;top:0;z-index:10}
-.barra{display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:94px}
-.logo{display:block;width:185px;height:74px;object-fit:contain;object-position:left center}
-.menu{display:flex;flex-wrap:wrap;align-items:center;gap:9px}
-.menu a{padding:10px 13px;border-radius:8px;font-size:14px;font-weight:650;transition:background .2s,color .2s}
+.barra{display:flex;align-items:center;justify-content:space-between;gap:34px;min-height:100px}
+.logo{display:block;width:198px;height:78px;object-fit:contain;object-position:left center}
+.menu{display:flex;flex-wrap:wrap;align-items:center;gap:13px}
+.menu a{padding:11px 15px;border-radius:8px;font-size:14px;font-weight:650;transition:background .2s,color .2s}
 .menu a:hover,.menu a:focus-visible{background:var(--fondo);color:var(--medio)}
 .menu a[aria-current="page"]{background:var(--azul);color:var(--blanco)}
 .hero{background:var(--azul);color:var(--blanco);position:relative;overflow:hidden}
@@ -25,15 +25,15 @@ a{color:inherit;text-decoration:none}.contenedor{width:min(1160px,92%);margin:au
 h1{font-size:clamp(30px,4vw,46px);line-height:1.15;letter-spacing:-1px;margin:12px 0}
 .hero p{max-width:660px;color:var(--fondo);font-size:16px;margin:0}
 main{padding:34px 0 64px}
-.resumen{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:16px;margin-bottom:22px}
-.metrica{background:var(--blanco);border:1px solid var(--claro);border-radius:13px;padding:20px 23px;min-height:116px;box-shadow:0 7px 22px rgba(41,63,86,.035)}
+.resumen{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:20px;margin-bottom:25px}
+.metrica{background:var(--blanco);border:1px solid var(--claro);border-radius:14px;padding:24px 28px;min-height:135px;box-shadow:0 7px 22px rgba(41,63,86,.035)}
 .metrica.destacada{background:var(--azul);color:var(--blanco);border-color:var(--azul)}
 .metrica .rotulo{font-size:12px;color:var(--medio);font-weight:650}
 .metrica.destacada .rotulo{color:var(--claro)}
 .metrica strong{display:block;font-size:clamp(22px,2.6vw,30px);line-height:1.3;letter-spacing:-.6px;margin-top:7px}
 .metrica .detalle{font-size:12px;color:var(--medio);margin-top:4px}
 .metrica.destacada .detalle{color:var(--fondo)}
-.panel{background:var(--blanco);border:1px solid var(--claro);border-radius:14px;padding:25px;box-shadow:0 12px 35px rgba(41,63,86,.045)}
+.panel{background:var(--blanco);border:1px solid var(--claro);border-radius:15px;padding:30px;box-shadow:0 12px 35px rgba(41,63,86,.045)}
 .controles{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:18px;margin-bottom:21px}
 .controles h2{font-size:21px;letter-spacing:-.3px;margin:0}
 .controles p{margin:4px 0 0;font-size:13px;color:var(--medio)}
@@ -41,10 +41,10 @@ main{padding:34px 0 64px}
 .busqueda input{width:100%;padding:12px 14px;border:1px solid var(--claro);border-radius:9px;font:inherit;color:var(--azul);background:var(--blanco);outline-offset:2px}
 .busqueda input:focus{outline:2px solid var(--medio);border-color:transparent}
 .tabla-contenedor{overflow-x:auto;border:1px solid var(--claro);border-radius:10px}
-table{width:100%;min-width:900px;border-collapse:separate;border-spacing:0;text-align:center;font-size:12px;font-variant-numeric:tabular-nums}
-th,td{padding:13px 9px;white-space:nowrap;border-right:1px solid var(--claro);border-bottom:1px solid var(--claro)}
+table{width:100%;min-width:1000px;border-collapse:separate;border-spacing:0;text-align:center;font-size:13px;font-variant-numeric:tabular-nums}
+th,td{padding:15px 10px;white-space:nowrap;border-right:1px solid var(--claro);border-bottom:1px solid var(--claro)}
 tr>*:last-child{border-right:0}tbody tr:last-child>*{border-bottom:0}
-thead th{background:var(--azul);color:var(--blanco);font-size:11px;letter-spacing:.5px}
+thead th{background:var(--azul);color:var(--blanco);font-size:12px;letter-spacing:.5px}
 tbody th{background:var(--medio);color:var(--blanco);font-weight:750;position:sticky;left:0}
 tbody tr:nth-child(even) td{background:var(--fondo)}tbody tr:hover td{background:#e2e7eb}
 tbody td.reciente{background:var(--claro)!important;font-weight:800;color:var(--azul);box-shadow:inset 0 0 0 1px var(--medio)}
@@ -53,7 +53,7 @@ tbody td.reciente{background:var(--claro)!important;font-weight:800;color:var(--
 footer{background:var(--azul);color:var(--blanco);padding:30px 0}
 .pie{display:flex;justify-content:space-between;align-items:center;gap:16px;font-size:12px}.pie p{margin:4px 0;color:var(--claro)}
 @media(max-width:850px){.barra{flex-direction:column;padding:10px 0 15px;gap:5px}.menu{justify-content:center}.resumen{grid-template-columns:1fr 1fr}.resumen .destacada{grid-column:1/-1}}
-@media(max-width:550px){.logo{width:155px;height:60px}.menu{gap:2px;justify-content:center}.menu a{font-size:12px;padding:8px}.hero-interior{padding:38px 0}.resumen{grid-template-columns:1fr}.resumen .destacada{grid-column:auto}.panel{padding:16px}.controles{align-items:stretch}.busqueda{width:100%}.pie{flex-direction:column;align-items:flex-start}}
+@media(max-width:550px){.logo{width:155px;height:60px}.menu{gap:2px;justify-content:center}.menu a{font-size:12px;padding:8px}.hero-interior{padding:38px 0}.resumen{grid-template-columns:1fr}.resumen .destacada{grid-column:auto}.panel{padding:16px}.metrica{padding:20px;min-height:110px}.controles{align-items:stretch}.busqueda{width:100%}.pie{flex-direction:column;align-items:flex-start}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
 </style>
 </head>
@@ -68,7 +68,7 @@ footer{background:var(--azul);color:var(--blanco);padding:30px 0}
 </header>
 <section class="hero" aria-labelledby="titulo">
   <div class="contenedor hero-interior">
-    <span class="eyebrow">Ulloa Contadores · Herramientas digitales</span>
+    <span class="eyebrow">HERRAMIENTAS DIGITALES</span>
     <h1 id="titulo">Consulta histórica del INPC</h1>
     <p>Explora el Índice Nacional de Precios al Consumidor por año y mes, con información oficial del INEGI.</p>
   </div>

@@ -109,6 +109,60 @@ a {color:inherit}
   h1 {font-size:25px}
   .panel {padding:18px}
 }
+  
+.detalle {
+  display: grid;
+  gap: 18px;
+  line-height: 1.5;
+}
+
+.detalle-seccion {
+  border: 1px solid #ABBCC6;
+  border-radius: 9px;
+  padding: 18px;
+  background: #fff;
+}
+
+.detalle-seccion h3 {
+  margin: 0 0 14px;
+  color: #293F56;
+  font-size: 17px;
+}
+
+.detalle-fila {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 18px;
+  padding: 10px 0;
+  border-bottom: 1px solid #ECEBE8;
+}
+
+.detalle-fila:last-child {
+  border-bottom: none;
+}
+
+.detalle-fila span {
+  color: #667F95;
+}
+
+.detalle-fila strong {
+  color: #293F56;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+  .detalle-fila {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .detalle-fila strong {
+    text-align: left;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -186,8 +240,9 @@ a {color:inherit}
         <strong id="rTotal"></strong>
       </div>
     </div>
-    <h2>Procedimiento</h2>
+    <h2>Procedimiento del cálculo</h2>
     <div id="detalle" class="detalle"></div>
+
   </section>
 
   <p class="aviso">
@@ -442,23 +497,94 @@ async function calcular() {
         anio + ": " + tasa.toFixed(2) + "%"
       ).join("; ");
 
-    $("detalle").textContent =
-      "Contribución: " + $("impuesto").value +
-      ". INPC inicial (" + mi + "/" + ai + "): " +
-      inpcInicial.toFixed(3) +
-      ". INPC final utilizado (" +
-      final.mes + "/" + final.anio + "): " +
-      final.valor.toFixed(3) +
-      ". Factor: " + final.valor.toFixed(3) +
-      " ÷ " + inpcInicial.toFixed(3) +
-      " = " + factor.toFixed(4) +
-      ". Meses o fracciones de mora considerados: " +
-      rec.meses +
-      ". Tasas por ejercicio: " + tramos +
-      ". Recargos: " +
-      dinero(contribucionActualizada) +
-      " × " + rec.tasa.toFixed(2) +
-      "% = " + dinero(recargos) + ".";
+    
+const mesesNombre = [
+  "enero", "febrero", "marzo", "abril",
+  "mayo", "junio", "julio", "agosto",
+  "septiembre", "octubre", "noviembre",
+  "diciembre"
+];
+
+const nombrePeriodo = (anio, mes) =>
+  mesesNombre[mes - 1] + " de " + anio;
+
+const detalle = $("detalle");
+detalle.replaceChildren();
+
+const agregar = (padre, etiqueta, texto, clase = "") => {
+  const elemento = document.createElement(etiqueta);
+  elemento.textContent = texto;
+  if (clase) elemento.className = clase;
+  padre.appendChild(elemento);
+  return elemento;
+};
+
+const seccion = (titulo, filas) => {
+  const bloque = document.createElement("section");
+  bloque.className = "detalle-seccion";
+
+  agregar(bloque, "h3", titulo);
+
+  for (const [concepto, valor] of filas) {
+    const fila = document.createElement("div");
+    fila.className = "detalle-fila";
+
+    agregar(fila, "span", concepto);
+    agregar(fila, "strong", String(valor));
+
+    bloque.appendChild(fila);
+  }
+
+  detalle.appendChild(bloque);
+};
+
+seccion("Datos del cálculo", [
+  ["Contribución", $("impuesto").value],
+  ["Meses o fracciones de mora", rec.meses]
+]);
+
+seccion("1. Actualización de la contribución", [
+  [
+    "INPC inicial (" + nombrePeriodo(ai, mi) + ")",
+    inpcInicial.toFixed(3)
+  ],
+  [
+    "INPC final (" +
+      nombrePeriodo(final.anio, final.mes) + ")",
+    final.valor.toFixed(3)
+  ],
+  [
+    "Operación",
+    final.valor.toFixed(3) + " ÷ " +
+      inpcInicial.toFixed(3)
+  ],
+  ["Factor aplicado", factor.toFixed(4)],
+  ["Actualización", dinero(actualizacion)],
+  [
+    "Contribución actualizada",
+    dinero(contribucionActualizada)
+  ]
+]);
+
+seccion("2. Cálculo de recargos", [
+  ["Meses de mora", rec.meses],
+  ["Tasas acumuladas por ejercicio", tramos],
+  ["Tasa acumulada", rec.tasa.toFixed(2) + "%"],
+  [
+    "Operación",
+    dinero(contribucionActualizada) +
+      " × " + rec.tasa.toFixed(2) + "%"
+  ],
+  ["Recargos", dinero(recargos)]
+]);
+
+seccion("3. Resultado", [
+  ["Contribución actualizada",
+    dinero(contribucionActualizada)],
+  ["Recargos", dinero(recargos)],
+  ["Total estimado", dinero(total)]
+]);
+
 
     $("panelResultados").hidden = false;
 

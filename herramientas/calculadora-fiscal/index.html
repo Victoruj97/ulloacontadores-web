@@ -403,6 +403,7 @@ function calcularRecargos(vencimiento, pago) {
 
   meses = Math.max(1, Math.min(meses, 60));
 
+  
   let tasa = 0;
   const desglose = {};
   const detalleMensual = [];
@@ -424,22 +425,22 @@ function calcularRecargos(vencimiento, pago) {
 
     desglose[anio] =
       (desglose[anio] || 0) + TASAS[anio];
+
+    detalleMensual.push({
+      anio,
+      mes: fechaPeriodo.getUTCMonth() + 1,
+      tasaMensual: TASAS[anio],
+      tasaAcumulada: tasa
+    });
   }
 
-  detalleMensual.push({
-   anio,
-   mes: fechaPeriodo.getUTCMonth() + 1,
-   tasaMensual: TASAS[anio],
-   tasaAcumulada: tasa
-  });
-
   return {
-  tasa,
-  meses,
-  desglose,
-  detalleMensual
-};
-
+    tasa,
+    meses,
+    desglose,
+    detalleMensual
+  };
+}
 
 
 async function calcular() {

@@ -624,7 +624,7 @@ const filasMensuales = (rec.detalleMensual || []).map(
     
 seccion("2. Cálculo de recargos", [
   ["Meses de mora", rec.meses],
-  ["Tasas por ejercicio", tramos],
+  ...filasMensuales,
   ["Tasa acumulada", rec.tasa.toFixed(2) + "%"],
   [
     "Operación",

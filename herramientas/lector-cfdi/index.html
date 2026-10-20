@@ -370,6 +370,26 @@ archivos.addEventListener("change", () => {
 
 
 procesar.addEventListener("click", async () => {
+  
+  const rfcContribuyente = document
+    .getElementById("rfcContribuyente")
+    .value.trim().toUpperCase();
+
+  const formatoRFC =
+    /^[A-ZÑ&]{3,4}\d{6}[A-Z0-9]{3}$/;
+
+  if (!formatoRFC.test(rfcContribuyente)) {
+    alert(
+      "Ingresa un RFC válido de 12 o 13 caracteres antes de procesar los archivos."
+    );
+
+    document
+      .getElementById("rfcContribuyente")
+      .focus();
+
+    return;
+  }
+
   const resultados = [];
   const errores = [];
 

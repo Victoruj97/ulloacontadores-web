@@ -239,6 +239,7 @@ const estado = document.getElementById("estado");
 
 
 const campos = [
+  "Clasificación",
   "UUID",
   "Tipo",
   "Fecha",
@@ -362,6 +363,33 @@ function leerCFDI(xml, nombreArchivo) {
   ).find(x => x.localName === "TimbreFiscalDigital");
 
   const tipo = raiz.getAttribute("TipoDeComprobante") || "";
+  
+const rfcSeleccionado = document
+  .getElementById("rfcContribuyente")
+  .value.trim().toUpperCase();
+
+const rfcEmisor = (
+  emisor?.getAttribute("Rfc") || ""
+).toUpperCase();
+
+const rfcReceptor = (
+  receptor?.getAttribute("Rfc") || ""
+).toUpperCase();
+
+let clasificacion = "No relacionado";
+
+if (tipo === "P") {
+  if (rfcEmisor === rfcSeleccionado) {
+    clasificacion = "Pago emitido";
+  } else if (rfcReceptor === rfcSeleccionado) {
+    clasificacion = "Pago recibido";
+  }
+} else if (rfcEmisor === rfcSeleccionado) {
+  clasificacion = "Emitido";
+} else if (rfcReceptor === rfcSeleccionado) {
+  clasificacion = "Recibido";
+}
+
   const factor = tipo === "E" ? -1 : 1;
 
   const desglose = desgloseIVA(raiz);
@@ -379,6 +407,7 @@ function leerCFDI(xml, nombreArchivo) {
   );
 
   const resultado = {
+    "Clasificación": clasificacion,
     "UUID": timbre?.getAttribute("UUID") || "",
     "Tipo": tipo,
     "Fecha": raiz.getAttribute("Fecha") || "",

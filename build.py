@@ -269,8 +269,25 @@ def article_html(item, related_html):
 <meta name="theme-color" content="#293F56"><meta name="description" content="{desc_attribute}">
 <link rel="canonical" href="{escape(canonical, quote=True)}">
 <title>{title} | Ulloa Contadores</title><style>{styles}</style></head><body>
-<header><div class="wrap nav"><a href="/index.html#inicio" aria-label="Inicio de Ulloa Contadores"><img class="logo" src="/PNG%20OBSCURO.png" alt="Ulloa Contadores"></a>
-<a href="/index.html#articulos">← Volver a artículos</a></div></header>
+<header>
+  <div class="wrap nav">
+    <a href="/#inicio" aria-label="Inicio de Ulloa Contadores">
+      <img class="logo" src="/PNG%20OBSCURO.png" alt="Ulloa Contadores">
+    </a>
+
+    <nav class="menu-principal" aria-label="Navegación principal">
+      <a href="/#inicio">Inicio</a>
+      <a href="/#servicios">Servicios</a>
+      <a href="/#herramientas">Herramientas</a>
+      <a href="/#articulos">Artículos</a>
+      <a href="/#contacto">Contacto</a>
+    </nav>
+
+    <a class="volver-articulos" href="/#articulos">
+      ← Volver a artículos
+    </a>
+  </div>
+</header>
 <section class="hero"><div class="wrap"><span class="eyebrow">{category}</span><h1>{title}</h1>
 {description_html}<div class="meta">Ulloa Contadores{' · ' + publication if publication else ''} · Lectura aproximada: {reading_minutes} min</div>
 </div></section>

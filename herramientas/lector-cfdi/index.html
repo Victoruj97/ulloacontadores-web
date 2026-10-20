@@ -126,9 +126,40 @@
   </p>
 
   <section class="panel">
-    <div class="carga">
-      <h2>Cargar comprobantes</h2>
-      <p>Selecciona uno o varios archivos XML o ZIP.</p>
+    
+<div class="carga">
+  <h2>Cargar comprobantes</h2>
+  <p>Selecciona uno o varios archivos XML o ZIP.</p>
+
+  <div style="margin-bottom:20px; text-align:left;">
+    <label for="rfcContribuyente"
+           style="display:block; margin-bottom:8px;">
+      RFC del contribuyente
+    </label>
+
+    <input
+      id="rfcContribuyente"
+      type="text"
+      placeholder="Ingresa el RFC del contribuyente"
+      maxlength="13"
+      autocomplete="off"
+      style="
+        width:100%;
+        max-width:350px;
+        padding:12px;
+        border:1px solid #ABBCC6;
+        border-radius:8px;
+        box-sizing:border-box;
+        text-transform:uppercase;
+      "
+    >
+
+    <small style="display:block; margin-top:6px;">
+      Este RFC permitirá identificar los CFDI
+      emitidos y recibidos.
+    </small>
+  </div>
+
 
       <input
         id="archivos"

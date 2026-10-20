@@ -247,12 +247,6 @@ def article_html(item, related_html):
   color:#667F95;
 }
 
-.volver-articulos{
-  color:#293F56;
-  font-size:13px;
-  white-space:nowrap;
-}
-
 @media(max-width:1000px){
   .nav{
     flex-wrap:wrap;
@@ -278,9 +272,6 @@ def article_html(item, related_html):
     font-size:13px;
   }
 
-  .volver-articulos{
-    font-size:12px;
-  }
 }
 
     .hero{background:#293F56;color:#ECEBE8;padding:65px 0 70px}
@@ -290,6 +281,25 @@ def article_html(item, related_html):
     .layout{display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:55px;padding:58px 0 90px}
     .layout.no-sidebar{grid-template-columns:minmax(0,1fr)}
     .content{min-width:0}.content h2{font-size:26px;line-height:1.3;margin:40px 0 14px}
+    
+/* Enlaces dentro del contenido de los artículos */
+.content p a,
+.content li a {
+  color: #293F56;
+  text-decoration: underline;
+  text-decoration-color: #667F95;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.content p a:hover,
+.content li a:hover {
+  color: #667F95;
+  text-decoration-color: #293F56;
+}
+
     .content h3{font-size:20px;margin-top:30px}.content p,.content li{font-size:16px}
     .content li{margin:8px 0}.content ul,.content ol{padding-left:24px}
     .content img{max-width:100%;height:auto}

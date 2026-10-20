@@ -434,9 +434,16 @@ procesar.addEventListener("click", async () => {
     const contenedor = document.createElement("div");
     contenedor.style.overflowX = "auto";
 
-    const tabla = document.createElement("table");
-    tabla.style.borderCollapse = "collapse";
-    tabla.style.width = "100%";
+    
+const tabla = document.createElement("table");
+
+tabla.style.borderCollapse = "separate";
+tabla.style.borderSpacing = "0";
+tabla.style.width = "max-content";
+tabla.style.minWidth = "100%";
+tabla.style.tableLayout = "auto";
+tabla.style.whiteSpace = "nowrap";
+
 
     const encabezado = document.createElement("tr");
 

@@ -209,8 +209,80 @@ def article_html(item, related_html):
     body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#293F56;background:#fff;line-height:1.75}
     a{color:inherit}header{border-bottom:1px solid #ABBCC6;background:#fff;position:sticky;top:0;z-index:5}
     .wrap{width:min(1020px,91%);margin:auto}
-    .nav{min-height:90px;display:flex;align-items:center;justify-content:space-between;gap:20px}
-    .logo{width:185px;max-height:76px;object-fit:contain}.nav a{text-decoration:none;font-weight:650}
+    
+.nav{
+  min-height:90px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:24px;
+}
+
+.logo{
+  width:185px;
+  max-height:76px;
+  object-fit:contain;
+}
+
+.nav a{
+  text-decoration:none;
+  font-weight:650;
+}
+
+.menu-principal{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:24px;
+}
+
+.menu-principal a{
+  color:#293F56;
+  font-size:14px;
+  transition:color .2s ease;
+}
+
+.menu-principal a:hover{
+  color:#667F95;
+}
+
+.volver-articulos{
+  color:#293F56;
+  font-size:13px;
+  white-space:nowrap;
+}
+
+@media(max-width:1000px){
+  .nav{
+    flex-wrap:wrap;
+    justify-content:space-between;
+    padding:14px 0;
+  }
+
+  .menu-principal{
+    order:3;
+    width:100%;
+    justify-content:center;
+    gap:12px 22px;
+    padding:10px 0;
+  }
+}
+
+@media(max-width:550px){
+  .menu-principal{
+    gap:12px 16px;
+  }
+
+  .menu-principal a{
+    font-size:13px;
+  }
+
+  .volver-articulos{
+    font-size:12px;
+  }
+}
+
     .hero{background:#293F56;color:#ECEBE8;padding:65px 0 70px}
     .eyebrow{text-transform:uppercase;letter-spacing:2px;font-size:12px;color:#ABBCC6;font-weight:750}
     h1{font-size:clamp(32px,5vw,52px);line-height:1.18;letter-spacing:-1px;max-width:850px;margin:15px 0}

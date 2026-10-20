@@ -333,16 +333,106 @@ def article_html(item, related_html):
     .relacionado-texto{padding:16px}.relacionado small{color:#667F95;text-transform:uppercase;letter-spacing:1px}
     .relacionado h3{font-size:16px;margin:8px 0 16px}.relacionado span{font-weight:650}
     .relacionado:hover{border-color:#667F95}
-    footer{background:#293F56;color:#ABBCC6;padding:35px 0}
-    .foot{display:flex;justify-content:space-between;align-items:center;gap:20px}
-    .foot img{width:165px;max-height:75px;object-fit:contain}.foot p{font-size:13px;text-align:right}
-    @media(max-width:800px){.layout{grid-template-columns:1fr;padding-top:30px;gap:28px}
-      .sidebar{position:static;order:-1}.sidebar a{display:inline-block;margin-right:15px}
-      .nav{min-height:75px}.logo{width:150px}.hero{padding:45px 0}
-      .foot{flex-direction:column;align-items:flex-start}.foot p{text-align:left}}
-    @media(max-width:550px){.relacionados-grid{grid-template-columns:1fr}
-      .relacionado img,.relacionado-sin-imagen{height:170px}}
-    '''
+
+/* =========================================
+   PIE DE PÁGINA
+========================================= */
+footer {
+  background: #293F56;
+  color: #ECEBE8;
+  padding: 45px 0;
+  border-top: 1px solid #667F95;
+}
+
+.pie {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30px;
+}
+
+.logo-pie {
+  display: block;
+  width: 175px;
+  height: 85px;
+  object-fit: contain;
+  object-position: left center;
+}
+
+.pie-texto {
+  color: #ABBCC6;
+  font-size: 13px;
+  text-align: right;
+}
+
+.pie-texto p {
+  font-size: 13px;
+}
+
+/* =========================================
+   DISEÑO RESPONSIVO
+========================================= */
+@media (max-width: 800px) {
+  .layout {
+    grid-template-columns: 1fr;
+    padding-top: 30px;
+    gap: 28px;
+  }
+
+  .sidebar {
+    position: static;
+    order: -1;
+  }
+
+  .sidebar a {
+    display: inline-block;
+    margin-right: 15px;
+  }
+
+  .nav {
+    min-height: 75px;
+  }
+
+  .logo {
+    width: 150px;
+  }
+
+  .hero {
+    padding: 45px 0;
+  }
+}
+
+/* =========================================
+   CELULARES
+========================================= */
+@media (max-width: 600px) {
+  .pie {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pie-texto {
+    text-align: left;
+  }
+
+  .logo-pie {
+    width: 160px;
+    height: 75px;
+  }
+}
+
+@media (max-width: 550px) {
+  .relacionados-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .relacionado img,
+  .relacionado-sin-imagen {
+    height: 170px;
+  }
+}
+'''
+
     description_html = '<p>' + description + '</p>' if description else ''
     layout_class = 'layout' if sidebar else 'layout no-sidebar'
     canonical = 'https://ulloacontadores.com.mx/' + item['url'].lstrip('/')
@@ -370,8 +460,32 @@ def article_html(item, related_html):
 {description_html}<div class="meta">Ulloa Contadores{' · ' + publication if publication else ''} · Lectura aproximada: {reading_minutes} min</div>
 </div></section>
 <div class="wrap {layout_class}"><main class="content">{cover_html}<article>{body}</article>{cta_html}{sources_html}{related_html}</main>{sidebar}</div>
-<footer><div class="wrap foot"><a href="/index.html#inicio"><img src="/PNG%20CLARO.png" alt="Ulloa Contadores"></a>
-<p>© Ulloa Contadores.<br>Soluciones contables, fiscales y financieras.</p></div></footer></body></html>'''
+
+<footer>
+  <div class="wrap pie">
+    <a href="/#inicio"
+       aria-label="Volver al inicio de Ulloa Contadores">
+      <img
+        src="/PNG%20CLARO.png"
+        alt="Ulloa Contadores"
+        class="logo-pie"
+      >
+    </a>
+
+    <div class="pie-texto">
+      <p>
+        © 2026 Ulloa Contadores.
+        Todos los derechos reservados.
+      </p>
+      <p>
+        Soluciones contables, fiscales y financieras.
+      </p>
+    </div>
+  </div>
+</footer>
+</body>
+</html>'''
+
 
 
 def card(item, number):

@@ -1,7 +1,10 @@
 
 <!DOCTYPE html>
 <html lang="es">
-<head>
+
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+
+  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
@@ -337,7 +340,7 @@ archivos.addEventListener("change", () => {
 procesar.addEventListener("click", async () => {
   const resultados = [];
   const errores = [];
-
+  let datosExcel = [];
   procesar.disabled = true;
   estado.textContent = "Procesando archivos...";
 
@@ -348,12 +351,68 @@ procesar.addEventListener("click", async () => {
           "Los ZIP se habilitarán en otra etapa"
         );
       }
+    
+if (datosExcel.length > 0) {
+  const botonExcel = document.createElement("button");
+
+  botonExcel.textContent = "Descargar Excel";
+  botonExcel.style.background = "#293F56";
+  botonExcel.style.color = "#ECEBE8";
+  botonExcel.style.padding = "12px 24px";
+  botonExcel.style.border = "none";
+  botonExcel.style.borderRadius = "8px";
+  botonExcel.style.cursor = "pointer";
+  botonExcel.style.marginTop = "20px";
+
+  botonExcel.addEventListener("click", () => {
+    if (typeof XLSX === "undefined") {
+      alert("No se pudo cargar la biblioteca de Excel.");
+      return;
+    }
+
+    const filas = datosExcel.map(cfdi => {
+      const fila = {};
+      campos.forEach(campo => {
+        fila[campo] = cfdi[campo] ?? "";
+      });
+      return fila;
+    });
+
+    const hoja = XLSX.utils.json_to_sheet(filas, {
+      header: campos
+    });
+
+    hoja["!cols"] = campos.map(campo => ({
+      wch: Math.max(16, Math.min(30, campo.length + 5))
+    }));
+
+    hoja["!autofilter"] = {
+      ref: hoja["!ref"]
+    };
+
+    const libro = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(
+      libro,
+      hoja,
+      "CFDI"
+    );
+
+    XLSX.writeFile(
+      libro,
+      "ReporteCFDI.xlsx"
+    );
+  });
+
+  estado.appendChild(botonExcel);
+}
+
 
       const contenido = await archivo.text();
 
-      resultados.push(
-        leerCFDI(contenido, archivo.name)
-      );
+      const cfdi = leerCFDI(contenido, archivo.name);
+resultados.push(cfdi);
+datosExcel.push(cfdi);
 
     } catch (error) {
       errores.push(`${archivo.name}: ${error.message}`);

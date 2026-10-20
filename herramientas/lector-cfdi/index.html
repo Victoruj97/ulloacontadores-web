@@ -127,6 +127,34 @@ main {
       h1 { font-size: 26px; }
       .panel { padding: 18px; }
     }
+    
+/* Ampliar el espacio de trabajo del Lector CFDI */
+body main {
+  width: calc(100% - 48px);
+  max-width: 1800px;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+body main .panel {
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
+}
+
+body main #estado {
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  body main {
+    width: calc(100% - 24px);
+  }
+}
+
   </style>
 </head>
 <body>

@@ -7,9 +7,170 @@
   <meta name="robots" content="noindex, nofollow">
   <link rel="icon" type="image/png" href="/favicon.png">
   <title>Lector CFDI | Ulloa Contadores</title>
+  <style>
+    :root {
+      --azul: #293F56;
+      --azul-medio: #667F95;
+      --azul-claro: #ABBCC6;
+      --fondo: #ECEBE8;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--fondo);
+      color: var(--azul);
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      background: white;
+      padding: 18px 6%;
+      border-bottom: 1px solid var(--azul-claro);
+    }
+
+    header img { width: 180px; max-width: 100%; }
+
+    main {
+      max-width: 1050px;
+      margin: 55px auto;
+      padding: 0 20px;
+    }
+
+    h1 { font-size: 32px; margin-bottom: 12px; }
+
+    .intro {
+      color: var(--azul-medio);
+      line-height: 1.7;
+      margin-bottom: 30px;
+    }
+
+    .panel {
+      background: white;
+      border: 1px solid var(--azul-claro);
+      border-radius: 14px;
+      padding: 35px;
+    }
+
+    .carga {
+      border: 2px dashed var(--azul-claro);
+      border-radius: 12px;
+      padding: 45px 20px;
+      text-align: center;
+      background: #ECEBE8;
+    }
+
+    .carga h2 { margin-top: 0; }
+
+    .carga p { color: var(--azul-medio); }
+
+    input[type=file] {
+      display: block;
+      margin: 25px auto;
+      max-width: 100%;
+    }
+
+    button {
+      border: 0;
+      border-radius: 7px;
+      background: var(--azul);
+      color: white;
+      padding: 13px 25px;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    button:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    .estado {
+      margin-top: 25px;
+      color: var(--azul-medio);
+      line-height: 1.6;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 60px;
+      padding: 25px;
+      color: var(--azul-medio);
+    }
+
+    @media (max-width: 600px) {
+      main { margin-top: 30px; }
+      h1 { font-size: 26px; }
+      .panel { padding: 18px; }
+    }
+  </style>
 </head>
 <body>
+
+<header>
+  <a href="/">
+    <img src="/PNG%20OBSCURO.png" alt="Ulloa Contadores">
+  </a>
+</header>
+
+<main>
   <h1>Lector CFDI</h1>
-  <p>Herramienta en desarrollo.</p>
+  <p class="intro">
+    Importa tus comprobantes fiscales digitales
+    en formato XML o ZIP para consultar su información
+    y generar reportes fiscales.
+  </p>
+
+  <section class="panel">
+    <div class="carga">
+      <h2>Cargar comprobantes</h2>
+      <p>Selecciona uno o varios archivos XML o ZIP.</p>
+
+      <input
+        id="archivos"
+        type="file"
+        accept=".xml,.zip"
+        multiple
+      >
+
+      <button id="procesar" disabled>
+        Procesar archivos
+      </button>
+    </div>
+
+    <div id="estado" class="estado" role="status" aria-live="polite">
+      No se han seleccionado archivos.
+    </div>
+  </section>
+</main>
+
+<footer>
+  © Ulloa Contadores
+</footer>
+
+<script>
+  const archivos = document.getElementById("archivos");
+  const procesar = document.getElementById("procesar");
+  const estado = document.getElementById("estado");
+
+  archivos.addEventListener("change", () => {
+    const total = archivos.files.length;
+
+    procesar.disabled = total === 0;
+
+    estado.textContent = total
+      ? `${total} archivo(s) seleccionado(s).`
+      : "No se han seleccionado archivos.";
+  });
+
+  procesar.addEventListener("click", () => {
+    estado.textContent =
+      "Archivos seleccionados correctamente. " +
+      "El procesamiento de CFDI se incorporará " +
+      "en la siguiente etapa.";
+  });
+</script>
+
 </body>
 </html>

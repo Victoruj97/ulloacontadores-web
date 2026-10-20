@@ -181,7 +181,7 @@ def article_html(item, related_html):
     )
 
     # CTA editorial uniforme para todos los artículos.
-    whatsapp = 'https://wa.me/523118761619?' + urlencode({
+    whatsapp = 'https://wa.me/523326158913?' + urlencode({
         'text': 'Hola, me gustaría recibir asesoría sobre ' + item['category'].lower() + '.'
     })
     cta_html = (
@@ -354,10 +354,6 @@ def article_html(item, related_html):
       <a href="/#articulos">Artículos</a>
       <a href="/#contacto">Contacto</a>
     </nav>
-
-    <a class="volver-articulos" href="/#articulos">
-      ← Volver a artículos
-    </a>
   </div>
 </header>
 <section class="hero"><div class="wrap"><span class="eyebrow">{category}</span><h1>{title}</h1>

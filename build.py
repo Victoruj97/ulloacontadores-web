@@ -439,8 +439,11 @@ footer {
     return f'''<!DOCTYPE html>
 <html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#293F56"><meta name="description" content="{desc_attribute}">
+
 <link rel="canonical" href="{escape(canonical, quote=True)}">
+<link rel="icon" type="image/png" sizes="96x96" href="/favicon.png">
 <title>{title} | Ulloa Contadores</title><style>{styles}</style></head><body>
+
 <header>
   <div class="wrap nav">
     <a href="/#inicio" aria-label="Inicio de Ulloa Contadores">

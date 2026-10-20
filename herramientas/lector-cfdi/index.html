@@ -522,6 +522,23 @@ th.style.fontWeight = "600";
       campos.forEach(campo => {
         const celda = document.createElement("td");
         const valor = resultado[campo];
+        
+if (
+  campo === "Nombre emisor" ||
+  campo === "Nombre receptor" ||
+  campo === "Nombre Emisor" ||
+  campo === "Nombre Receptor"
+) {
+  celda.style.maxWidth = "220px";
+  celda.style.width = "220px";
+  celda.style.overflow = "hidden";
+  celda.style.textOverflow = "ellipsis";
+  celda.style.whiteSpace = "nowrap";
+
+  // Mostrar el nombre completo al pasar el cursor
+  celda.title = String(valor ?? "");
+}
+
 
         celda.textContent =
           valor === null || valor === undefined

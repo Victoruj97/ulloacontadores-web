@@ -11,6 +11,26 @@
   <link rel="icon" type="image/png" href="/favicon.png">
   <title>Lector CFDI | Ulloa Contadores</title>
   <style>
+    
+/* Ampliar el área de trabajo del Lector CFDI */
+main {
+  width: 96%;
+  max-width: 1800px;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+.panel {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#estado {
+  width: 100%;
+  box-sizing: border-box;
+}
+
     :root {
       --azul: #293F56;
       --azul-medio: #667F95;
@@ -445,13 +465,21 @@ tabla.style.tableLayout = "auto";
 tabla.style.whiteSpace = "nowrap";
 
 
+contenedor.style.width = "100%";
+contenedor.style.maxWidth = "100%";
+contenedor.style.fontSize = "13px";
+
     const encabezado = document.createElement("tr");
 
     campos.forEach(campo => {
       const th = document.createElement("th");
 
       th.textContent = campo;
-      th.style.padding = "12px";
+      
+th.style.padding = "9px 12px";
+th.style.fontSize = "13px";
+th.style.fontWeight = "600";
+
       th.style.background = "#293F56";
       th.style.color = "#ECEBE8";
 
@@ -472,7 +500,10 @@ tabla.style.whiteSpace = "nowrap";
             ? "Sin desglose"
             : String(valor);
 
-        celda.style.padding = "10px";
+        
+celda.style.padding = "8px 12px";
+celda.style.fontSize = "13px";
+
         celda.style.borderBottom =
           "1px solid #ABBCC6";
 

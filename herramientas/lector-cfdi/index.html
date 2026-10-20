@@ -149,28 +149,210 @@
   © Ulloa Contadores
 </footer>
 
+
 <script>
-  const archivos = document.getElementById("archivos");
-  const procesar = document.getElementById("procesar");
-  const estado = document.getElementById("estado");
+const archivos = document.getElementById("archivos");
+const procesar = document.getElementById("procesar");
+const estado = document.getElementById("estado");
 
-  archivos.addEventListener("change", () => {
-    const total = archivos.files.length;
+const campos = [
+  "UUID", "Tipo", "Fecha", "RFC emisor",
+  "Nombre emisor", "RFC receptor",
+  "Nombre receptor", "Subtotal",
+  "Descuento", "Total", "Moneda",
+  "Forma de pago", "Método de pago",
+  "IVA trasladado", "IVA retenido",
+  "ISR retenido"
+];
 
-    procesar.disabled = total === 0;
+function hijos(nodo, nombre) {
+  return Array.from(nodo?.children || [])
+    .filter(x => x.localName === nombre);
+}
 
-    estado.textContent = total
-      ? `${total} archivo(s) seleccionado(s).`
-      : "No se han seleccionado archivos.";
-  });
+function hijo(nodo, nombre) {
+  return hijos(nodo, nombre)[0] || null;
+}
 
-  procesar.addEventListener("click", () => {
-    estado.textContent =
-      "Archivos seleccionados correctamente. " +
-      "El procesamiento de CFDI se incorporará " +
-      "en la siguiente etapa.";
-  });
+function numero(valor) {
+  return Number(valor || 0);
+}
+
+function impuestos(nodo, grupo, impuesto) {
+  const contenedor = hijo(nodo, "Impuestos");
+  const lista = hijo(contenedor, grupo);
+
+  if (!lista) return null;
+
+  const elemento = grupo === "Traslados"
+    ? "Traslado" : "Retencion";
+
+  return hijos(lista, elemento)
+    .filter(x => x.getAttribute("Impuesto") === impuesto)
+    .reduce((suma, x) =>
+      suma + numero(x.getAttribute("Importe")), 0);
+}
+
+function leerCFDI(xml, nombreArchivo) {
+  const documento = new DOMParser()
+    .parseFromString(xml, "application/xml");
+
+  if (documento.querySelector("parsererror")) {
+    throw new Error("XML inválido");
+  }
+
+  const raiz = documento.documentElement;
+
+  if (raiz.localName !== "Comprobante" ||
+      raiz.namespaceURI !==
+      "http://www.sat.gob.mx/cfd/4") {
+    throw new Error("No es un CFDI 4.0");
+  }
+
+  const emisor = hijo(raiz, "Emisor");
+  const receptor = hijo(raiz, "Receptor");
+  const complemento = hijo(raiz, "Complemento");
+
+  const timbre = Array.from(
+    complemento?.children || []
+  ).find(x => x.localName === "TimbreFiscalDigital");
+
+  const ivaTrasladado = impuestos(
+    raiz, "Traslados", "002"
+  );
+
+  const ivaRetenido = impuestos(
+    raiz, "Retenciones", "002"
+  );
+
+  const isrRetenido = impuestos(
+    raiz, "Retenciones", "001"
+  );
+
+  return {
+    "UUID": timbre?.getAttribute("UUID") || "",
+    "Tipo": raiz.getAttribute("TipoDeComprobante") || "",
+    "Fecha": raiz.getAttribute("Fecha") || "",
+    "RFC emisor": emisor?.getAttribute("Rfc") || "",
+    "Nombre emisor": emisor?.getAttribute("Nombre") || "",
+    "RFC receptor": receptor?.getAttribute("Rfc") || "",
+    "Nombre receptor": receptor?.getAttribute("Nombre") || "",
+    "Subtotal": numero(raiz.getAttribute("SubTotal")),
+    "Descuento": numero(raiz.getAttribute("Descuento")),
+    "Total": numero(raiz.getAttribute("Total")),
+    "Moneda": raiz.getAttribute("Moneda") || "",
+    "Forma de pago": raiz.getAttribute("FormaPago") || "",
+    "Método de pago": raiz.getAttribute("MetodoPago") || "",
+    "IVA trasladado": ivaTrasladado,
+    "IVA retenido": ivaRetenido,
+    "ISR retenido": isrRetenido
+  };
+}
+
+archivos.addEventListener("change", () => {
+  const total = archivos.files.length;
+  procesar.disabled = total === 0;
+
+  estado.textContent = total
+    ? `${total} archivo(s) seleccionado(s).`
+    : "No se han seleccionado archivos.";
+});
+
+procesar.addEventListener("click", async () => {
+  const resultados = [];
+  const errores = [];
+
+  procesar.disabled = true;
+  estado.textContent = "Procesando archivos...";
+
+  for (const archivo of archivos.files) {
+    try {
+      if (!archivo.name.toLowerCase().endsWith(".xml")) {
+        throw new Error(
+          "Los ZIP se habilitarán en otra etapa"
+        );
+      }
+
+      const contenido = await archivo.text();
+
+      resultados.push(
+        leerCFDI(contenido, archivo.name)
+      );
+
+    } catch (error) {
+      errores.push(`${archivo.name}: ${error.message}`);
+    }
+  }
+
+  estado.replaceChildren();
+
+  const resumen = document.createElement("p");
+  resumen.textContent =
+    `${resultados.length} CFDI procesados. ` +
+    `${errores.length} archivos con observaciones.`;
+  estado.appendChild(resumen);
+
+  if (resultados.length) {
+    const contenedor = document.createElement("div");
+    contenedor.style.overflowX = "auto";
+
+    const tabla = document.createElement("table");
+    tabla.style.borderCollapse = "collapse";
+    tabla.style.width = "100%";
+
+    const encabezado = document.createElement("tr");
+
+    campos.forEach(campo => {
+      const th = document.createElement("th");
+      th.textContent = campo;
+      th.style.padding = "12px";
+      th.style.background = "#293F56";
+      th.style.color = "white";
+      encabezado.appendChild(th);
+    });
+
+    tabla.appendChild(encabezado);
+
+    resultados.forEach((resultado, indice) => {
+      const fila = document.createElement("tr");
+
+      campos.forEach(campo => {
+        const celda = document.createElement("td");
+        const valor = resultado[campo];
+
+        celda.textContent = valor === null
+          ? "Sin desglose"
+          : String(valor);
+
+        celda.style.padding = "10px";
+        celda.style.borderBottom = "1px solid #ABBCC6";
+
+        fila.appendChild(celda);
+      });
+
+      tabla.appendChild(fila);
+    });
+
+    contenedor.appendChild(tabla);
+    estado.appendChild(contenedor);
+  }
+
+  if (errores.length) {
+    const titulo = document.createElement("p");
+    titulo.textContent = "Observaciones:";
+    estado.appendChild(titulo);
+
+    errores.forEach(error => {
+      const linea = document.createElement("p");
+      linea.textContent = error;
+      estado.appendChild(linea);
+    });
+  }
+
+  procesar.disabled = false;
+});
 </script>
+
 
 </body>
 </html>

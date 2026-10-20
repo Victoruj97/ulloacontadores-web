@@ -178,6 +178,7 @@ function numero(valor) {
   return Number(valor || 0);
 }
 
+
 function impuestos(nodo, grupo, impuesto) {
   const contenedor = hijo(nodo, "Impuestos");
   const lista = hijo(contenedor, grupo);
@@ -191,6 +192,50 @@ function impuestos(nodo, grupo, impuesto) {
     .filter(x => x.getAttribute("Impuesto") === impuesto)
     .reduce((suma, x) =>
       suma + numero(x.getAttribute("Importe")), 0);
+}
+
+function desgloseIVA(raiz) {
+  const resultado = {
+    "Base IVA 16%": 0,
+    "IVA 16%": 0,
+    "Base IVA 8%": 0,
+    "IVA 8%": 0,
+    "Base IVA 0%": 0,
+    "Base exenta": 0
+  };
+
+  const conceptos = hijo(raiz, "Conceptos");
+
+  for (const concepto of hijos(conceptos, "Concepto")) {
+    const impuestosConcepto = hijo(concepto, "Impuestos");
+    const traslados = hijo(impuestosConcepto, "Traslados");
+
+    const registros = hijos(traslados, "Traslado")
+      .filter(x => x.getAttribute("Impuesto") === "002");
+
+    for (const traslado of registros) {
+      const base = numero(traslado.getAttribute("Base"));
+      const importe = numero(traslado.getAttribute("Importe"));
+      const tipoFactor = traslado.getAttribute("TipoFactor");
+      const tasa = traslado.getAttribute("TasaOCuota");
+
+      if (tipoFactor === "Exento") {
+        resultado["Base exenta"] += base;
+      } else if (tipoFactor === "Tasa") {
+        if (tasa === "0.160000") {
+          resultado["Base IVA 16%"] += base;
+          resultado["IVA 16%"] += importe;
+        } else if (tasa === "0.080000") {
+          resultado["Base IVA 8%"] += base;
+          resultado["IVA 8%"] += importe;
+        } else if (tasa === "0.000000") {
+          resultado["Base IVA 0%"] += base;
+        }
+      }
+    }
+  }
+
+  return resultado;
 }
 
 function leerCFDI(xml, nombreArchivo) {
@@ -217,6 +262,11 @@ function leerCFDI(xml, nombreArchivo) {
     complemento?.children || []
   ).find(x => x.localName === "TimbreFiscalDigital");
 
+  const tipo = raiz.getAttribute("TipoDeComprobante") || "";
+  const factor = tipo === "E" ? -1 : 1;
+
+  const desglose = desgloseIVA(raiz);
+
   const ivaTrasladado = impuestos(
     raiz, "Traslados", "002"
   );
@@ -229,24 +279,33 @@ function leerCFDI(xml, nombreArchivo) {
     raiz, "Retenciones", "001"
   );
 
-  return {
+  const resultado = {
     "UUID": timbre?.getAttribute("UUID") || "",
-    "Tipo": raiz.getAttribute("TipoDeComprobante") || "",
+    "Tipo": tipo,
     "Fecha": raiz.getAttribute("Fecha") || "",
     "RFC emisor": emisor?.getAttribute("Rfc") || "",
     "Nombre emisor": emisor?.getAttribute("Nombre") || "",
     "RFC receptor": receptor?.getAttribute("Rfc") || "",
     "Nombre receptor": receptor?.getAttribute("Nombre") || "",
-    "Subtotal": numero(raiz.getAttribute("SubTotal")),
-    "Descuento": numero(raiz.getAttribute("Descuento")),
-    "Total": numero(raiz.getAttribute("Total")),
+    "Subtotal": numero(raiz.getAttribute("SubTotal")) * factor,
+    "Descuento": numero(raiz.getAttribute("Descuento")) * factor,
+    "Total": numero(raiz.getAttribute("Total")) * factor,
     "Moneda": raiz.getAttribute("Moneda") || "",
     "Forma de pago": raiz.getAttribute("FormaPago") || "",
     "Método de pago": raiz.getAttribute("MetodoPago") || "",
-    "IVA trasladado": ivaTrasladado,
-    "IVA retenido": ivaRetenido,
-    "ISR retenido": isrRetenido
+    "IVA trasladado": ivaTrasladado === null
+      ? null : ivaTrasladado * factor,
+    "IVA retenido": ivaRetenido === null
+      ? null : ivaRetenido * factor,
+    "ISR retenido": isrRetenido === null
+      ? null : isrRetenido * factor
   };
+
+  for (const [campo, importe] of Object.entries(desglose)) {
+    resultado[campo] = importe * factor;
+  }
+
+  return resultado;
 }
 
 archivos.addEventListener("change", () => {

@@ -337,13 +337,15 @@ archivos.addEventListener("change", () => {
     : "No se han seleccionado archivos.";
 });
 
+
 procesar.addEventListener("click", async () => {
   const resultados = [];
   const errores = [];
-  let datosExcel = [];
+
   procesar.disabled = true;
   estado.textContent = "Procesando archivos...";
 
+  // 1. Leer y procesar los XML
   for (const archivo of archivos.files) {
     try {
       if (!archivo.name.toLowerCase().endsWith(".xml")) {
@@ -351,83 +353,33 @@ procesar.addEventListener("click", async () => {
           "Los ZIP se habilitarán en otra etapa"
         );
       }
-    
-if (datosExcel.length > 0) {
-  const botonExcel = document.createElement("button");
-
-  botonExcel.textContent = "Descargar Excel";
-  botonExcel.style.background = "#293F56";
-  botonExcel.style.color = "#ECEBE8";
-  botonExcel.style.padding = "12px 24px";
-  botonExcel.style.border = "none";
-  botonExcel.style.borderRadius = "8px";
-  botonExcel.style.cursor = "pointer";
-  botonExcel.style.marginTop = "20px";
-
-  botonExcel.addEventListener("click", () => {
-    if (typeof XLSX === "undefined") {
-      alert("No se pudo cargar la biblioteca de Excel.");
-      return;
-    }
-
-    const filas = datosExcel.map(cfdi => {
-      const fila = {};
-      campos.forEach(campo => {
-        fila[campo] = cfdi[campo] ?? "";
-      });
-      return fila;
-    });
-
-    const hoja = XLSX.utils.json_to_sheet(filas, {
-      header: campos
-    });
-
-    hoja["!cols"] = campos.map(campo => ({
-      wch: Math.max(16, Math.min(30, campo.length + 5))
-    }));
-
-    hoja["!autofilter"] = {
-      ref: hoja["!ref"]
-    };
-
-    const libro = XLSX.utils.book_new();
-
-    XLSX.utils.book_append_sheet(
-      libro,
-      hoja,
-      "CFDI"
-    );
-
-    XLSX.writeFile(
-      libro,
-      "ReporteCFDI.xlsx"
-    );
-  });
-
-  estado.appendChild(botonExcel);
-}
-
 
       const contenido = await archivo.text();
-
       const cfdi = leerCFDI(contenido, archivo.name);
-resultados.push(cfdi);
-datosExcel.push(cfdi);
+
+      resultados.push(cfdi);
 
     } catch (error) {
-      errores.push(`${archivo.name}: ${error.message}`);
+      errores.push(
+        `${archivo.name}: ${error.message}`
+      );
     }
   }
 
+  // 2. Limpiar resultados anteriores
   estado.replaceChildren();
 
+  // 3. Mostrar resumen
   const resumen = document.createElement("p");
+
   resumen.textContent =
     `${resultados.length} CFDI procesados. ` +
     `${errores.length} archivos con observaciones.`;
+
   estado.appendChild(resumen);
 
-  if (resultados.length) {
+  // 4. Crear tabla de resultados
+  if (resultados.length > 0) {
     const contenedor = document.createElement("div");
     contenedor.style.overflowX = "auto";
 
@@ -439,28 +391,32 @@ datosExcel.push(cfdi);
 
     campos.forEach(campo => {
       const th = document.createElement("th");
+
       th.textContent = campo;
       th.style.padding = "12px";
       th.style.background = "#293F56";
-      th.style.color = "white";
+      th.style.color = "#ECEBE8";
+
       encabezado.appendChild(th);
     });
 
     tabla.appendChild(encabezado);
 
-    resultados.forEach((resultado, indice) => {
+    resultados.forEach(resultado => {
       const fila = document.createElement("tr");
 
       campos.forEach(campo => {
         const celda = document.createElement("td");
         const valor = resultado[campo];
 
-        celda.textContent = valor === null
-          ? "Sin desglose"
-          : String(valor);
+        celda.textContent =
+          valor === null || valor === undefined
+            ? "Sin desglose"
+            : String(valor);
 
         celda.style.padding = "10px";
-        celda.style.borderBottom = "1px solid #ABBCC6";
+        celda.style.borderBottom =
+          "1px solid #ABBCC6";
 
         fila.appendChild(celda);
       });
@@ -470,22 +426,106 @@ datosExcel.push(cfdi);
 
     contenedor.appendChild(tabla);
     estado.appendChild(contenedor);
+
+    // 5. Crear botón Descargar Excel
+    const botonExcel = document.createElement("button");
+
+    botonExcel.textContent = "Descargar Excel";
+    botonExcel.type = "button";
+
+    botonExcel.style.background = "#293F56";
+    botonExcel.style.color = "#ECEBE8";
+    botonExcel.style.padding = "12px 24px";
+    botonExcel.style.border = "none";
+    botonExcel.style.borderRadius = "8px";
+    botonExcel.style.cursor = "pointer";
+    botonExcel.style.marginTop = "20px";
+
+    botonExcel.addEventListener("click", () => {
+      if (typeof XLSX === "undefined") {
+        alert(
+          "No se pudo cargar la biblioteca de Excel."
+        );
+        return;
+      }
+
+      try {
+        // Mantener el orden de las columnas
+        const filas = resultados.map(cfdi => {
+          const fila = {};
+
+          campos.forEach(campo => {
+            fila[campo] = cfdi[campo] ?? "";
+          });
+
+          return fila;
+        });
+
+        // Crear hoja Excel
+        const hoja = XLSX.utils.json_to_sheet(
+          filas,
+          { header: campos }
+        );
+
+        // Configurar ancho de columnas
+        hoja["!cols"] = campos.map(campo => ({
+          wch: Math.max(
+            16,
+            Math.min(30, campo.length + 5)
+          )
+        }));
+
+        // Activar autofiltro
+        hoja["!autofilter"] = {
+          ref: hoja["!ref"]
+        };
+
+        // Crear libro Excel
+        const libro = XLSX.utils.book_new();
+
+        XLSX.utils.book_append_sheet(
+          libro,
+          hoja,
+          "CFDI"
+        );
+
+        // Descargar archivo
+        XLSX.writeFile(
+          libro,
+          "ReporteCFDI.xlsx"
+        );
+
+      } catch (error) {
+        alert(
+          "Error al generar Excel: " +
+          error.message
+        );
+      }
+    });
+
+    // Mostrar botón después de la tabla
+    estado.appendChild(botonExcel);
   }
 
-  if (errores.length) {
+  // 6. Mostrar observaciones
+  if (errores.length > 0) {
     const titulo = document.createElement("p");
     titulo.textContent = "Observaciones:";
+
     estado.appendChild(titulo);
 
     errores.forEach(error => {
       const linea = document.createElement("p");
       linea.textContent = error;
+
       estado.appendChild(linea);
     });
   }
 
+  // 7. Habilitar nuevamente el procesamiento
   procesar.disabled = false;
 });
+
 </script>
 
 

@@ -155,15 +155,32 @@ const archivos = document.getElementById("archivos");
 const procesar = document.getElementById("procesar");
 const estado = document.getElementById("estado");
 
+
 const campos = [
-  "UUID", "Tipo", "Fecha", "RFC emisor",
-  "Nombre emisor", "RFC receptor",
-  "Nombre receptor", "Subtotal",
-  "Descuento", "Total", "Moneda",
-  "Forma de pago", "Método de pago",
-  "IVA trasladado", "IVA retenido",
+  "UUID",
+  "Tipo",
+  "Fecha",
+  "RFC emisor",
+  "Nombre emisor",
+  "RFC receptor",
+  "Nombre receptor",
+  "Subtotal",
+  "Descuento",
+  "Total",
+  "Moneda",
+  "Forma de pago",
+  "Método de pago",
+  "Base IVA 16%",
+  "IVA 16%",
+  "Base IVA 8%",
+  "IVA 8%",
+  "Base IVA 0%",
+  "Base exenta",
+  "IVA trasladado",
+  "IVA retenido",
   "ISR retenido"
 ];
+
 
 function hijos(nodo, nombre) {
   return Array.from(nodo?.children || [])

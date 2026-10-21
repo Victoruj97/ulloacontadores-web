@@ -502,16 +502,20 @@ const conceptosTexto = listaConceptos
   .filter(descripcion => descripcion !== "")
   .join(" | ");
 
+
 let baseIEPS = 0;
 
-const impuestosGlobales = hijo(raiz, "Impuestos");
-const trasladosGlobales = hijo(impuestosGlobales, "Traslados");
+for (const concepto of listaConceptos) {
+  const impuestosConcepto = hijo(concepto, "Impuestos");
+  const trasladosConcepto = hijo(impuestosConcepto, "Traslados");
 
-for (const traslado of hijos(trasladosGlobales, "Traslado")) {
-  if (traslado.getAttribute("Impuesto") === "003") {
-    baseIEPS += numero(traslado.getAttribute("Base"));
+  for (const traslado of hijos(trasladosConcepto, "Traslado")) {
+    if (traslado.getAttribute("Impuesto") === "003") {
+      baseIEPS += numero(traslado.getAttribute("Base"));
+    }
   }
 }
+
 
 
   const resultado = {
@@ -566,7 +570,7 @@ for (const traslado of hijos(trasladosGlobales, "Traslado")) {
 
     
 "Base IEPS": baseIEPS * factor,
-"Conceptos": conceptosTexto,
+"Concepto": conceptosTexto,
 "Archivo": nombreArchivo
 
   };

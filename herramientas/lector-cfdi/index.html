@@ -256,6 +256,7 @@ const campos = [
   "Total moneda original",
   "Forma de pago",
   "Método de pago",
+  "Concepto",
   "Subtotal",
   "Base IVA 16%",
   "IVA 16%",
@@ -263,6 +264,7 @@ const campos = [
   "IVA 8%",
   "Base IVA 0%",
   "Base exenta",
+  "Base IEPS",
   "IEPS",
   "ISR retenido",
   "IVA retenido",
@@ -490,6 +492,27 @@ function leerCFDI(xml, nombreArchivo) {
   const iepsTrasladado = impuestos(
     raiz, "Traslados", "003"
   );
+  
+const conceptos = hijo(raiz, "Conceptos");
+
+const listaConceptos = hijos(conceptos, "Concepto");
+
+const conceptosTexto = listaConceptos
+  .map(concepto => concepto.getAttribute("Descripcion") || "")
+  .filter(descripcion => descripcion !== "")
+  .join(" | ");
+
+let baseIEPS = 0;
+
+const impuestosGlobales = hijo(raiz, "Impuestos");
+const trasladosGlobales = hijo(impuestosGlobales, "Traslados");
+
+for (const traslado of hijos(trasladosGlobales, "Traslado")) {
+  if (traslado.getAttribute("Impuesto") === "003") {
+    baseIEPS += numero(traslado.getAttribute("Base"));
+  }
+}
+
 
   const resultado = {
     "Clasificación": clasificacion,
@@ -541,7 +564,11 @@ function leerCFDI(xml, nombreArchivo) {
     "IEPS retenido": iepsRetenido === null
       ? null : iepsRetenido * factor,
 
-    "Archivo": nombreArchivo
+    
+"Base IEPS": baseIEPS * factor,
+"Conceptos": conceptosTexto,
+"Archivo": nombreArchivo
+
   };
 
   // Incorporar las bases e IVA por tasa

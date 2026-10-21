@@ -239,30 +239,41 @@ const estado = document.getElementById("estado");
 
 
 const campos = [
+  
+const campos = [
   "Clasificación",
   "UUID",
   "Tipo",
+  "Estado CFDI",
   "Fecha",
+  "Serie",
+  "Folio",
   "RFC emisor",
   "Nombre emisor",
   "RFC receptor",
   "Nombre receptor",
-  "Subtotal",
-  "Descuento",
-  "Total",
+  "Régimen receptor",
+  "Uso CFDI",
   "Moneda",
+  "Tipo cambio",
+  "Total moneda original",
   "Forma de pago",
   "Método de pago",
+  "Subtotal",
   "Base IVA 16%",
   "IVA 16%",
   "Base IVA 8%",
   "IVA 8%",
   "Base IVA 0%",
   "Base exenta",
-  "IVA trasladado",
+  "IEPS",
+  "ISR retenido",
   "IVA retenido",
-  "ISR retenido"
+  "IEPS retenido",
+  "Total",
+  "Archivo"
 ];
+
 
 
 function hijos(nodo, nombre) {
@@ -277,6 +288,48 @@ function hijo(nodo, nombre) {
 function numero(valor) {
   return Number(valor || 0);
 }
+  
+const camposMonetarios = new Set([
+  "Subtotal",
+  "Descuento",
+  "Total",
+  "Total moneda original",
+  "Base IVA 16%",
+  "IVA 16%",
+  "Base IVA 8%",
+  "IVA 8%",
+  "Base IVA 0%",
+  "Base exenta",
+  "Base IEPS",
+  "IEPS",
+  "IVA trasladado",
+  "IVA retenido",
+  "ISR retenido",
+  "IEPS retenido"
+]);
+
+function formatoMoneda(valor) {
+  if (
+    valor === null ||
+    valor === undefined ||
+    valor === ""
+  ) {
+    return "Sin desglose";
+  }
+
+  const cantidad = Number(valor);
+
+  if (!Number.isFinite(cantidad)) {
+    return String(valor);
+  }
+
+  return new Intl.NumberFormat("es-MX", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+    useGrouping: true
+  }).format(cantidad);
+}
+
 
 
 function impuestos(nodo, grupo, impuesto) {
@@ -635,10 +688,18 @@ if (
 }
 
 
-        celda.textContent =
-          valor === null || valor === undefined
-            ? "Sin desglose"
-            : String(valor);
+      
+if (camposMonetarios.has(campo)) {
+  celda.textContent = formatoMoneda(valor);
+  celda.style.textAlign = "right";
+  celda.style.fontVariantNumeric = "tabular-nums";
+} else {
+  celda.textContent =
+    valor === null || valor === undefined
+      ? "Sin desglose"
+      : String(valor);
+}
+
 
         
 celda.style.padding = "8px 12px";
@@ -695,6 +756,30 @@ celda.style.fontSize = "13px";
           filas,
           { header: campos }
         );
+        
+const formatoExcel = '#,##0.00;[Red](#,##0.00);0.00';
+
+for (let fila = 1; fila <= filas.length; fila++) {
+  campos.forEach((campo, indice) => {
+    if (!camposMonetarios.has(campo)) return;
+
+    const direccion = XLSX.utils.encode_cell({
+      r: fila,
+      c: indice
+    });
+
+    const celda = hoja[direccion];
+
+    if (
+      celda &&
+      celda.t === "n" &&
+      Number.isFinite(celda.v)
+    ) {
+      celda.z = formatoExcel;
+    }
+  });
+}
+
 
         // Configurar ancho de columnas
         hoja["!cols"] = campos.map(campo => ({

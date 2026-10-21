@@ -436,9 +436,28 @@ footer {
     description_html = '<p>' + description + '</p>' if description else ''
     layout_class = 'layout' if sidebar else 'layout no-sidebar'
     canonical = 'https://ulloacontadores.com.mx/' + item['url'].lstrip('/')
+
+    # Vista previa para Facebook, WhatsApp y otras redes sociales.
+    cover_url = item.get('cover', '')
+    if cover_url and not cover_url.startswith(('https://', 'http://')):
+        cover_url = 'https://ulloacontadores.com.mx/' + cover_url.lstrip('/')
+
+    social_image = (
+        '<meta property="og:image" content="' + escape(cover_url, quote=True) + '\">\n'
+        '<meta name="twitter:image" content="' + escape(cover_url, quote=True) + '\">'
+        if cover_url else ''
+    )
+
     return f'''<!DOCTYPE html>
 <html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#293F56"><meta name="description" content="{desc_attribute}">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Ulloa Contadores">
+<meta property="og:title" content="{escape(item['title'] + ' | Ulloa Contadores', quote=True)}">
+<meta property="og:description" content="{desc_attribute}">
+<meta property="og:url" content="{escape(canonical, quote=True)}">
+<meta name="twitter:card" content="summary_large_image">
+{social_image}
 
 <link rel="canonical" href="{escape(canonical, quote=True)}">
 <link rel="icon" type="image/png" sizes="96x96" href="/favicon.png">
@@ -621,3 +640,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

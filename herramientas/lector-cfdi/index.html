@@ -338,6 +338,7 @@ function desgloseIVA(raiz) {
   return resultado;
 }
 
+
 function leerCFDI(xml, nombreArchivo) {
   const documento = new DOMParser()
     .parseFromString(xml, "application/xml");
@@ -348,9 +349,10 @@ function leerCFDI(xml, nombreArchivo) {
 
   const raiz = documento.documentElement;
 
-  if (raiz.localName !== "Comprobante" ||
-      raiz.namespaceURI !==
-      "http://www.sat.gob.mx/cfd/4") {
+  if (
+    raiz.localName !== "Comprobante" ||
+    raiz.namespaceURI !== "http://www.sat.gob.mx/cfd/4"
+  ) {
     throw new Error("No es un CFDI 4.0");
   }
 
@@ -358,40 +360,65 @@ function leerCFDI(xml, nombreArchivo) {
   const receptor = hijo(raiz, "Receptor");
   const complemento = hijo(raiz, "Complemento");
 
-  const timbre = Array.from(
-    complemento?.children || []
-  ).find(x => x.localName === "TimbreFiscalDigital");
+  const timbre = Array.from(complemento?.children || [])
+    .find(x =>
+      x.localName === "TimbreFiscalDigital" &&
+      x.namespaceURI ===
+      "http://www.sat.gob.mx/TimbreFiscalDigital"
+    );
 
   const tipo = raiz.getAttribute("TipoDeComprobante") || "";
-  
-const rfcSeleccionado = document
-  .getElementById("rfcContribuyente")
-  .value.trim().toUpperCase();
 
-const rfcEmisor = (
-  emisor?.getAttribute("Rfc") || ""
-).toUpperCase();
+  // Identificar al contribuyente
+  const rfcSeleccionado = document
+    .getElementById("rfcContribuyente")
+    .value.trim().toUpperCase();
 
-const rfcReceptor = (
-  receptor?.getAttribute("Rfc") || ""
-).toUpperCase();
+  const rfcEmisor = (
+    emisor?.getAttribute("Rfc") || ""
+  ).toUpperCase();
 
-let clasificacion = "No relacionado";
+  const rfcReceptor = (
+    receptor?.getAttribute("Rfc") || ""
+  ).toUpperCase();
 
-if (tipo === "P") {
-  if (rfcEmisor === rfcSeleccionado) {
-    clasificacion = "Pago emitido";
+  let clasificacion = "No relacionado";
+
+  if (tipo === "P") {
+    if (rfcEmisor === rfcSeleccionado) {
+      clasificacion = "Pago emitido";
+    } else if (rfcReceptor === rfcSeleccionado) {
+      clasificacion = "Pago recibido";
+    }
+  } else if (rfcEmisor === rfcSeleccionado) {
+    clasificacion = "Emitido";
   } else if (rfcReceptor === rfcSeleccionado) {
-    clasificacion = "Pago recibido";
+    clasificacion = "Recibido";
   }
-} else if (rfcEmisor === rfcSeleccionado) {
-  clasificacion = "Emitido";
-} else if (rfcReceptor === rfcSeleccionado) {
-  clasificacion = "Recibido";
-}
 
+  // Notas de crédito con signo negativo
   const factor = tipo === "E" ? -1 : 1;
 
+  // Información monetaria
+  const moneda = raiz.getAttribute("Moneda") || "";
+  const tipoCambioTexto = raiz.getAttribute("TipoCambio");
+  const tipoCambio = tipoCambioTexto === null
+    ? (moneda === "MXN" ? 1 : null)
+    : numero(tipoCambioTexto);
+
+  const subtotalOriginal = numero(
+    raiz.getAttribute("SubTotal")
+  );
+
+  const descuentoOriginal = numero(
+    raiz.getAttribute("Descuento")
+  );
+
+  const totalOriginal = numero(
+    raiz.getAttribute("Total")
+  );
+
+  // Desglose de impuestos existente
   const desglose = desgloseIVA(raiz);
 
   const ivaTrasladado = impuestos(
@@ -406,29 +433,68 @@ if (tipo === "P") {
     raiz, "Retenciones", "001"
   );
 
+  const iepsRetenido = impuestos(
+    raiz, "Retenciones", "003"
+  );
+
+  const iepsTrasladado = impuestos(
+    raiz, "Traslados", "003"
+  );
+
   const resultado = {
     "Clasificación": clasificacion,
     "UUID": timbre?.getAttribute("UUID") || "",
     "Tipo": tipo,
+    "Estado CFDI": "No verificado",
     "Fecha": raiz.getAttribute("Fecha") || "",
-    "RFC emisor": emisor?.getAttribute("Rfc") || "",
+    "Serie": raiz.getAttribute("Serie") || "",
+    "Folio": raiz.getAttribute("Folio") || "",
+
+    "RFC emisor": rfcEmisor,
     "Nombre emisor": emisor?.getAttribute("Nombre") || "",
-    "RFC receptor": receptor?.getAttribute("Rfc") || "",
+    "RFC receptor": rfcReceptor,
     "Nombre receptor": receptor?.getAttribute("Nombre") || "",
-    "Subtotal": numero(raiz.getAttribute("SubTotal")) * factor,
-    "Descuento": numero(raiz.getAttribute("Descuento")) * factor,
-    "Total": numero(raiz.getAttribute("Total")) * factor,
-    "Moneda": raiz.getAttribute("Moneda") || "",
-    "Forma de pago": raiz.getAttribute("FormaPago") || "",
-    "Método de pago": raiz.getAttribute("MetodoPago") || "",
+
+    "Régimen receptor":
+      receptor?.getAttribute("RegimenFiscalReceptor") || "",
+
+    "Uso CFDI":
+      receptor?.getAttribute("UsoCFDI") || "",
+
+    "Moneda": moneda,
+    "Tipo cambio": tipoCambio,
+
+    "Total moneda original": totalOriginal * factor,
+
+    "Forma de pago":
+      raiz.getAttribute("FormaPago") || "",
+
+    "Método de pago":
+      raiz.getAttribute("MetodoPago") || "",
+
+    "Subtotal": subtotalOriginal * factor,
+    "Descuento": descuentoOriginal * factor,
+    "Total": totalOriginal * factor,
+
     "IVA trasladado": ivaTrasladado === null
       ? null : ivaTrasladado * factor,
+
     "IVA retenido": ivaRetenido === null
       ? null : ivaRetenido * factor,
+
     "ISR retenido": isrRetenido === null
-      ? null : isrRetenido * factor
+      ? null : isrRetenido * factor,
+
+    "IEPS": iepsTrasladado === null
+      ? null : iepsTrasladado * factor,
+
+    "IEPS retenido": iepsRetenido === null
+      ? null : iepsRetenido * factor,
+
+    "Archivo": nombreArchivo
   };
 
+  // Incorporar las bases e IVA por tasa
   for (const [campo, importe] of Object.entries(desglose)) {
     resultado[campo] = importe * factor;
   }

@@ -457,6 +457,29 @@ function leerCFDI(xml, nombreArchivo) {
   const tipoCambio = tipoCambioTexto === null
     ? (moneda === "MXN" ? 1 : null)
     : numero(tipoCambioTexto);
+  
+const requiereConversion = moneda !== "MXN" && moneda !== "XXX";
+
+if (
+  requiereConversion &&
+  (!Number.isFinite(tipoCambio) || tipoCambio <= 0)
+) {
+  throw new Error(
+    "El CFDI en moneda " + moneda +
+    " no tiene un tipo de cambio válido para convertir a MXN"
+  );
+}
+
+const factorConversion = requiereConversion ? tipoCambio : 1;
+
+const convertirMXN = (importe) => {
+  if (importe === null || importe === undefined) {
+    return null;
+  }
+
+  return importe * factorConversion * factor;
+};
+
 
   const subtotalOriginal = numero(
     raiz.getAttribute("SubTotal")
@@ -549,36 +572,32 @@ for (const concepto of listaConceptos) {
     "Método de pago":
       raiz.getAttribute("MetodoPago") || "",
 
-    "Subtotal": subtotalOriginal * factor,
-    "Descuento": descuentoOriginal * factor,
-    "Total": totalOriginal * factor,
+    
+"Subtotal": convertirMXN(subtotalOriginal),
+"Descuento": convertirMXN(descuentoOriginal),
+"Total": convertirMXN(totalOriginal),
 
-    "IVA trasladado": ivaTrasladado === null
-      ? null : ivaTrasladado * factor,
+"IVA trasladado": convertirMXN(ivaTrasladado),
+"IVA retenido": convertirMXN(ivaRetenido),
+"ISR retenido": convertirMXN(isrRetenido),
+"IEPS": convertirMXN(iepsTrasladado),
+"IEPS retenido": convertirMXN(iepsRetenido),
 
-    "IVA retenido": ivaRetenido === null
-      ? null : ivaRetenido * factor,
-
-    "ISR retenido": isrRetenido === null
-      ? null : isrRetenido * factor,
-
-    "IEPS": iepsTrasladado === null
-      ? null : iepsTrasladado * factor,
-
-    "IEPS retenido": iepsRetenido === null
-      ? null : iepsRetenido * factor,
 
     
-"Base IEPS": baseIEPS * factor,
+
+"Base IEPS": convertirMXN(baseIEPS),
 "Concepto": conceptosTexto,
 "Archivo": nombreArchivo
 
   };
 
   // Incorporar las bases e IVA por tasa
-  for (const [campo, importe] of Object.entries(desglose)) {
-    resultado[campo] = importe * factor;
-  }
+ 
+for (const [campo, importe] of Object.entries(desglose)) {
+  resultado[campo] = convertirMXN(importe);
+}
+
 
   return resultado;
 }

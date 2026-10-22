@@ -1,894 +1,270 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lector CFDI | Ulloa Contadores</title>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
-
-  <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="robots" content="noindex, nofollow">
-  <link rel="icon" type="image/png" href="/favicon.png">
-  <title>Lector CFDI | Ulloa Contadores</title>
-  <style>
-    
-/* Ampliar el área de trabajo del Lector CFDI */
-main {
-  width: 96%;
-  max-width: 1800px;
-  margin-left: auto;
-  margin-right: auto;
-  box-sizing: border-box;
-}
-
-.panel {
-  width: 100%;
-  box-sizing: border-box;
-}
-
-#estado {
-  width: 100%;
-  box-sizing: border-box;
-}
-
-    :root {
-      --azul: #293F56;
-      --azul-medio: #667F95;
-      --azul-claro: #ABBCC6;
-      --fondo: #ECEBE8;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      background: var(--fondo);
-      color: var(--azul);
-      font-family: Arial, sans-serif;
-    }
-
-    header {
-      background: white;
-      padding: 18px 6%;
-      border-bottom: 1px solid var(--azul-claro);
-    }
-
-    header img { width: 180px; max-width: 100%; }
-
-    main {
-      max-width: 1050px;
-      margin: 55px auto;
-      padding: 0 20px;
-    }
-
-    h1 { font-size: 32px; margin-bottom: 12px; }
-
-    .intro {
-      color: var(--azul-medio);
-      line-height: 1.7;
-      margin-bottom: 30px;
-    }
-
-    .panel {
-      background: white;
-      border: 1px solid var(--azul-claro);
-      border-radius: 14px;
-      padding: 35px;
-    }
-
-    .carga {
-      border: 2px dashed var(--azul-claro);
-      border-radius: 12px;
-      padding: 45px 20px;
-      text-align: center;
-      background: #ECEBE8;
-    }
-
-    .carga h2 { margin-top: 0; }
-
-    .carga p { color: var(--azul-medio); }
-
-    input[type=file] {
-      display: block;
-      margin: 25px auto;
-      max-width: 100%;
-    }
-
-    button {
-      border: 0;
-      border-radius: 7px;
-      background: var(--azul);
-      color: white;
-      padding: 13px 25px;
-      cursor: pointer;
-      font-size: 15px;
-    }
-
-    button:disabled {
-      opacity: .5;
-      cursor: not-allowed;
-    }
-
-    .estado {
-      margin-top: 25px;
-      color: var(--azul-medio);
-      line-height: 1.6;
-    }
-
-    footer {
-      text-align: center;
-      margin-top: 60px;
-      padding: 25px;
-      color: var(--azul-medio);
-    }
-
-    @media (max-width: 600px) {
-      main { margin-top: 30px; }
-      h1 { font-size: 26px; }
-      .panel { padding: 18px; }
-    }
-    
-/* Ampliar el espacio de trabajo del Lector CFDI */
-body main {
-  width: calc(100% - 48px);
-  max-width: 1800px;
-  margin-left: auto;
-  margin-right: auto;
-  box-sizing: border-box;
-}
-
-body main .panel {
-  width: 100%;
-  max-width: none;
-  box-sizing: border-box;
-}
-
-body main #estado {
-  width: 100%;
-  max-width: none;
-  box-sizing: border-box;
-}
-
-@media (max-width: 768px) {
-  body main {
-    width: calc(100% - 24px);
-  }
-}
-
-  </style>
+<style>
+:root{--azul:#293F56;--medio:#667F95;--claro:#ABBCC6;--fondo:#ECEBE8}
+*{box-sizing:border-box}body{margin:0;background:var(--fondo);color:var(--azul);font-family:Arial,Helvetica,sans-serif}header{background:var(--azul);color:white;padding:26px max(20px,3vw)}header h1{margin:0;font-size:26px}header p{margin:8px 0 0;color:var(--claro)}main{max-width:1800px;margin:auto;padding:24px 3vw}section{background:#fff;border-radius:12px;padding:22px;margin-bottom:20px;box-shadow:0 3px 14px #293f5610}h2{font-size:18px;margin:0 0 18px}label{display:block;font-weight:600;margin-bottom:7px}.controles{display:flex;gap:16px;align-items:end;flex-wrap:wrap}.campo{flex:1;min-width:250px}input{width:100%;padding:12px;border:1px solid var(--claro);border-radius:7px;font:inherit}button{background:var(--azul);color:white;border:0;border-radius:7px;padding:12px 18px;cursor:pointer;font:inherit}button:disabled{opacity:.5;cursor:not-allowed}button.secundario{background:var(--medio)}#estado{margin:15px 0 0;white-space:pre-wrap;line-height:1.5}.tablas{overflow:auto;max-height:550px;border:1px solid #dbe1e6;border-radius:8px}table{border-collapse:separate;border-spacing:0;font-size:13px;white-space:nowrap;width:max-content;min-width:100%}th,td{border-bottom:1px solid #e1e5e9;padding:9px 12px;text-align:left}th{position:sticky;top:0;background:var(--azul);color:white;z-index:1}tr:nth-child(even) td{background:#f7f9fa}td.numero{text-align:right;font-variant-numeric:tabular-nums}td.nombre{max-width:220px;overflow:hidden;text-overflow:ellipsis}#resultados{display:none}#acciones{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px}footer{text-align:center;padding:22px;color:var(--medio)}.nota{font-size:13px;color:var(--medio);line-height:1.5;margin-top:12px}.etiqueta{font-weight:700;margin:18px 0 10px}.oculto{display:none}
+</style>
 </head>
 <body>
-
-<header>
-  <a href="/">
-    <img src="/PNG%20OBSCURO.png" alt="Ulloa Contadores">
-  </a>
-</header>
-
+<header><h1>Lector CFDI</h1><p>Ulloa Contadores · CFDI 4.0 y complementos de pago 2.0</p></header>
 <main>
-  <h1>Lector CFDI</h1>
-  <p class="intro">
-    Importa tus comprobantes fiscales digitales
-    en formato XML o ZIP para consultar su información
-    y generar reportes fiscales.
-  </p>
-
-  <section class="panel">
-    
-<div class="carga">
-  <h2>Cargar comprobantes</h2>
-  <p>Selecciona uno o varios archivos XML o ZIP.</p>
-
-  <div style="margin-bottom:20px; text-align:left;">
-    <label for="rfcContribuyente"
-           style="display:block; margin-bottom:8px;">
-      RFC del contribuyente
-    </label>
-
-    <input
-      id="rfcContribuyente"
-      type="text"
-      placeholder="Ingresa el RFC del contribuyente"
-      maxlength="13"
-      autocomplete="off"
-      style="
-        width:100%;
-        max-width:350px;
-        padding:12px;
-        border:1px solid #ABBCC6;
-        border-radius:8px;
-        box-sizing:border-box;
-        text-transform:uppercase;
-      "
-    >
-
-    <small style="display:block; margin-top:6px;">
-      Este RFC permitirá identificar los CFDI
-      emitidos y recibidos.
-    </small>
-  </div>
-
-
-      <input
-        id="archivos"
-        type="file"
-        accept=".xml,.zip"
-        multiple
-      >
-
-      <button id="procesar" disabled>
-        Procesar archivos
-      </button>
-    </div>
-
-    <div id="estado" class="estado" role="status" aria-live="polite">
-      No se han seleccionado archivos.
-    </div>
-  </section>
+<section>
+<h2>Procesar comprobantes</h2>
+<div class="controles">
+<div class="campo"><label for="rfcContribuyente">RFC del contribuyente</label><input id="rfcContribuyente" maxlength="13" placeholder="Ingresa el RFC"></div>
+<div class="campo"><label for="archivos">Archivos XML</label><input id="archivos" type="file" accept=".xml,text/xml,application/xml" multiple></div>
+<button id="procesar">Procesar archivos</button>
+</div>
+<div id="estado" role="status">No se han seleccionado archivos.</div>
+<p class="nota">Los archivos XML se procesan localmente en tu navegador. Esta versión admite XML individuales; no admite archivos ZIP. El estado de vigencia ante el SAT no se verifica automáticamente.</p>
+</section>
+<section id="resultados">
+<h2>Resultados</h2>
+<div id="acciones"><button id="descargar">Descargar Excel</button></div>
+<div class="etiqueta" id="tituloCFDI">Comprobantes</div><div class="tablas" id="tablaCFDI"></div>
+<div class="etiqueta oculto" id="tituloPagos">Detalle de pagos</div><div class="tablas oculto" id="tablaPagos"></div>
+<p class="nota">En los CFDI tipo P, los importes del encabezado del comprobante son cero. El monto cobrado y los impuestos se obtienen del complemento Pagos 2.0. La base gravada no equivale necesariamente al subtotal de una factura. Los valores del XML se conservan sin recalcular retenciones.</p>
+</section>
 </main>
-
-<footer>
-  © Ulloa Contadores
-</footer>
-
-
+<footer>© Ulloa Contadores</footer>
 <script>
-const archivos = document.getElementById("archivos");
-const procesar = document.getElementById("procesar");
-const estado = document.getElementById("estado");
-  
-const campos = [
-  "Clasificación",
-  "UUID",
-  "Tipo",
-  "Estado CFDI",
-  "Fecha",
-  "Serie",
-  "Folio",
-  "RFC emisor",
-  "Nombre emisor",
-  "RFC receptor",
-  "Nombre receptor",
-  "Régimen receptor",
-  "Uso CFDI",
-  "Moneda",
-  "Tipo cambio",
-  "Total moneda original",
-  "Forma de pago",
-  "Método de pago",
-  "Concepto",
-  "Subtotal",
-  "Base IVA 16%",
-  "IVA 16%",
-  "Base IVA 8%",
-  "IVA 8%",
-  "Base IVA 0%",
-  "Base exenta",
-  "Base IEPS",
-  "IEPS",
-  "ISR retenido",
-  "IVA retenido",
-  "IEPS retenido",
-  "Total",
-  "Archivo"
+'use strict';
+const NS_CFDI='http://www.sat.gob.mx/cfd/4';
+const NS_PAGOS='http://www.sat.gob.mx/Pagos20';
+const NS_TFD='http://www.sat.gob.mx/TimbreFiscalDigital';
+const $=id=>document.getElementById(id);
+const archivos=$('archivos'), procesar=$('procesar'), estado=$('estado');
+let registros=[],detallePagos=[];
+const campos=[
+ 'Clasificación','UUID','Tipo','Estado CFDI','Fecha','Serie','Folio',
+ 'RFC emisor','Nombre emisor','RFC receptor','Nombre receptor','Régimen receptor','Uso CFDI',
+ 'Moneda','Tipo cambio','Total moneda original','Forma de pago','Método de pago',
+ 'Subtotal','Descuento','Base IVA 16%','IVA 16%','Base IVA 8%','IVA 8%',
+ 'Base IVA 0%','Base exenta','Base IEPS','IEPS','IVA trasladado','ISR retenido',
+ 'IVA retenido','IEPS retenido','Total','Concepto','Fecha de pago','Monto total pagos',
+ 'Moneda del pago','Tipo cambio del pago','UUID relacionado','Parcialidad','Saldo anterior',
+ 'Importe pagado','Saldo insoluto','Archivo'
 ];
-
-
-
-function hijos(nodo, nombre) {
-  return Array.from(nodo?.children || [])
-    .filter(x => x.localName === nombre);
-}
-
-function hijo(nodo, nombre) {
-  return hijos(nodo, nombre)[0] || null;
-}
-
-function numero(valor) {
-  return Number(valor || 0);
-}
-  
-const camposMonetarios = new Set([
-  "Subtotal",
-  "Descuento",
-  "Total",
-  "Total moneda original",
-  "Base IVA 16%",
-  "IVA 16%",
-  "Base IVA 8%",
-  "IVA 8%",
-  "Base IVA 0%",
-  "Base exenta",
-  "Base IEPS",
-  "IEPS",
-  "IVA trasladado",
-  "IVA retenido",
-  "ISR retenido",
-  "IEPS retenido"
+const camposPago=[
+ 'Clasificación','UUID complemento','Fecha CFDI','Fecha pago','RFC emisor','RFC receptor',
+ 'Forma de pago','Moneda pago','Tipo cambio pago','Monto pago','UUID relacionado',
+ 'Serie relacionada','Folio relacionado','Moneda documento','Equivalencia DR',
+ 'Parcialidad','Saldo anterior','Importe pagado','Saldo insoluto',
+ 'Base IVA 16%','IVA 16%','Base IVA 8%','IVA 8%','Base IVA 0%','IVA 0%',
+ 'Base exenta','Base IEPS','IEPS','ISR retenido','IVA retenido','IEPS retenido','Archivo'
+];
+const monetarios=new Set([
+ 'Total moneda original','Subtotal','Descuento','Base IVA 16%','IVA 16%',
+ 'Base IVA 8%','IVA 8%','Base IVA 0%','IVA 0%','Base exenta','Base IEPS',
+ 'IEPS','IVA trasladado','ISR retenido','IVA retenido','IEPS retenido','Total',
+ 'Monto total pagos','Monto pago','Saldo anterior','Importe pagado','Saldo insoluto'
 ]);
-
-function formatoMoneda(valor) {
-  if (
-    valor === null ||
-    valor === undefined ||
-    valor === ""
-  ) {
-    return "Sin desglose";
+function hijo(nodo,nombre,ns){return Array.from(nodo?.children||[]).find(x=>x.localName===nombre&&(!ns||x.namespaceURI===ns))||null}
+function hijos(nodo,nombre,ns){return Array.from(nodo?.children||[]).filter(x=>x.localName===nombre&&(!ns||x.namespaceURI===ns))}
+function attr(nodo,nombre){return nodo?.getAttribute(nombre)??''}
+function num(valor){if(valor===null||valor===undefined||valor==='')return null;const n=Number(valor);return Number.isFinite(n)?n:null}
+function nattr(nodo,nombre){return num(nodo?.getAttribute(nombre))}
+function suma(lista){return lista.reduce((a,b)=>a+(b||0),0)}
+function mostrarNumero(valor){return valor===null||valor===undefined||valor===''?'Sin desglose':new Intl.NumberFormat('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2}).format(Number(valor))}
+function sumarA(obj,campo,valor){if(valor!==null)obj[campo]=(obj[campo]??0)+valor}
+function desgloseCFDI(raiz){
+ const d={'Base IVA 16%':0,'IVA 16%':0,'Base IVA 8%':0,'IVA 8%':0,'Base IVA 0%':0,'Base exenta':0,'Base IEPS':0,'IEPS':0};
+ for(const c of hijos(hijo(raiz,'Conceptos',NS_CFDI),'Concepto',NS_CFDI)){
+  const imp=hijo(c,'Impuestos',NS_CFDI);
+  const tras=hijos(hijo(imp,'Traslados',NS_CFDI),'Traslado',NS_CFDI);
+  for(const t of tras){
+   const impuesto=attr(t,'Impuesto'),factor=attr(t,'TipoFactor'),tasa=num(attr(t,'TasaOCuota'));
+   const base=nattr(t,'Base')||0,importe=nattr(t,'Importe')||0;
+   if(impuesto==='002'){
+    if(factor==='Exento')d['Base exenta']+=base;
+    else if(tasa!==null&&Math.abs(tasa-.16)<1e-9){d['Base IVA 16%']+=base;d['IVA 16%']+=importe}
+    else if(tasa!==null&&Math.abs(tasa-.08)<1e-9){d['Base IVA 8%']+=base;d['IVA 8%']+=importe}
+    else if(tasa===0)d['Base IVA 0%']+=base;
+   }else if(impuesto==='003'){d['Base IEPS']+=base;d['IEPS']+=importe}
   }
-
-  const cantidad = Number(valor);
-
-  if (!Number.isFinite(cantidad)) {
-    return String(valor);
-  }
-
-  return new Intl.NumberFormat("es-MX", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-    useGrouping: true
-  }).format(cantidad);
+ }
+ return d;
 }
-
-
-
-function impuestos(nodo, grupo, impuesto) {
-  const contenedor = hijo(nodo, "Impuestos");
-  const lista = hijo(contenedor, grupo);
-
-  if (!lista) return null;
-
-  const elemento = grupo === "Traslados"
-    ? "Traslado" : "Retencion";
-
-  return hijos(lista, elemento)
-    .filter(x => x.getAttribute("Impuesto") === impuesto)
-    .reduce((suma, x) =>
-      suma + numero(x.getAttribute("Importe")), 0);
+function impuestoGlobal(raiz,seccion,clave){
+ const cont=hijo(hijo(raiz,'Impuestos',NS_CFDI),seccion,NS_CFDI);
+ const encontrados=hijos(cont,seccion==='Traslados'?'Traslado':'Retencion',NS_CFDI).filter(x=>attr(x,'Impuesto')===clave);
+ return encontrados.length?suma(encontrados.map(x=>nattr(x,'Importe'))):null;
 }
-
-function desgloseIVA(raiz) {
-  const resultado = {
-    "Base IVA 16%": 0,
-    "IVA 16%": 0,
-    "Base IVA 8%": 0,
-    "IVA 8%": 0,
-    "Base IVA 0%": 0,
-    "Base exenta": 0
-  };
-
-  const conceptos = hijo(raiz, "Conceptos");
-
-  for (const concepto of hijos(conceptos, "Concepto")) {
-    const impuestosConcepto = hijo(concepto, "Impuestos");
-    const traslados = hijo(impuestosConcepto, "Traslados");
-
-    const registros = hijos(traslados, "Traslado")
-      .filter(x => x.getAttribute("Impuesto") === "002");
-
-    for (const traslado of registros) {
-      const base = numero(traslado.getAttribute("Base"));
-      const importe = numero(traslado.getAttribute("Importe"));
-      const tipoFactor = traslado.getAttribute("TipoFactor");
-      const tasa = traslado.getAttribute("TasaOCuota");
-
-      if (tipoFactor === "Exento") {
-        resultado["Base exenta"] += base;
-      } else if (tipoFactor === "Tasa") {
-        if (tasa === "0.160000") {
-          resultado["Base IVA 16%"] += base;
-          resultado["IVA 16%"] += importe;
-        } else if (tasa === "0.080000") {
-          resultado["Base IVA 8%"] += base;
-          resultado["IVA 8%"] += importe;
-        } else if (tasa === "0.000000") {
-          resultado["Base IVA 0%"] += base;
-        }
-      }
-    }
-  }
-
-  return resultado;
+function desgloseImpuestosPago(contenedor,sufijo){
+ const d={'Base IVA 16%':0,'IVA 16%':0,'Base IVA 8%':0,'IVA 8%':0,'Base IVA 0%':0,'IVA 0%':0,'Base exenta':0,'Base IEPS':0,'IEPS':0,'ISR retenido':0,'IVA retenido':0,'IEPS retenido':0};
+ const impuestos=hijo(contenedor,'Impuestos'+sufijo,NS_PAGOS);
+ const tras=hijos(hijo(impuestos,'Traslados'+sufijo,NS_PAGOS),'Traslado'+sufijo,NS_PAGOS);
+ const ret=hijos(hijo(impuestos,'Retenciones'+sufijo,NS_PAGOS),'Retencion'+sufijo,NS_PAGOS);
+ for(const t of tras){
+  const clave=attr(t,'Impuesto'+sufijo),factor=attr(t,'TipoFactor'+sufijo),tasa=nattr(t,'TasaOCuota'+sufijo);
+  const base=nattr(t,'Base'+sufijo)||0,importe=nattr(t,'Importe'+sufijo)||0;
+  if(clave==='002'){
+   if(factor==='Exento')d['Base exenta']+=base;
+   else if(tasa!==null&&Math.abs(tasa-.16)<1e-9){d['Base IVA 16%']+=base;d['IVA 16%']+=importe}
+   else if(tasa!==null&&Math.abs(tasa-.08)<1e-9){d['Base IVA 8%']+=base;d['IVA 8%']+=importe}
+   else if(tasa===0){d['Base IVA 0%']+=base;d['IVA 0%']+=importe}
+  }else if(clave==='003'){d['Base IEPS']+=base;d['IEPS']+=importe}
+ }
+ for(const r of ret){
+  const clave=attr(r,'Impuesto'+sufijo),importe=nattr(r,'Importe'+sufijo)||0;
+  if(clave==='001')d['ISR retenido']+=importe;
+  if(clave==='002')d['IVA retenido']+=importe;
+  if(clave==='003')d['IEPS retenido']+=importe;
+ }
+ return d;
 }
-
-
-function leerCFDI(xml, nombreArchivo) {
-  const documento = new DOMParser()
-    .parseFromString(xml, "application/xml");
-
-  if (documento.querySelector("parsererror")) {
-    throw new Error("XML inválido");
+function leerCFDI(xml,nombreArchivo,rfcSeleccionado){
+ const doc=new DOMParser().parseFromString(xml,'application/xml');
+ if(doc.querySelector('parsererror'))throw Error('XML inválido');
+ const raiz=doc.documentElement;
+ if(raiz.localName!=='Comprobante'||raiz.namespaceURI!==NS_CFDI)throw Error('No es un CFDI 4.0');
+ const tipo=attr(raiz,'TipoDeComprobante');
+ const emisor=hijo(raiz,'Emisor',NS_CFDI),receptor=hijo(raiz,'Receptor',NS_CFDI);
+ const complemento=hijo(raiz,'Complemento',NS_CFDI);
+ const timbre=hijo(complemento,'TimbreFiscalDigital',NS_TFD);
+ const rfcEmisor=attr(emisor,'Rfc').toUpperCase(),rfcReceptor=attr(receptor,'Rfc').toUpperCase();
+ let clasificacion='No relacionado';
+ if(rfcEmisor===rfcSeleccionado)clasificacion=tipo==='P'?'Pago emitido':'Emitido';
+ else if(rfcReceptor===rfcSeleccionado)clasificacion=tipo==='P'?'Pago recibido':'Recibido';
+ const signo=tipo==='E'?-1:1;
+ const moneda=attr(raiz,'Moneda'),tipoCambio=nattr(raiz,'TipoCambio')??(moneda==='MXN'?1:null);
+ const convertir=moneda!=='MXN'&&moneda!=='XXX';
+ if(tipo!=='P'&&convertir&&(!tipoCambio||tipoCambio<=0))throw Error('Tipo de cambio inválido o ausente');
+ const conv=v=>v===null?null:v*signo*(convertir?tipoCambio:1);
+ const conceptos=hijos(hijo(raiz,'Conceptos',NS_CFDI),'Concepto',NS_CFDI);
+ const resultado={
+  'Clasificación':clasificacion,'UUID':attr(timbre,'UUID'),'Tipo':tipo,'Estado CFDI':'No verificado',
+  'Fecha':attr(raiz,'Fecha'),'Serie':attr(raiz,'Serie'),'Folio':attr(raiz,'Folio'),
+  'RFC emisor':rfcEmisor,'Nombre emisor':attr(emisor,'Nombre'),
+  'RFC receptor':rfcReceptor,'Nombre receptor':attr(receptor,'Nombre'),
+  'Régimen receptor':attr(receptor,'RegimenFiscalReceptor'),'Uso CFDI':attr(receptor,'UsoCFDI'),
+  'Moneda':moneda,'Tipo cambio':tipoCambio,'Total moneda original':nattr(raiz,'Total')*signo,
+  'Forma de pago':attr(raiz,'FormaPago'),'Método de pago':attr(raiz,'MetodoPago'),
+  'Subtotal':conv(nattr(raiz,'SubTotal')),'Descuento':conv(nattr(raiz,'Descuento')),
+  'Total':conv(nattr(raiz,'Total')),
+  'Concepto':conceptos.map(x=>attr(x,'Descripcion')).filter(Boolean).join(' | '),
+  'Archivo':nombreArchivo
+ };
+ const pagosDetalle=[];
+ if(tipo!=='P'){
+  const d=desgloseCFDI(raiz);
+  for(const [k,v] of Object.entries(d))resultado[k]=conv(v);
+  resultado['IVA trasladado']=conv(impuestoGlobal(raiz,'Traslados','002'));
+  resultado['ISR retenido']=conv(impuestoGlobal(raiz,'Retenciones','001'));
+  resultado['IVA retenido']=conv(impuestoGlobal(raiz,'Retenciones','002'));
+  resultado['IEPS retenido']=conv(impuestoGlobal(raiz,'Retenciones','003'));
+ }else{
+  const pagos20=hijo(complemento,'Pagos',NS_PAGOS);
+  if(!pagos20)throw Error('CFDI tipo P sin complemento Pagos 2.0');
+  const totales=hijo(pagos20,'Totales',NS_PAGOS);
+  const pagos=hijos(pagos20,'Pago',NS_PAGOS);
+  if(!totales||!pagos.length)throw Error('Complemento Pagos 2.0 incompleto');
+  const montoTotal=nattr(totales,'MontoTotalPagos');
+  resultado['Monto total pagos']=montoTotal;
+  resultado['Total']=null; // El total del comprobante tipo P es cero; se informa el cobro aparte.
+  resultado['Subtotal']=null;
+  resultado['Descuento']=null;
+  resultado['Base IVA 16%']=nattr(totales,'TotalTrasladosBaseIVA16');
+  resultado['IVA 16%']=nattr(totales,'TotalTrasladosImpuestoIVA16');
+  resultado['Base IVA 8%']=nattr(totales,'TotalTrasladosBaseIVA8');
+  resultado['IVA 8%']=nattr(totales,'TotalTrasladosImpuestoIVA8');
+  resultado['Base IVA 0%']=nattr(totales,'TotalTrasladosBaseIVA0');
+  resultado['ISR retenido']=nattr(totales,'TotalRetencionesISR');
+  resultado['IVA retenido']=nattr(totales,'TotalRetencionesIVA');
+  resultado['IEPS retenido']=nattr(totales,'TotalRetencionesIEPS');
+  resultado['IVA trasladado']=suma([resultado['IVA 16%'],resultado['IVA 8%'],nattr(totales,'TotalTrasladosImpuestoIVA0')]);
+  if(pagos.length===1){
+   const p=pagos[0];resultado['Fecha de pago']=attr(p,'FechaPago');
+   resultado['Forma de pago']=attr(p,'FormaDePagoP');resultado['Moneda del pago']=attr(p,'MonedaP');
+   resultado['Tipo cambio del pago']=nattr(p,'TipoCambioP');
+   const relacionados=hijos(p,'DoctoRelacionado',NS_PAGOS);
+   if(relacionados.length===1){const r=relacionados[0];resultado['UUID relacionado']=attr(r,'IdDocumento');resultado['Parcialidad']=attr(r,'NumParcialidad');resultado['Saldo anterior']=nattr(r,'ImpSaldoAnt');resultado['Importe pagado']=nattr(r,'ImpPagado');resultado['Saldo insoluto']=nattr(r,'ImpSaldoInsoluto')}
   }
-
-  const raiz = documento.documentElement;
-
-  if (
-    raiz.localName !== "Comprobante" ||
-    raiz.namespaceURI !== "http://www.sat.gob.mx/cfd/4"
-  ) {
-    throw new Error("No es un CFDI 4.0");
+  for(const p of pagos){
+   const dP=desgloseImpuestosPago(p,'P');
+   const relacionados=hijos(p,'DoctoRelacionado',NS_PAGOS);
+   for(const r of relacionados){
+    const dR=desgloseImpuestosPago(r,'DR');
+    pagosDetalle.push({
+     'Clasificación':clasificacion,'UUID complemento':attr(timbre,'UUID'),
+     'Fecha CFDI':attr(raiz,'Fecha'),'Fecha pago':attr(p,'FechaPago'),
+     'RFC emisor':rfcEmisor,'RFC receptor':rfcReceptor,
+     'Forma de pago':attr(p,'FormaDePagoP'),'Moneda pago':attr(p,'MonedaP'),
+     'Tipo cambio pago':nattr(p,'TipoCambioP'),
+     'Monto pago':nattr(p,'Monto'),'UUID relacionado':attr(r,'IdDocumento'),
+     'Serie relacionada':attr(r,'Serie'),'Folio relacionado':attr(r,'Folio'),
+     'Moneda documento':attr(r,'MonedaDR'),'Equivalencia DR':nattr(r,'EquivalenciaDR'),
+     'Parcialidad':attr(r,'NumParcialidad'),'Saldo anterior':nattr(r,'ImpSaldoAnt'),
+     'Importe pagado':nattr(r,'ImpPagado'),'Saldo insoluto':nattr(r,'ImpSaldoInsoluto'),
+     ...dR,'Archivo':nombreArchivo
+    });
+   }
+   // ImpuestosP se mantienen como importes a nivel de pago; no se suman a ImpuestosDR.
+   // Si no hay documentos relacionados, el pago sigue visible en el resumen.
   }
-
-  const emisor = hijo(raiz, "Emisor");
-  const receptor = hijo(raiz, "Receptor");
-  const complemento = hijo(raiz, "Complemento");
-
-  const timbre = Array.from(complemento?.children || [])
-    .find(x =>
-      x.localName === "TimbreFiscalDigital" &&
-      x.namespaceURI ===
-      "http://www.sat.gob.mx/TimbreFiscalDigital"
-    );
-
-  const tipo = raiz.getAttribute("TipoDeComprobante") || "";
-
-  // Identificar al contribuyente
-  const rfcSeleccionado = document
-    .getElementById("rfcContribuyente")
-    .value.trim().toUpperCase();
-
-  const rfcEmisor = (
-    emisor?.getAttribute("Rfc") || ""
-  ).toUpperCase();
-
-  const rfcReceptor = (
-    receptor?.getAttribute("Rfc") || ""
-  ).toUpperCase();
-
-  let clasificacion = "No relacionado";
-
-  if (tipo === "P") {
-    if (rfcEmisor === rfcSeleccionado) {
-      clasificacion = "Pago emitido";
-    } else if (rfcReceptor === rfcSeleccionado) {
-      clasificacion = "Pago recibido";
-    }
-  } else if (rfcEmisor === rfcSeleccionado) {
-    clasificacion = "Emitido";
-  } else if (rfcReceptor === rfcSeleccionado) {
-    clasificacion = "Recibido";
-  }
-
-  // Notas de crédito con signo negativo
-  const factor = tipo === "E" ? -1 : 1;
-
-  // Información monetaria
-  const moneda = raiz.getAttribute("Moneda") || "";
-  const tipoCambioTexto = raiz.getAttribute("TipoCambio");
-  const tipoCambio = tipoCambioTexto === null
-    ? (moneda === "MXN" ? 1 : null)
-    : numero(tipoCambioTexto);
-  
-const requiereConversion = moneda !== "MXN" && moneda !== "XXX";
-
-if (
-  requiereConversion &&
-  (!Number.isFinite(tipoCambio) || tipoCambio <= 0)
-) {
-  throw new Error(
-    "El CFDI en moneda " + moneda +
-    " no tiene un tipo de cambio válido para convertir a MXN"
-  );
+  // IEPS y exentos pueden estar en ImpuestosP; se reportan solo cuando existen.
+  const agregado={};
+  for(const p of pagos){const d=desgloseImpuestosPago(p,'P');for(const k of ['Base exenta','Base IEPS','IEPS'])agregado[k]=(agregado[k]||0)+(d[k]||0)}
+  for(const [k,v] of Object.entries(agregado))resultado[k]=v;
+ }
+ return {resultado,pagosDetalle};
 }
-
-const factorConversion = requiereConversion ? tipoCambio : 1;
-
-const convertirMXN = (importe) => {
-  if (importe === null || importe === undefined) {
-    return null;
+function tablaHTML(datos,columnas){
+ const tabla=document.createElement('table');const cab=document.createElement('thead'),filaCab=document.createElement('tr');
+ for(const c of columnas){const th=document.createElement('th');th.textContent=c;filaCab.appendChild(th)}cab.appendChild(filaCab);tabla.appendChild(cab);
+ const cuerpo=document.createElement('tbody');
+ for(const registro of datos){const tr=document.createElement('tr');for(const c of columnas){const td=document.createElement('td');const v=registro[c];
+  td.textContent=monetarios.has(c)?mostrarNumero(v):(v===null||v===undefined||v===''?'Sin desglose':String(v));
+  if(monetarios.has(c))td.classList.add('numero');
+  if(c==='Nombre emisor'||c==='Nombre receptor'||c==='Concepto'){td.classList.add('nombre');td.title=String(v??'')}
+  tr.appendChild(td)}cuerpo.appendChild(tr)}tabla.appendChild(cuerpo);return tabla;
+}
+function hojaExcel(datos,columnas){
+ const filas=[columnas,...datos.map(d=>columnas.map(c=>d[c]??''))];
+ const hoja=XLSX.utils.aoa_to_sheet(filas);
+ hoja['!cols']=columnas.map(c=>({wch:Math.min(Math.max(c.length+3,16),c==='Concepto'?65:35)}));
+ hoja['!autofilter']={ref:XLSX.utils.encode_range({s:{r:0,c:0},e:{r:Math.max(0,filas.length-1),c:columnas.length-1}})};
+ for(let r=1;r<filas.length;r++)for(let c=0;c<columnas.length;c++){
+  if(!monetarios.has(columnas[c]))continue;
+  const celda=hoja[XLSX.utils.encode_cell({r,c})];
+  if(celda&&celda.t==='n')celda.z='#,##0.00;[Red](#,##0.00);0.00';
+ }
+ return hoja;
+}
+procesar.addEventListener('click',async()=>{
+ const seleccion=Array.from(archivos.files||[]),rfc=$('rfcContribuyente').value.trim().toUpperCase();
+ if(!rfc){estado.textContent='Ingresa el RFC del contribuyente.';return}
+ if(!seleccion.length){estado.textContent='Selecciona uno o más archivos XML.';return}
+ procesar.disabled=true;registros=[];detallePagos=[];const errores=[];
+ try{
+  for(const archivo of seleccion){
+   if(!archivo.name.toLowerCase().endsWith('.xml')){errores.push(archivo.name+': solo se admiten XML');continue}
+   try{const xml=await archivo.text();const r=leerCFDI(xml,archivo.name,rfc);registros.push(r.resultado);detallePagos.push(...r.pagosDetalle)}
+   catch(e){errores.push(archivo.name+': '+e.message)}
   }
-
-  return importe * factorConversion * factor;
-};
-
-
-  const subtotalOriginal = numero(
-    raiz.getAttribute("SubTotal")
-  );
-
-  const descuentoOriginal = numero(
-    raiz.getAttribute("Descuento")
-  );
-
-  const totalOriginal = numero(
-    raiz.getAttribute("Total")
-  );
-
-  // Desglose de impuestos existente
-  const desglose = desgloseIVA(raiz);
-
-  const ivaTrasladado = impuestos(
-    raiz, "Traslados", "002"
-  );
-
-  const ivaRetenido = impuestos(
-    raiz, "Retenciones", "002"
-  );
-
-  const isrRetenido = impuestos(
-    raiz, "Retenciones", "001"
-  );
-
-  const iepsRetenido = impuestos(
-    raiz, "Retenciones", "003"
-  );
-
-  const iepsTrasladado = impuestos(
-    raiz, "Traslados", "003"
-  );
-  
-const conceptos = hijo(raiz, "Conceptos");
-
-const listaConceptos = hijos(conceptos, "Concepto");
-
-const conceptosTexto = listaConceptos
-  .map(concepto => concepto.getAttribute("Descripcion") || "")
-  .filter(descripcion => descripcion !== "")
-  .join(" | ");
-
-
-let baseIEPS = 0;
-
-for (const concepto of listaConceptos) {
-  const impuestosConcepto = hijo(concepto, "Impuestos");
-  const trasladosConcepto = hijo(impuestosConcepto, "Traslados");
-
-  for (const traslado of hijos(trasladosConcepto, "Traslado")) {
-    if (traslado.getAttribute("Impuesto") === "003") {
-      baseIEPS += numero(traslado.getAttribute("Base"));
-    }
-  }
-}
-
-
-
-  const resultado = {
-    "Clasificación": clasificacion,
-    "UUID": timbre?.getAttribute("UUID") || "",
-    "Tipo": tipo,
-    "Estado CFDI": "No verificado",
-    "Fecha": raiz.getAttribute("Fecha") || "",
-    "Serie": raiz.getAttribute("Serie") || "",
-    "Folio": raiz.getAttribute("Folio") || "",
-
-    "RFC emisor": rfcEmisor,
-    "Nombre emisor": emisor?.getAttribute("Nombre") || "",
-    "RFC receptor": rfcReceptor,
-    "Nombre receptor": receptor?.getAttribute("Nombre") || "",
-
-    "Régimen receptor":
-      receptor?.getAttribute("RegimenFiscalReceptor") || "",
-
-    "Uso CFDI":
-      receptor?.getAttribute("UsoCFDI") || "",
-
-    "Moneda": moneda,
-    "Tipo cambio": tipoCambio,
-
-    "Total moneda original": totalOriginal * factor,
-
-    "Forma de pago":
-      raiz.getAttribute("FormaPago") || "",
-
-    "Método de pago":
-      raiz.getAttribute("MetodoPago") || "",
-
-    
-"Subtotal": convertirMXN(subtotalOriginal),
-"Descuento": convertirMXN(descuentoOriginal),
-"Total": convertirMXN(totalOriginal),
-
-"IVA trasladado": convertirMXN(ivaTrasladado),
-"IVA retenido": convertirMXN(ivaRetenido),
-"ISR retenido": convertirMXN(isrRetenido),
-"IEPS": convertirMXN(iepsTrasladado),
-"IEPS retenido": convertirMXN(iepsRetenido),
-
-
-    
-
-"Base IEPS": convertirMXN(baseIEPS),
-"Concepto": conceptosTexto,
-"Archivo": nombreArchivo
-
-  };
-
-  // Incorporar las bases e IVA por tasa
- 
-for (const [campo, importe] of Object.entries(desglose)) {
-  resultado[campo] = convertirMXN(importe);
-}
-
-
-  return resultado;
-}
-
-archivos.addEventListener("change", () => {
-  const total = archivos.files.length;
-  procesar.disabled = total === 0;
-
-  estado.textContent = total
-    ? `${total} archivo(s) seleccionado(s).`
-    : "No se han seleccionado archivos.";
+  $('resultados').style.display=registros.length?'block':'none';
+  $('tablaCFDI').replaceChildren(tablaHTML(registros,campos));
+  $('tituloCFDI').textContent='Comprobantes ('+registros.length+')';
+  $('tablaPagos').replaceChildren(tablaHTML(detallePagos,camposPago));
+  $('tituloPagos').textContent='Detalle de documentos relacionados con pagos ('+detallePagos.length+')';
+  $('tituloPagos').classList.toggle('oculto',!detallePagos.length);
+  $('tablaPagos').classList.toggle('oculto',!detallePagos.length);
+  estado.textContent=registros.length+' XML procesados. '+detallePagos.length+' documentos relacionados con pagos.'+(errores.length?'\nObservaciones:\n'+errores.join('\n'):'\nSin observaciones de lectura.');
+ }finally{procesar.disabled=false}
 });
-
-
-procesar.addEventListener("click", async () => {
-  
-  const rfcContribuyente = document
-    .getElementById("rfcContribuyente")
-    .value.trim().toUpperCase();
-
-  const formatoRFC =
-    /^[A-ZÑ&]{3,4}\d{6}[A-Z0-9]{3}$/;
-
-  if (!formatoRFC.test(rfcContribuyente)) {
-    alert(
-      "Ingresa un RFC válido de 12 o 13 caracteres antes de procesar los archivos."
-    );
-
-    document
-      .getElementById("rfcContribuyente")
-      .focus();
-
-    return;
-  }
-
-  const resultados = [];
-  const errores = [];
-
-  procesar.disabled = true;
-  estado.textContent = "Procesando archivos...";
-
-  // 1. Leer y procesar los XML
-  for (const archivo of archivos.files) {
-    try {
-      if (!archivo.name.toLowerCase().endsWith(".xml")) {
-        throw new Error(
-          "Los ZIP se habilitarán en otra etapa"
-        );
-      }
-
-      const contenido = await archivo.text();
-      const cfdi = leerCFDI(contenido, archivo.name);
-
-      resultados.push(cfdi);
-
-    } catch (error) {
-      errores.push(
-        `${archivo.name}: ${error.message}`
-      );
-    }
-  }
-
-  // 2. Limpiar resultados anteriores
-  estado.replaceChildren();
-
-  // 3. Mostrar resumen
-  const resumen = document.createElement("p");
-
-  resumen.textContent =
-    `${resultados.length} CFDI procesados. ` +
-    `${errores.length} archivos con observaciones.`;
-
-  estado.appendChild(resumen);
-
-  // 4. Crear tabla de resultados
-  if (resultados.length > 0) {
-    const contenedor = document.createElement("div");
-    contenedor.style.overflowX = "auto";
-
-    
-const tabla = document.createElement("table");
-
-tabla.style.borderCollapse = "separate";
-tabla.style.borderSpacing = "0";
-tabla.style.width = "max-content";
-tabla.style.minWidth = "100%";
-tabla.style.tableLayout = "auto";
-tabla.style.whiteSpace = "nowrap";
-
-
-contenedor.style.width = "100%";
-contenedor.style.maxWidth = "100%";
-contenedor.style.fontSize = "13px";
-
-    const encabezado = document.createElement("tr");
-
-    campos.forEach(campo => {
-      const th = document.createElement("th");
-
-      th.textContent = campo;
-      
-th.style.padding = "9px 12px";
-th.style.fontSize = "13px";
-th.style.fontWeight = "600";
-
-      th.style.background = "#293F56";
-      th.style.color = "#ECEBE8";
-
-      encabezado.appendChild(th);
-    });
-
-    tabla.appendChild(encabezado);
-
-    resultados.forEach(resultado => {
-      const fila = document.createElement("tr");
-
-      campos.forEach(campo => {
-        const celda = document.createElement("td");
-        const valor = resultado[campo];
-        
-if (
-  campo === "Nombre emisor" ||
-  campo === "Nombre receptor" ||
-  campo === "Nombre Emisor" ||
-  campo === "Nombre Receptor"
-) {
-  celda.style.maxWidth = "220px";
-  celda.style.width = "220px";
-  celda.style.overflow = "hidden";
-  celda.style.textOverflow = "ellipsis";
-  celda.style.whiteSpace = "nowrap";
-
-  // Mostrar el nombre completo al pasar el cursor
-  celda.title = String(valor ?? "");
-}
-
-
-      
-if (camposMonetarios.has(campo)) {
-  celda.textContent = formatoMoneda(valor);
-  celda.style.textAlign = "right";
-  celda.style.fontVariantNumeric = "tabular-nums";
-} else {
-  celda.textContent =
-    valor === null || valor === undefined
-      ? "Sin desglose"
-      : String(valor);
-}
-
-
-        
-celda.style.padding = "8px 12px";
-celda.style.fontSize = "13px";
-
-        celda.style.borderBottom =
-          "1px solid #ABBCC6";
-
-        fila.appendChild(celda);
-      });
-
-      tabla.appendChild(fila);
-    });
-
-    contenedor.appendChild(tabla);
-    estado.appendChild(contenedor);
-
-    // 5. Crear botón Descargar Excel
-    const botonExcel = document.createElement("button");
-
-    botonExcel.textContent = "Descargar Excel";
-    botonExcel.type = "button";
-
-    botonExcel.style.background = "#293F56";
-    botonExcel.style.color = "#ECEBE8";
-    botonExcel.style.padding = "12px 24px";
-    botonExcel.style.border = "none";
-    botonExcel.style.borderRadius = "8px";
-    botonExcel.style.cursor = "pointer";
-    botonExcel.style.marginTop = "20px";
-
-    botonExcel.addEventListener("click", () => {
-      if (typeof XLSX === "undefined") {
-        alert(
-          "No se pudo cargar la biblioteca de Excel."
-        );
-        return;
-      }
-
-      try {
-        // Mantener el orden de las columnas
-        const filas = resultados.map(cfdi => {
-          const fila = {};
-
-          campos.forEach(campo => {
-            fila[campo] = cfdi[campo] ?? "";
-          });
-
-          return fila;
-        });
-
-        // Crear hoja Excel
-        const hoja = XLSX.utils.json_to_sheet(
-          filas,
-          { header: campos }
-        );
-        
-const formatoExcel = '#,##0.00;[Red](#,##0.00);0.00';
-
-for (let fila = 1; fila <= filas.length; fila++) {
-  campos.forEach((campo, indice) => {
-    if (!camposMonetarios.has(campo)) return;
-
-    const direccion = XLSX.utils.encode_cell({
-      r: fila,
-      c: indice
-    });
-
-    const celda = hoja[direccion];
-
-    if (
-      celda &&
-      celda.t === "n" &&
-      Number.isFinite(celda.v)
-    ) {
-      celda.z = formatoExcel;
-    }
-  });
-}
-
-
-        // Configurar ancho de columnas
-        hoja["!cols"] = campos.map(campo => ({
-          wch: Math.max(
-            16,
-            Math.min(30, campo.length + 5)
-          )
-        }));
-
-        // Activar autofiltro
-        hoja["!autofilter"] = {
-          ref: hoja["!ref"]
-        };
-
-        // Crear libro Excel
-        const libro = XLSX.utils.book_new();
-
-        XLSX.utils.book_append_sheet(
-          libro,
-          hoja,
-          "CFDI"
-        );
-
-        // Descargar archivo
-        XLSX.writeFile(
-          libro,
-          "ReporteCFDI.xlsx"
-        );
-
-      } catch (error) {
-        alert(
-          "Error al generar Excel: " +
-          error.message
-        );
-      }
-    });
-
-    // Mostrar botón después de la tabla
-    estado.appendChild(botonExcel);
-  }
-
-  // 6. Mostrar observaciones
-  if (errores.length > 0) {
-    const titulo = document.createElement("p");
-    titulo.textContent = "Observaciones:";
-
-    estado.appendChild(titulo);
-
-    errores.forEach(error => {
-      const linea = document.createElement("p");
-      linea.textContent = error;
-
-      estado.appendChild(linea);
-    });
-  }
-
-  // 7. Habilitar nuevamente el procesamiento
-  procesar.disabled = false;
+$('descargar').addEventListener('click',()=>{
+ if(!registros.length)return;
+ if(typeof XLSX==='undefined'){alert('No se pudo cargar la biblioteca para Excel. Revisa tu conexión.');return}
+ const libro=XLSX.utils.book_new();
+ XLSX.utils.book_append_sheet(libro,hojaExcel(registros,campos),'CFDI');
+ if(detallePagos.length)XLSX.utils.book_append_sheet(libro,hojaExcel(detallePagos,camposPago),'Pagos');
+ XLSX.writeFile(libro,'ReporteCFDI.xlsx');
 });
-
 </script>
-
-
 </body>
 </html>

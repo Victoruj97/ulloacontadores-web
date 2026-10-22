@@ -26,7 +26,8 @@
 <section id="resultados">
 <h2>Resultados</h2>
 <div id="acciones"><button id="descargar">Descargar Excel</button></div>
-<div class="etiqueta" id="tituloCFDI">Comprobantes</div><div class="tablas" id="tablaCFDI"></div>
+<div class="etiqueta oculto" id="tituloEmitidas">Emitidas</div><div class="tablas oculto" id="tablaEmitidas"></div>
+<div class="etiqueta oculto" id="tituloRecibidas">Recibidas</div><div class="tablas oculto" id="tablaRecibidas"></div>
 <div class="etiqueta oculto" id="tituloPagos">Detalle de pagos</div><div class="tablas oculto" id="tablaPagos"></div>
 <p class="nota">En los CFDI tipo P, los importes del encabezado del comprobante son cero. El monto cobrado y los impuestos se obtienen del complemento Pagos 2.0. La base gravada no equivale necesariamente al subtotal de una factura. Los valores del XML se conservan sin recalcular retenciones.</p>
 </section>
@@ -39,7 +40,8 @@ const NS_PAGOS='http://www.sat.gob.mx/Pagos20';
 const NS_TFD='http://www.sat.gob.mx/TimbreFiscalDigital';
 const $=id=>document.getElementById(id);
 const archivos=$('archivos'), procesar=$('procesar'), estado=$('estado');
-let registros=[],detallePagos=[];
+let emitidas=[],recibidas=[],detallePagos=[];
+let totalProcesados=0;
 const campos=[
  'Clasificación','UUID','Tipo','Estado CFDI','Fecha','Serie','Folio',
  'RFC emisor','Nombre emisor','RFC receptor','Nombre receptor','Régimen receptor','Uso CFDI',
@@ -240,28 +242,43 @@ procesar.addEventListener('click',async()=>{
  const seleccion=Array.from(archivos.files||[]),rfc=$('rfcContribuyente').value.trim().toUpperCase();
  if(!rfc){estado.textContent='Ingresa el RFC del contribuyente.';return}
  if(!seleccion.length){estado.textContent='Selecciona uno o más archivos XML.';return}
- procesar.disabled=true;registros=[];detallePagos=[];const errores=[];
+ procesar.disabled=true;emitidas=[];recibidas=[];detallePagos=[];totalProcesados=0;
+ const errores=[];
  try{
   for(const archivo of seleccion){
    if(!archivo.name.toLowerCase().endsWith('.xml')){errores.push(archivo.name+': solo se admiten XML');continue}
-   try{const xml=await archivo.text();const r=leerCFDI(xml,archivo.name,rfc);registros.push(r.resultado);detallePagos.push(...r.pagosDetalle)}
-   catch(e){errores.push(archivo.name+': '+e.message)}
+   try{
+    const xml=await archivo.text();
+    const r=leerCFDI(xml,archivo.name,rfc);
+    totalProcesados++;
+    const clasificacion=r.resultado['Clasificación'];
+    if(r.resultado['Tipo']==='P'){
+     if(clasificacion==='No relacionado')errores.push(archivo.name+': RFC no relacionado con el complemento');
+     else detallePagos.push(...r.pagosDetalle);
+    }else if(clasificacion==='Emitido')emitidas.push(r.resultado);
+    else if(clasificacion==='Recibido')recibidas.push(r.resultado);
+    else errores.push(archivo.name+': RFC no relacionado con el comprobante');
+   }catch(e){errores.push(archivo.name+': '+e.message)}
   }
-  $('resultados').style.display=registros.length?'block':'none';
-  $('tablaCFDI').replaceChildren(tablaHTML(registros,campos));
-  $('tituloCFDI').textContent='Comprobantes ('+registros.length+')';
-  $('tablaPagos').replaceChildren(tablaHTML(detallePagos,camposPago));
-  $('tituloPagos').textContent='Detalle de documentos relacionados con pagos ('+detallePagos.length+')';
-  $('tituloPagos').classList.toggle('oculto',!detallePagos.length);
-  $('tablaPagos').classList.toggle('oculto',!detallePagos.length);
-  estado.textContent=registros.length+' XML procesados. '+detallePagos.length+' documentos relacionados con pagos.'+(errores.length?'\nObservaciones:\n'+errores.join('\n'):'\nSin observaciones de lectura.');
+  const mostrar=(tituloId,tablaId,datos,columnas,nombre)=>{
+   $(tituloId).textContent=nombre+' ('+datos.length+')';
+   $(tablaId).replaceChildren(tablaHTML(datos,columnas));
+   $(tituloId).classList.toggle('oculto',!datos.length);
+   $(tablaId).classList.toggle('oculto',!datos.length);
+  };
+  mostrar('tituloEmitidas','tablaEmitidas',emitidas,campos,'Emitidas');
+  mostrar('tituloRecibidas','tablaRecibidas',recibidas,campos,'Recibidas');
+  mostrar('tituloPagos','tablaPagos',detallePagos,camposPago,'Complementos de pago — documentos relacionados');
+  $('resultados').style.display=(emitidas.length||recibidas.length||detallePagos.length)?'block':'none';
+  estado.textContent=totalProcesados+' XML procesados. '+emitidas.length+' emitidas, '+recibidas.length+' recibidas y '+detallePagos.length+' documentos relacionados con pagos.'+(errores.length?'\nObservaciones:\n'+errores.join('\n'):'\nSin observaciones de lectura.');
  }finally{procesar.disabled=false}
 });
 $('descargar').addEventListener('click',()=>{
- if(!registros.length)return;
+ if(!emitidas.length&&!recibidas.length&&!detallePagos.length)return;
  if(typeof XLSX==='undefined'){alert('No se pudo cargar la biblioteca para Excel. Revisa tu conexión.');return}
  const libro=XLSX.utils.book_new();
- XLSX.utils.book_append_sheet(libro,hojaExcel(registros,campos),'CFDI');
+ if(emitidas.length)XLSX.utils.book_append_sheet(libro,hojaExcel(emitidas,campos),'Emitidas');
+ if(recibidas.length)XLSX.utils.book_append_sheet(libro,hojaExcel(recibidas,campos),'Recibidas');
  if(detallePagos.length)XLSX.utils.book_append_sheet(libro,hojaExcel(detallePagos,camposPago),'Pagos');
  XLSX.writeFile(libro,'ReporteCFDI.xlsx');
 });

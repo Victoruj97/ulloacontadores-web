@@ -48,8 +48,8 @@ const campos=[
  'RFC emisor','Nombre emisor','RFC receptor','Nombre receptor','Régimen receptor','Uso CFDI',
  'Moneda','Tipo cambio','Total moneda original','Forma de pago','Método de pago',
  'Subtotal','Descuento','Base IVA 16%','IVA 16%','Base IVA 8%','IVA 8%',
- 'Base IVA 0%','Base exenta','Base IEPS','IEPS','IVA trasladado','ISR retenido',
- 'IVA retenido','IEPS retenido','Total','Concepto','Archivo'
+ 'Base IVA 0%','Base exenta','Base IEPS','IEPS','ISR retenido',
+ 'IVA retenido','IEPS retenido','Total','Concepto'
 ];
 const camposPago=[
  'UUID complemento','Fecha CFDI','Fecha pago','RFC emisor','RFC receptor',
@@ -57,7 +57,7 @@ const camposPago=[
  'Serie relacionada','Folio relacionado','Moneda documento','Equivalencia DR',
  'Parcialidad','Saldo anterior','Importe pagado','Saldo insoluto',
  'Base IVA 16%','IVA 16%','Base IVA 8%','IVA 8%','Base IVA 0%','IVA 0%',
- 'Base exenta','Base IEPS','IEPS','ISR retenido','IVA retenido','IEPS retenido','Archivo'
+ 'Base exenta','Base IEPS','IEPS','ISR retenido','IVA retenido','IEPS retenido'
 ];
 const monetarios=new Set([
  'Total moneda original','Subtotal','Descuento','Base IVA 16%','IVA 16%',
@@ -72,6 +72,7 @@ function num(valor){if(valor===null||valor===undefined||valor==='')return null;c
 function nattr(nodo,nombre){return num(nodo?.getAttribute(nombre))}
 function suma(lista){return lista.reduce((a,b)=>a+(b||0),0)}
 function mostrarNumero(valor){return valor===null||valor===undefined||valor===''?'Sin desglose':new Intl.NumberFormat('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2}).format(Number(valor))}
+function redondearCentavos(valor){return valor===null||valor===undefined?null:Math.round((valor+Math.sign(valor)*Number.EPSILON)*100)/100}
 function sumarA(obj,campo,valor){if(valor!==null)obj[campo]=(obj[campo]??0)+valor}
 function desgloseCFDI(raiz){
  const d={'Base IVA 16%':0,'IVA 16%':0,'Base IVA 8%':0,'IVA 8%':0,'Base IVA 0%':0,'Base exenta':0,'Base IEPS':0,'IEPS':0};
@@ -95,6 +96,40 @@ function impuestoGlobal(raiz,seccion,clave){
  const cont=hijo(hijo(raiz,'Impuestos',NS_CFDI),seccion,NS_CFDI);
  const encontrados=hijos(cont,seccion==='Traslados'?'Traslado':'Retencion',NS_CFDI).filter(x=>attr(x,'Impuesto')===clave);
  return encontrados.length?suma(encontrados.map(x=>nattr(x,'Importe'))):null;
+}
+// Cuando existe desglose global por tasa, es el importe declarado en el CFDI.
+// Los conceptos se usan solo como respaldo cuando falta ese desglose.
+function desgloseGlobalPorTasa(raiz,detalle){
+ const impuestos=hijo(raiz,'Impuestos',NS_CFDI);
+ const traslados=hijos(hijo(impuestos,'Traslados',NS_CFDI),'Traslado',NS_CFDI);
+ const grupos={
+  '16':{'Base IVA 16%':0,'IVA 16%':0},
+  '8':{'Base IVA 8%':0,'IVA 8%':0},
+  '0':{'Base IVA 0%':0},
+  'exento':{'Base exenta':0},
+  'ieps':{'Base IEPS':0,'IEPS':0}
+ };
+ const vistos=new Set();
+ for(const t of traslados){
+  const clave=attr(t,'Impuesto'),factor=attr(t,'TipoFactor'),tasa=nattr(t,'TasaOCuota');
+  let grupo=null;
+  if(clave==='003')grupo='ieps';
+  else if(clave==='002'){
+   if(factor==='Exento')grupo='exento';
+   else if(tasa!==null&&Math.abs(tasa-0.16)<1e-9)grupo='16';
+   else if(tasa!==null&&Math.abs(tasa-0.08)<1e-9)grupo='8';
+   else if(tasa===0)grupo='0';
+  }
+  if(!grupo)continue;
+  vistos.add(grupo);
+  const base=nattr(t,'Base'),importe=nattr(t,'Importe');
+  const baseCampo=Object.keys(grupos[grupo]).find(k=>k.startsWith('Base'));
+  if(base!==null)grupos[grupo][baseCampo]+=base;
+  const impCampo=Object.keys(grupos[grupo]).find(k=>!k.startsWith('Base'));
+  if(impCampo&&importe!==null)grupos[grupo][impCampo]+=importe;
+ }
+ for(const grupo of vistos)Object.assign(detalle,grupos[grupo]);
+ return detalle;
 }
 function desgloseImpuestosPago(contenedor,sufijo){
  const d={'Base IVA 16%':0,'IVA 16%':0,'Base IVA 8%':0,'IVA 8%':0,'Base IVA 0%':0,'IVA 0%':0,'Base exenta':0,'Base IEPS':0,'IEPS':0,'ISR retenido':0,'IVA retenido':0,'IEPS retenido':0};
@@ -136,7 +171,7 @@ function leerCFDI(xml,nombreArchivo,rfcSeleccionado){
  const moneda=attr(raiz,'Moneda'),tipoCambio=nattr(raiz,'TipoCambio')??(moneda==='MXN'?1:null);
  const convertir=moneda!=='MXN'&&moneda!=='XXX';
  if(tipo!=='P'&&convertir&&(!tipoCambio||tipoCambio<=0))throw Error('Tipo de cambio inválido o ausente');
- const conv=v=>v===null?null:v*signo*(convertir?tipoCambio:1);
+ const conv=v=>v===null?null:redondearCentavos(v*signo*(convertir?tipoCambio:1));
  const conceptos=hijos(hijo(raiz,'Conceptos',NS_CFDI),'Concepto',NS_CFDI);
  const resultado={
   'Clasificación':clasificacion,'UUID':attr(timbre,'UUID'),'Tipo':tipo,'Estado CFDI':'No verificado',
@@ -153,9 +188,8 @@ function leerCFDI(xml,nombreArchivo,rfcSeleccionado){
  };
  const pagosDetalle=[];
  if(tipo!=='P'){
-  const d=desgloseCFDI(raiz);
+  const d=desgloseGlobalPorTasa(raiz,desgloseCFDI(raiz));
   for(const [k,v] of Object.entries(d))resultado[k]=conv(v);
-  resultado['IVA trasladado']=conv(impuestoGlobal(raiz,'Traslados','002'));
   resultado['ISR retenido']=conv(impuestoGlobal(raiz,'Retenciones','001'));
   resultado['IVA retenido']=conv(impuestoGlobal(raiz,'Retenciones','002'));
   resultado['IEPS retenido']=conv(impuestoGlobal(raiz,'Retenciones','003'));
@@ -178,7 +212,6 @@ function leerCFDI(xml,nombreArchivo,rfcSeleccionado){
   resultado['ISR retenido']=nattr(totales,'TotalRetencionesISR');
   resultado['IVA retenido']=nattr(totales,'TotalRetencionesIVA');
   resultado['IEPS retenido']=nattr(totales,'TotalRetencionesIEPS');
-  resultado['IVA trasladado']=suma([resultado['IVA 16%'],resultado['IVA 8%'],nattr(totales,'TotalTrasladosImpuestoIVA0')]);
   if(pagos.length===1){
    const p=pagos[0];resultado['Fecha de pago']=attr(p,'FechaPago');
    resultado['Forma de pago']=attr(p,'FormaDePagoP');resultado['Moneda del pago']=attr(p,'MonedaP');
@@ -202,7 +235,7 @@ function leerCFDI(xml,nombreArchivo,rfcSeleccionado){
      'Moneda documento':attr(r,'MonedaDR'),'Equivalencia DR':nattr(r,'EquivalenciaDR'),
      'Parcialidad':attr(r,'NumParcialidad'),'Saldo anterior':nattr(r,'ImpSaldoAnt'),
      'Importe pagado':nattr(r,'ImpPagado'),'Saldo insoluto':nattr(r,'ImpSaldoInsoluto'),
-     ...dR,'Archivo':nombreArchivo
+     ...Object.fromEntries(Object.entries(dR).map(([k,v])=>[k,redondearCentavos(v)]))
     });
    }
    // ImpuestosP se mantienen como importes a nivel de pago; no se suman a ImpuestosDR.

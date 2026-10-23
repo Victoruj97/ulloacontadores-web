@@ -43,21 +43,25 @@ const $=id=>document.getElementById(id);
 const archivos=$('archivos'), procesar=$('procesar'), estado=$('estado');
 let emitidas=[],recibidas=[],pagosEmitidos=[],pagosRecibidos=[];
 let totalProcesados=0;
+// El orden de estos arreglos controla tanto la tabla web como las columnas de Excel.
 const campos=[
- 'UUID','Tipo','Estado CFDI','Fecha','Serie','Folio',
- 'RFC emisor','Nombre emisor','RFC receptor','Nombre receptor','Régimen receptor','Uso CFDI',
- 'Moneda','Tipo cambio','Total moneda original','Forma de pago','Método de pago',
+ 'Fecha','UUID','Serie','Folio','Tipo','Estado CFDI',
+ 'RFC emisor','Nombre emisor','RFC receptor','Nombre receptor',
  'Subtotal','Descuento','Base IVA 16%','IVA 16%','Base IVA 8%','IVA 8%',
- 'Base IVA 0%','Base exenta','Base IEPS','IEPS','ISR retenido',
- 'IVA retenido','IEPS retenido','Total','Concepto'
+ 'Base IVA 0%','Base exenta','Base IEPS','IEPS',
+ 'ISR retenido','IVA retenido','IEPS retenido','Total',
+ 'Moneda','Tipo cambio','Total moneda original',
+ 'Forma de pago','Método de pago','Régimen receptor','Uso CFDI','Concepto'
 ];
 const camposPago=[
- 'UUID complemento','Fecha CFDI','Fecha pago','RFC emisor','RFC receptor',
- 'Forma de pago','Moneda pago','Tipo cambio pago','Monto pago','UUID relacionado',
- 'Serie relacionada','Folio relacionado','Moneda documento','Equivalencia DR',
+ 'Fecha pago','UUID complemento','UUID relacionado',
+ 'RFC emisor','RFC receptor','Monto pago',
+ 'Base IVA 16%','IVA 16%','Base IVA 8%','IVA 8%',
+ 'Base IVA 0%','IVA 0%','Base exenta','Base IEPS','IEPS',
+ 'ISR retenido','IVA retenido','IEPS retenido',
+ 'Moneda pago','Tipo cambio pago','Forma de pago',
  'Parcialidad','Saldo anterior','Importe pagado','Saldo insoluto',
- 'Base IVA 16%','IVA 16%','Base IVA 8%','IVA 8%','Base IVA 0%','IVA 0%',
- 'Base exenta','Base IEPS','IEPS','ISR retenido','IVA retenido','IEPS retenido'
+ 'Moneda documento','Equivalencia DR','Serie relacionada','Folio relacionado','Fecha CFDI'
 ];
 const monetarios=new Set([
  'Total moneda original','Subtotal','Descuento','Base IVA 16%','IVA 16%',

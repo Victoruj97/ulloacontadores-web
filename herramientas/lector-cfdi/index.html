@@ -30,6 +30,7 @@
 <div class="etiqueta oculto" id="tituloRecibidas">Recibidas</div><div class="tablas oculto" id="tablaRecibidas"></div>
 <div class="etiqueta oculto" id="tituloPagosEmitidos">Complementos de pago emitidos</div><div class="tablas oculto" id="tablaPagosEmitidos"></div>
 <div class="etiqueta oculto" id="tituloPagosRecibidos">Complementos de pago recibidos</div><div class="tablas oculto" id="tablaPagosRecibidos"></div>
+<p class="nota">En complementos con varios documentos, «Monto pago» es el total del pago y se repite en cada documento: no sumar esa columna por filas. Las alertas son revisiones aritméticas y cronológicas, no una validación fiscal ante el SAT.</p>
 <p class="nota">En los CFDI tipo P, los importes del encabezado del comprobante son cero. El monto cobrado y los impuestos se obtienen del complemento Pagos 2.0. La base gravada no equivale necesariamente al subtotal de una factura. Los valores del XML se conservan sin recalcular retenciones.</p>
 </section>
 </main>
@@ -43,6 +44,7 @@ const $=id=>document.getElementById(id);
 const archivos=$('archivos'), procesar=$('procesar'), estado=$('estado');
 let emitidas=[],recibidas=[],pagosEmitidos=[],pagosRecibidos=[];
 let totalProcesados=0;
+let advertenciasPago=[];
 // El orden de estos arreglos controla tanto la tabla web como las columnas de Excel.
 const campos=[
  'Fecha','UUID','Serie','Folio','Tipo','Estado CFDI',
@@ -191,6 +193,8 @@ function leerCFDI(xml,nombreArchivo,rfcSeleccionado){
   'Archivo':nombreArchivo
  };
  const pagosDetalle=[];
+ const avisos=[];
+ const referencias=[];
  if(tipo!=='P'){
   const d=desgloseGlobalPorTasa(raiz,desgloseCFDI(raiz));
   for(const [k,v] of Object.entries(d))resultado[k]=conv(v);
@@ -226,8 +230,31 @@ function leerCFDI(xml,nombreArchivo,rfcSeleccionado){
   for(const p of pagos){
    const dP=desgloseImpuestosPago(p,'P');
    const relacionados=hijos(p,'DoctoRelacionado',NS_PAGOS);
+   const montoPago=nattr(p,'Monto');
+   const monedaPago=attr(p,'MonedaP');
+   const equivalenciasValidas=relacionados.every(r=>{const e=nattr(r,'EquivalenciaDR');return e!==null&&e>0});
+   if(relacionados.length>1)avisos.push('Pago con '+relacionados.length+' documentos relacionados: «Monto pago» corresponde al pago completo y se repite como referencia en cada fila; no debe sumarse por filas.');
+   if(!relacionados.length)avisos.push('Pago sin documentos relacionados: no se genera una fila de detalle.');
+   // EquivalenciaDR expresa unidades de MonedaDR por unidad de MonedaP.
+   // ImpPagado está en MonedaDR; dividir por EquivalenciaDR permite comparar con Monto (MonedaP).
+   if(relacionados.length&&equivalenciasValidas&&montoPago!==null){
+    const aplicado=relacionados.reduce((ac,r)=>ac+(nattr(r,'ImpPagado')??0)/nattr(r,'EquivalenciaDR'),0);
+    if(aplicado>montoPago+0.02)avisos.push('La suma de importes aplicados, convertida a '+monedaPago+', supera el monto del pago. Revisar equivalencias e importes.');
+   }
+   if(relacionados.length===1){
+    const r=relacionados[0];
+    const e=nattr(r,'EquivalenciaDR');
+    if(e!==null&&e>0&&montoPago!==null){
+     const aplicado=(nattr(r,'ImpPagado')??0)/e;
+     if(Math.abs(aplicado-montoPago)>0.02)avisos.push('Monto del pago e importe aplicado al único documento no coinciden (tras equivalencia); podría existir diferencia por otros conceptos.');
+    }
+   }
    for(const r of relacionados){
     const dR=desgloseImpuestosPago(r,'DR');
+    const uuidRelacionado=attr(r,'IdDocumento').toUpperCase();
+    referencias.push({uuid:uuidRelacionado,fechaPago:attr(p,'FechaPago'),complemento:attr(timbre,'UUID')});
+    const anterior=nattr(r,'ImpSaldoAnt'),pagado=nattr(r,'ImpPagado'),insoluto=nattr(r,'ImpSaldoInsoluto');
+    if([anterior,pagado,insoluto].every(v=>v!==null)&&Math.abs(redondearCentavos(anterior-pagado-insoluto))>0.01)avisos.push('Los saldos del documento '+uuidRelacionado+' no cuadran: saldo anterior menos importe pagado es distinto del saldo insoluto.');
     pagosDetalle.push({
      'Clasificación':clasificacion,'UUID complemento':attr(timbre,'UUID'),
      'Fecha CFDI':attr(raiz,'Fecha'),'Fecha pago':attr(p,'FechaPago'),
@@ -250,7 +277,7 @@ function leerCFDI(xml,nombreArchivo,rfcSeleccionado){
   for(const p of pagos){const d=desgloseImpuestosPago(p,'P');for(const k of ['Base exenta','Base IEPS','IEPS'])agregado[k]=(agregado[k]||0)+(d[k]||0)}
   for(const [k,v] of Object.entries(agregado))resultado[k]=v;
  }
- return {resultado,pagosDetalle};
+ return {resultado,pagosDetalle,avisos,referencias};
 }
 function tablaHTML(datos,columnas){
  const tabla=document.createElement('table');const cab=document.createElement('thead'),filaCab=document.createElement('tr');
@@ -278,15 +305,25 @@ procesar.addEventListener('click',async()=>{
  const seleccion=Array.from(archivos.files||[]),rfc=$('rfcContribuyente').value.trim().toUpperCase();
  if(!rfc){estado.textContent='Ingresa el RFC del contribuyente.';return}
  if(!seleccion.length){estado.textContent='Selecciona uno o más archivos XML.';return}
- procesar.disabled=true;emitidas=[];recibidas=[];pagosEmitidos=[];pagosRecibidos=[];totalProcesados=0;
+ procesar.disabled=true;emitidas=[];recibidas=[];pagosEmitidos=[];pagosRecibidos=[];totalProcesados=0;advertenciasPago=[];
  const errores=[];
+ const facturasPorUUID=new Map(),referenciasPendientes=[];
+ const uuidsVistos=new Set();
  try{
   for(const archivo of seleccion){
    if(!archivo.name.toLowerCase().endsWith('.xml')){errores.push(archivo.name+': solo se admiten XML');continue}
    try{
     const xml=await archivo.text();
     const r=leerCFDI(xml,archivo.name,rfc);
+    const uuid=r.resultado['UUID'].toUpperCase();
+    if(uuid&&uuidsVistos.has(uuid)){errores.push(archivo.name+': UUID duplicado, se omitió para evitar duplicación de importes.');continue}
+    if(uuid)uuidsVistos.add(uuid);
     totalProcesados++;
+    if(r.resultado['Tipo']!=='P'&&uuid)facturasPorUUID.set(uuid,r.resultado['Fecha']);
+    if(r.resultado['Tipo']==='P'){
+     advertenciasPago.push(...r.avisos.map(a=>archivo.name+': '+a));
+     referenciasPendientes.push(...r.referencias.map(a=>({...a,archivo:archivo.name})));
+    }
     const clasificacion=r.resultado['Clasificación'];
     if(r.resultado['Tipo']==='P'){
      if(clasificacion==='No relacionado')errores.push(archivo.name+': RFC no relacionado con el complemento');
@@ -296,6 +333,12 @@ procesar.addEventListener('click',async()=>{
     else if(clasificacion==='Recibido')recibidas.push(r.resultado);
     else errores.push(archivo.name+': RFC no relacionado con el comprobante');
    }catch(e){errores.push(archivo.name+': '+e.message)}
+  }
+  for(const ref of referenciasPendientes){
+   const fechaFactura=facturasPorUUID.get(ref.uuid);
+   if(fechaFactura&&ref.fechaPago&&ref.fechaPago.slice(0,10)<fechaFactura.slice(0,10)){
+    advertenciasPago.push(ref.archivo+': fecha de pago '+ref.fechaPago.slice(0,10)+' anterior a la fecha de emisión '+fechaFactura.slice(0,10)+' de la factura relacionada '+ref.uuid+'.');
+   }
   }
   const mostrar=(tituloId,tablaId,datos,columnas,nombre)=>{
    $(tituloId).textContent=nombre+' ('+datos.length+')';
@@ -308,7 +351,7 @@ procesar.addEventListener('click',async()=>{
   mostrar('tituloPagosEmitidos','tablaPagosEmitidos',pagosEmitidos,camposPago,'Complementos de pago emitidos');
   mostrar('tituloPagosRecibidos','tablaPagosRecibidos',pagosRecibidos,camposPago,'Complementos de pago recibidos');
   $('resultados').style.display=(emitidas.length||recibidas.length||pagosEmitidos.length||pagosRecibidos.length)?'block':'none';
-  estado.textContent=totalProcesados+' XML procesados. '+emitidas.length+' emitidas, '+recibidas.length+' recibidas y '+pagosEmitidos.length+' documentos de pagos emitidos y '+pagosRecibidos.length+' documentos de pagos recibidos.'+(errores.length?'\nObservaciones:\n'+errores.join('\n'):'\nSin observaciones de lectura.');
+  estado.textContent=totalProcesados+' XML procesados. '+emitidas.length+' emitidas, '+recibidas.length+' recibidas y '+pagosEmitidos.length+' documentos de pagos emitidos y '+pagosRecibidos.length+' documentos de pagos recibidos.'+((errores.length||advertenciasPago.length)?'\nObservaciones:\n'+[...errores,...advertenciasPago].join('\n'):'\nSin observaciones de lectura.');
  }finally{procesar.disabled=false}
 });
 $('descargar').addEventListener('click',()=>{

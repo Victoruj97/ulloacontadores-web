@@ -357,8 +357,9 @@ procesar.addEventListener('click',async()=>{
  const facturasPorUUID=new Map(),referenciasPendientes=[];
  const uuidsVistos=new Set();
  try{
-  for(const archivo of seleccion){
-   if(!archivo.name.toLowerCase().endsWith('.xml')){errores.push(archivo.name+': solo se admiten XML');continue}
+  const archivosXML=await obtenerXML(seleccion,errores);
+  if(!archivosXML.length)errores.push('No se encontraron archivos XML dentro de la selección.');
+  for(const archivo of archivosXML){
    try{
     const xml=await archivo.text();
     const r=leerCFDI(xml,archivo.name,rfc);
@@ -399,7 +400,7 @@ procesar.addEventListener('click',async()=>{
   mostrar('tituloPagosRecibidos','tablaPagosRecibidos',pagosRecibidos,camposPago,'Complementos de pago recibidos');
   $('resultados').style.display=(emitidas.length||recibidas.length||pagosEmitidos.length||pagosRecibidos.length)?'block':'none';
   estado.textContent=totalProcesados+' XML procesados. '+emitidas.length+' emitidas, '+recibidas.length+' recibidas y '+pagosEmitidos.length+' documentos de pagos emitidos y '+pagosRecibidos.length+' documentos de pagos recibidos.'+((errores.length||advertenciasPago.length)?'\nObservaciones:\n'+[...errores,...advertenciasPago].join('\n'):'\nSin observaciones de lectura.');
- }finally{procesar.disabled=false}
+ }catch(e){estado.textContent='No se pudo completar el procesamiento: '+(e?.message||String(e));console.error(e)}finally{procesar.disabled=false}
 });
 $('descargar').addEventListener('click',()=>{
  if(!emitidas.length&&!recibidas.length&&!pagosEmitidos.length&&!pagosRecibidos.length)return;

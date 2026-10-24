@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Lector CFDI | Ulloa Contadores</title>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <style>
 :root{--azul:#293F56;--medio:#667F95;--claro:#ABBCC6;--fondo:#ECEBE8}
 *{box-sizing:border-box}body{margin:0;background:var(--fondo);color:var(--azul);font-family:Arial,Helvetica,sans-serif}header{background:var(--azul);color:white;padding:26px max(20px,3vw)}header h1{margin:0;font-size:26px}header p{margin:8px 0 0;color:var(--claro)}main{max-width:1800px;margin:auto;padding:24px 3vw}section{background:#fff;border-radius:12px;padding:22px;margin-bottom:20px;box-shadow:0 3px 14px #293f5610}h2{font-size:18px;margin:0 0 18px}label{display:block;font-weight:600;margin-bottom:7px}.controles{display:flex;gap:16px;align-items:end;flex-wrap:wrap}.campo{flex:1;min-width:250px}input{width:100%;padding:12px;border:1px solid var(--claro);border-radius:7px;font:inherit}button{background:var(--azul);color:white;border:0;border-radius:7px;padding:12px 18px;cursor:pointer;font:inherit}button:disabled{opacity:.5;cursor:not-allowed}button.secundario{background:var(--medio)}#estado{margin:15px 0 0;white-space:pre-wrap;line-height:1.5}.tablas{overflow:auto;max-height:550px;scrollbar-width:thin;scrollbar-color:var(--medio) #e7edf1;border:1px solid #dbe1e6;border-radius:8px}table{border-collapse:separate;border-spacing:0;font-size:13px;white-space:nowrap;width:max-content;min-width:100%}th,td{border-bottom:1px solid #e1e5e9;padding:9px 12px;text-align:left}th{position:sticky;top:0;background:var(--azul);color:white;z-index:1}tr:nth-child(even) td{background:#f7f9fa}td.numero{text-align:right;font-variant-numeric:tabular-nums}td.nombre{max-width:220px;overflow:hidden;text-overflow:ellipsis}#resultados{display:none}#acciones{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px}footer{text-align:center;padding:22px;color:var(--medio)}.nota{font-size:13px;color:var(--medio);line-height:1.5;margin-top:12px}.etiqueta{font-weight:700;margin:22px 0 10px}.tablas:focus{outline:2px solid var(--medio);outline-offset:2px}.tablas::-webkit-scrollbar{height:12px;width:12px}.tablas::-webkit-scrollbar-thumb{background:var(--medio);border-radius:8px;border:2px solid #e7edf1}.tablas::-webkit-scrollbar-track{background:#e7edf1}.oculto{display:none}
@@ -17,15 +18,17 @@
 <h2>Procesar comprobantes</h2>
 <div class="controles">
 <div class="campo"><label for="rfcContribuyente">RFC del contribuyente</label><input id="rfcContribuyente" maxlength="13" placeholder="Ingresa el RFC"></div>
-<div class="campo"><label for="archivos">Archivos XML</label><input id="archivos" type="file" accept=".xml,text/xml,application/xml" multiple></div>
+<div class="campo"><label for="archivos">Archivos XML o ZIP</label><input id="archivos" type="file" accept=".xml,.zip,text/xml,application/xml,application/zip" multiple></div>
 <button id="procesar">Procesar archivos</button>
 </div>
 <div id="estado" role="status">No se han seleccionado archivos.</div>
-<p class="nota">Los archivos XML se procesan localmente en tu navegador. Esta versión admite XML individuales; no admite archivos ZIP. El estado de vigencia ante el SAT no se verifica automáticamente.</p>
+<p class="nota">Los archivos XML se procesan localmente en tu navegador. Admite XML individuales y archivos ZIP; los datos se procesan en tu navegador. El estado de vigencia ante el SAT no se verifica automáticamente.</p>
 </section>
 <section id="resultados">
 <h2>Resultados</h2>
 <div id="acciones"><button id="descargar">Descargar Excel</button></div>
+<div class="etiqueta" id="tituloResumen">Resumen mensual preliminar</div><div class="tablas" id="tablaResumen"></div>
+<p class="nota">Resumen informativo de los XML cargados, no determinación de impuestos. Las facturas y los pagos se muestran por separado; no sumes sus impuestos entre sí. El periodo de pagos se basa en FechaPago.</p>
 <div class="etiqueta oculto" id="tituloEmitidas">Emitidas</div><div class="tablas oculto" id="tablaEmitidas"></div>
 <div class="etiqueta oculto" id="tituloRecibidas">Recibidas</div><div class="tablas oculto" id="tablaRecibidas"></div>
 <div class="etiqueta oculto" id="tituloPagosEmitidos">Complementos de pago emitidos</div><div class="tablas oculto" id="tablaPagosEmitidos"></div>
@@ -45,6 +48,7 @@ const $=id=>document.getElementById(id);
 const archivos=$('archivos'), procesar=$('procesar'), estado=$('estado');
 let emitidas=[],recibidas=[],pagosEmitidos=[],pagosRecibidos=[];
 let totalProcesados=0;
+let pagosEventos=[];
 let advertenciasPago=[];
 // El orden de estos arreglos controla tanto la tabla web como las columnas de Excel.
 const campos=[
@@ -194,6 +198,7 @@ function leerCFDI(xml,nombreArchivo,rfcSeleccionado){
   'Archivo':nombreArchivo
  };
  const pagosDetalle=[];
+ const pagosEventosLocal=[];
  const avisos=[];
  const referencias=[];
  if(tipo!=='P'){
@@ -278,7 +283,7 @@ function leerCFDI(xml,nombreArchivo,rfcSeleccionado){
   for(const p of pagos){const d=desgloseImpuestosPago(p,'P');for(const k of ['Base exenta','Base IEPS','IEPS'])agregado[k]=(agregado[k]||0)+(d[k]||0)}
   for(const [k,v] of Object.entries(agregado))resultado[k]=v;
  }
- return {resultado,pagosDetalle,avisos,referencias};
+ return {resultado,pagosDetalle,pagosEventos:pagosEventosLocal,avisos,referencias};
 }
 function tablaHTML(datos,columnas){
  const tabla=document.createElement('table');const cab=document.createElement('thead'),filaCab=document.createElement('tr');
@@ -302,11 +307,52 @@ function hojaExcel(datos,columnas){
  }
  return hoja;
 }
+ const columnasResumen=['Periodo','Emitidas','Subtotal emitido (MXN)','IVA 16% emitido (MXN)','Total emitido (MXN)','Recibidas','Subtotal recibido (MXN)','IVA 16% recibido (MXN)','Total recibido (MXN)','Pagos emitidos (MXN)','Pagos recibidos (MXN)'];
+ function resumenMensual(){
+  const periodos=new Map();
+  const obtener=fecha=>{const periodo=String(fecha||'').slice(0,7);if(!/^\d{4}-\d{2}$/.test(periodo))return null;
+   if(!periodos.has(periodo))periodos.set(periodo,{'Periodo':periodo,'Emitidas':0,'Subtotal emitido (MXN)':0,'IVA 16% emitido (MXN)':0,'Total emitido (MXN)':0,'Recibidas':0,'Subtotal recibido (MXN)':0,'IVA 16% recibido (MXN)':0,'Total recibido (MXN)':0,'Pagos emitidos (MXN)':0,'Pagos recibidos (MXN)':0});
+   return periodos.get(periodo)};
+  for(const [lista,tipo] of [[emitidas,'emitido'],[recibidas,'recibido']])for(const f of lista){const r=obtener(f.Fecha);if(!r)continue;
+   const pref=tipo==='emitido'?'emitido':'recibido';r[tipo==='emitido'?'Emitidas':'Recibidas']++;
+   for(const [campo,destino] of [['Subtotal','Subtotal'],['IVA 16%','IVA 16%'],['Total','Total']])r[destino+' '+pref+' (MXN)']+=Number(f[campo]||0);
+  }
+  for(const p of pagosEventos){const r=obtener(p['Fecha pago']);if(!r)continue;
+   const moneda=p['Moneda pago'];const tc=Number(p['Tipo cambio pago']);
+   if(moneda!=='MXN'&&(!Number.isFinite(tc)||tc<=0))continue;
+   const monto=Number(p['Monto pago']||0)*(moneda==='MXN'?1:tc);
+   if(p.Clasificación==='Pago emitido')r['Pagos emitidos (MXN)']+=monto;
+   if(p.Clasificación==='Pago recibido')r['Pagos recibidos (MXN)']+=monto;
+  }
+  return Array.from(periodos.values()).sort((a,b)=>a.Periodo.localeCompare(b.Periodo));
+ }
+ function tablaResumenMensual(){const datos=resumenMensual();const tabla=document.createElement('table');const cab=document.createElement('tr');
+  for(const c of columnasResumen){const th=document.createElement('th');th.textContent=c;cab.appendChild(th)}const head=document.createElement('thead');head.appendChild(cab);tabla.appendChild(head);
+  const cuerpo=document.createElement('tbody');for(const d of datos){const tr=document.createElement('tr');for(const c of columnasResumen){const td=document.createElement('td');td.textContent=c==='Periodo'?d[c]:['Emitidas','Recibidas'].includes(c)?String(d[c]):mostrarNumero(d[c]);if(c!=='Periodo')td.classList.add('numero');tr.appendChild(td)}cuerpo.appendChild(tr)}tabla.appendChild(cuerpo);return tabla;
+ }
+ async function obtenerXML(seleccion,errores){
+  const encontrados=[];const MAX_XML=10000,MAX_TAM=15*1024*1024,MAX_TOTAL=120*1024*1024;let bytes=0;
+  for(const archivo of seleccion){const nombre=archivo.name.toLowerCase();
+   if(nombre.endsWith('.xml')){if(archivo.size>MAX_TAM){errores.push(archivo.name+': XML demasiado grande');continue}bytes+=archivo.size;if(bytes>MAX_TOTAL)throw Error('Se excedió el límite de 120 MB de XML');encontrados.push({name:archivo.name,text:()=>archivo.text()});continue}
+   if(!nombre.endsWith('.zip')){errores.push(archivo.name+': formato no admitido');continue}
+   if(typeof JSZip==='undefined')throw Error('No se pudo cargar el lector ZIP. Revisa tu conexión.');
+   const zip=await JSZip.loadAsync(archivo);for(const [ruta,entrada] of Object.entries(zip.files)){
+    if(entrada.dir||!ruta.toLowerCase().endsWith('.xml'))continue;
+    if(encontrados.length>=MAX_XML)throw Error('Se excedió el límite de 10,000 XML');
+    const contenido=await entrada.async('uint8array');bytes+=contenido.byteLength;
+    if(contenido.byteLength>MAX_TAM){errores.push(ruta+': XML demasiado grande');continue}
+    if(bytes>MAX_TOTAL)throw Error('Se excedió el límite de 120 MB de XML');
+    const texto=new TextDecoder('utf-8').decode(contenido);
+    encontrados.push({name:archivo.name+' / '+ruta,text:async()=>texto});
+   }
+  }
+  return encontrados;
+ }
 procesar.addEventListener('click',async()=>{
  const seleccion=Array.from(archivos.files||[]),rfc=$('rfcContribuyente').value.trim().toUpperCase();
  if(!rfc){estado.textContent='Ingresa el RFC del contribuyente.';return}
  if(!seleccion.length){estado.textContent='Selecciona uno o más archivos XML.';return}
- procesar.disabled=true;emitidas=[];recibidas=[];pagosEmitidos=[];pagosRecibidos=[];totalProcesados=0;advertenciasPago=[];
+ procesar.disabled=true;emitidas=[];recibidas=[];pagosEmitidos=[];pagosRecibidos=[];pagosEventos=[];totalProcesados=0;advertenciasPago=[];
  const errores=[];
  const facturasPorUUID=new Map(),referenciasPendientes=[];
  const uuidsVistos=new Set();

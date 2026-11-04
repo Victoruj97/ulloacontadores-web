@@ -179,7 +179,25 @@ def main():
     print("Consultando API oficial del INEGI...", flush=True)
 
     serie = consultar_inegi()
-    valores = extraer_indices(serie)
+valores = extraer_indices(serie)
+
+print("Indicador consultado:", INDICADOR, flush=True)
+print("Observaciones recibidas:",
+      len(serie.get("OBSERVATIONS", [])), flush=True)
+print("Índices mensuales válidos:",
+      len(valores), flush=True)
+
+print("Periodos 2026:", [
+    f"{anio}-{mes:02d}"
+    for anio, mes in sorted(valores)
+    if anio == 2026
+], flush=True)
+
+print("Ejemplos de periodos originales:",
+      [
+          obs.get("TIME_PERIOD")
+          for obs in serie.get("OBSERVATIONS", [])[:10]
+      ], flush=True)
 
     hoy = date.today()
     inicio = hoy.year - 10

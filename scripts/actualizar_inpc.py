@@ -1,135 +1,217 @@
 
 #!/usr/bin/env python3
-"""Actualiza el INPC desde la API oficial del INEGI sin perder datos previos."""
+"""Actualiza el INPC desde el CSV oficial del INEGI."""
 
+import csv
+import io
 import json
-import os
 import re
 import sys
 from datetime import date
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from pathlib import Path
 from urllib.error import HTTPError, URLError
-from urllib.parse import quote
+from urllib.parse import urlencode
 from urllib.request import Request, urlopen
+
 
 ROOT = Path(__file__).resolve().parent.parent
 DESTINO = ROOT / "herramientas" / "inpc" / "inpc.json"
 
-TOKEN = os.environ.get("INEGI_TOKEN", "").strip()
-INDICADOR = os.environ.get("INEGI_INPC_INDICADOR", "").strip()
-FUENTE = os.environ.get("INEGI_INPC_FUENTE", "BIE-BISE").strip()
+URL = (
+    "https://www.inegi.org.mx/app/indicesdeprecios/"
+    "Exportacion.aspx?INPTipoExporta=CSV"
+)
+
+SERIE = "865541"
+ESTRUCTURA = "112001700010"
+
+MESES = {
+    "Ene": 1,
+    "Feb": 2,
+    "Mar": 3,
+    "Abr": 4,
+    "May": 5,
+    "Jun": 6,
+    "Jul": 7,
+    "Ago": 8,
+    "Sep": 9,
+    "Oct": 10,
+    "Nov": 11,
+    "Dic": 12,
+}
 
 
-def consultar_inegi():
-    if not TOKEN or not INDICADOR:
-        raise RuntimeError(
-            "Falta INEGI_TOKEN o INEGI_INPC_INDICADOR"
-        )
+def descargar_csv():
+    actual = date.today().year
 
-    if FUENTE not in ("BISE", "BIE-BISE"):
-        raise RuntimeError("Fuente INEGI no válida")
-
-    url = (
-        "https://www.inegi.org.mx/app/api/indicadores/"
-        "desarrolladores/"
-        f"jsonxml/INDICATOR/{quote(INDICADOR, safe='')}"
-        f"/es/00/false/{FUENTE}/2.0/"
-        f"{quote(TOKEN, safe='')}?type=json"
-    )
+    parametros = {
+        "idEstructura": ESTRUCTURA,
+        "_formato": "CSV",
+        "_anioI": str(actual - 10),
+        "_anioF": str(actual),
+        "_meta": "0",
+        "_tipo": "Niveles",
+        "_info": "Índices",
+        "_orient": "vertical",
+        "_esquema": "0",
+        "_of": "inp",
+        "_cuadro": ESTRUCTURA,
+        "_series": (
+            "e|865541,1380001,865546,865547,865555,"
+        ),
+        "_cveEstructura": ESTRUCTURA,
+    }
 
     solicitud = Request(
-        url,
+        URL,
+        data=urlencode(parametros).encode("utf-8"),
         headers={
-            "Accept": "application/json",
-            "User-Agent": "UlloaContadores-INPC/1.0",
+            "User-Agent": "Mozilla/5.0",
+            "Content-Type": (
+                "application/x-www-form-urlencoded"
+            ),
+            "Referer": (
+                "https://www.inegi.org.mx/app/"
+                "indicesdeprecios/"
+            ),
+            "Accept": "text/csv,text/plain,*/*",
         },
+        method="POST",
     )
+
+    print("Solicitando CSV oficial del INEGI...", flush=True)
 
     try:
         with urlopen(solicitud, timeout=60) as respuesta:
+            estado = respuesta.status
+            url_final = respuesta.geturl()
+            tipo_contenido = respuesta.headers.get(
+                "Content-Type", ""
+            )
             contenido = respuesta.read()
+
+            print(
+                f"Estado HTTP: {estado}",
+                flush=True,
+            )
+            print(
+                f"URL final: {url_final}",
+                flush=True,
+            )
+            print(
+                f"Content-Type: {tipo_contenido}",
+                flush=True,
+            )
+            print(
+                f"Tamaño recibido: {len(contenido)} bytes",
+                flush=True,
+            )
+
     except HTTPError as error:
         raise RuntimeError(
-            f"INEGI respondió HTTP {error.code}"
+            f"El INEGI rechazó la descarga CSV. "
+            f"HTTP {error.code}. "
+            f"URL: {error.url}"
         ) from error
+
     except URLError as error:
         raise RuntimeError(
-            f"No se pudo conectar al INEGI: {error.reason}"
+            f"No se pudo conectar con el INEGI. "
+            f"Motivo: {error.reason}"
         ) from error
 
-    try:
-        datos = json.loads(contenido.decode("utf-8-sig"))
-    except (UnicodeError, ValueError) as error:
+    if not contenido:
         raise RuntimeError(
-            "El INEGI no devolvió JSON válido"
-        ) from error
+            "El INEGI devolvió un archivo vacío"
+        )
 
-    series = (
-        datos.get("Series")
-        if isinstance(datos, dict)
-        else None
+    texto = contenido.decode("cp1252")
+
+    if (
+        "<html" in texto[:1000].lower()
+        or "<!doctype html" in texto[:1000].lower()
+    ):
+        raise RuntimeError(
+            "El INEGI devolvió una página HTML "
+            "en lugar del archivo CSV"
+        )
+
+    print(
+        "Descarga CSV completada.",
+        flush=True,
     )
 
-    if not isinstance(series, list):
+    return texto
+
+
+def extraer_indices(contenido):
+    filas = list(csv.reader(io.StringIO(contenido)))
+
+    encabezado = None
+    columna = None
+
+    for numero, fila in enumerate(filas):
+        if fila and fila[0].strip() == "Fecha":
+            encabezado = numero
+
+            columnas = [
+                x.strip()
+                for x in fila
+            ]
+
+            if SERIE not in columnas:
+                raise RuntimeError(
+                    "El CSV no contiene la serie "
+                    + SERIE
+                )
+
+            columna = columnas.index(SERIE)
+            break
+
+    if encabezado is None:
         raise RuntimeError(
-            "Respuesta sin series; revisa indicador, fuente y token"
+            "No se encontró el encabezado Fecha"
         )
-
-    coincidencias = [
-        serie
-        for serie in series
-        if str(serie.get("INDICADOR")) == INDICADOR
-    ]
-
-    if len(coincidencias) != 1:
-        raise RuntimeError(
-            "No se encontró una serie única del indicador configurado"
-        )
-
-    return coincidencias[0]
-
-
-def extraer_indices(serie):
-    observaciones = serie.get("OBSERVATIONS")
-
-    if not isinstance(observaciones, list):
-        raise RuntimeError("No hay observaciones")
 
     valores = {}
 
-    for obs in observaciones:
-        periodo = str(
-            obs.get("TIME_PERIOD", "")
-        ).strip()
+    for fila in filas[encabezado + 1:]:
+        if len(fila) <= columna:
+            continue
+
+        periodo = fila[0].strip()
 
         coincidencia = re.fullmatch(
-            r"(\d{4})[-/](0?[1-9]|1[0-2])",
+            r"(Ene|Feb|Mar|Abr|May|Jun|Jul|Ago|"
+            r"Sep|Oct|Nov|Dic)\s+(\d{4})",
             periodo,
         )
 
         if not coincidencia:
             continue
 
+        mes = MESES[coincidencia.group(1)]
+        anio = int(coincidencia.group(2))
+
+        bruto = fila[columna].strip()
+
         try:
-            valor = Decimal(
-                str(obs.get("OBS_VALUE", "")).strip()
-            )
+            valor = Decimal(bruto)
         except InvalidOperation:
             continue
 
         if not valor.is_finite() or valor <= 0:
             continue
 
-        clave = (
-            int(coincidencia.group(1)),
-            int(coincidencia.group(2)),
+        indice = float(
+            valor.quantize(
+                Decimal("0.001"),
+                rounding=ROUND_HALF_UP,
+            )
         )
 
-        indice = valor.quantize(
-            Decimal("0.001"),
-            rounding=ROUND_HALF_UP,
-        )
+        clave = (anio, mes)
 
         if clave in valores and valores[clave] != indice:
             raise RuntimeError(
@@ -139,104 +221,44 @@ def extraer_indices(serie):
         valores[clave] = indice
 
     print(
-        "Indicador:", INDICADOR,
-        "Observaciones:", len(observaciones),
-        "Meses válidos:", len(valores),
+        f"Índices mensuales válidos: {len(valores)}",
         flush=True,
     )
 
-    print(
-        "Periodos 2026:",
-        [
-            f"{anio}-{mes:02d}"
-            for anio, mes in sorted(valores)
-            if anio == 2026
-        ],
-        flush=True,
-    )
+    if valores:
+        ultimo = max(valores)
 
-    print(
-        "Ejemplos de periodos originales:",
-        [
-            obs.get("TIME_PERIOD")
-            for obs in observaciones[:8]
-        ],
-        flush=True,
-    )
+        print(
+            "Último periodo recibido:",
+            f"{ultimo[0]}-{ultimo[1]:02d}",
+            flush=True,
+        )
 
     if len(valores) < 100:
         raise RuntimeError(
-            "La API devolvió menos de 100 meses válidos; "
-            "verifica el indicador"
+            "La descarga contiene pocos índices válidos"
         )
 
     return valores
 
 
-def leer_anteriores():
-    if not DESTINO.exists():
-        return {}, None
-
-    documento = json.loads(
-        DESTINO.read_text(encoding="utf-8")
-    )
-
-    anteriores = {}
-
-    for registro in documento.get("registros", []):
-        for mes, valor in enumerate(
-            registro["meses"], start=1
-        ):
-            if valor is not None:
-                anteriores[
-                    (int(registro["anio"]), mes)
-                ] = Decimal(str(valor))
-
-    return anteriores, documento
-
-
 def main():
     print(
-        "Consultando API oficial del INEGI...",
+        "Consultando CSV oficial del INEGI...",
         flush=True,
     )
 
-    serie = consultar_inegi()
-    valores = extraer_indices(serie)
+    contenido = descargar_csv()
+    valores = extraer_indices(contenido)
 
     hoy = date.today()
     inicio = hoy.year - 10
-
-    anteriores, documento_anterior = leer_anteriores()
-
-    # No cambiar la serie ni perder datos históricos.
-    for (anio, mes), anterior in anteriores.items():
-        if not inicio <= anio <= hoy.year:
-            continue
-
-        nuevo = valores.get((anio, mes))
-
-        if nuevo is None:
-            raise RuntimeError(
-                f"Falta el índice {anio}-{mes:02d}. "
-                "Se conserva el archivo anterior."
-            )
-
-        if abs(nuevo - anterior) > Decimal("0.001"):
-            raise RuntimeError(
-                f"Diferencia histórica en {anio}-{mes:02d}: "
-                f"publicado={anterior}, API={nuevo}. "
-                "Verifica la serie y la base; "
-                "no se modifica el archivo."
-            )
 
     registros = []
 
     for anio in range(hoy.year, inicio - 1, -1):
         meses = [
-            float(valores[(anio, mes)])
-            if (anio, mes) in valores
-            else None
+            valores.get((anio, mes))
             for mes in range(1, 13)
         ]
 
@@ -244,8 +266,7 @@ def main():
             valor is None for valor in meses
         ):
             raise RuntimeError(
-                f"Faltan índices del año {anio}; "
-                "no se modifica el archivo"
+                f"Faltan índices del año {anio}"
             )
 
         registros.append({
@@ -253,10 +274,54 @@ def main():
             "meses": meses,
         })
 
+    if not any(
+        valor is not None
+        for registro in registros
+        for valor in registro["meses"]
+    ):
+        raise RuntimeError(
+            "No se encontraron índices"
+        )
+
+    anteriores = {}
+
+    if DESTINO.exists():
+        anterior = json.loads(
+            DESTINO.read_text(encoding="utf-8")
+        )
+
+        for registro in anterior.get("registros", []):
+            for mes, valor in enumerate(
+                registro["meses"],
+                start=1,
+            ):
+                if valor is not None:
+                    anteriores[
+                        (int(registro["anio"]), mes)
+                    ] = Decimal(str(valor))
+
+    # Impedir que una descarga incompleta borre
+    # índices que ya estaban publicados.
+    for clave, valor in anteriores.items():
+        anio, mes = clave
+
+        if inicio <= anio <= hoy.year:
+            if clave not in valores:
+                raise RuntimeError(
+                    f"El INEGI no devolvió "
+                    f"{anio}-{mes:02d}. "
+                    "Se conserva el archivo anterior."
+                )
+
+    # Detectar si los índices cambiaron realmente.
     nuevos = {
-        clave: valor
-        for clave, valor in valores.items()
-        if inicio <= clave[0] <= hoy.year
+        (registro["anio"], mes): Decimal(str(valor))
+        for registro in registros
+        for mes, valor in enumerate(
+            registro["meses"],
+            start=1,
+        )
+        if valor is not None
     }
 
     anteriores_vigentes = {
@@ -266,15 +331,18 @@ def main():
     }
 
     if (
-        documento_anterior is not None
-        and nuevos == anteriores_vigentes
+        nuevos == anteriores_vigentes
+        and DESTINO.exists()
     ):
-        print("El INPC ya está actualizado.")
+        print(
+            "El INPC ya está actualizado.",
+            flush=True,
+        )
         return
 
     resultado = {
         "fuente": "INEGI",
-        "indicador": INDICADOR,
+        "indicador": SERIE,
         "descripcion": (
             "Índice Nacional de Precios al Consumidor"
         ),
@@ -300,15 +368,23 @@ def main():
 
     temporal.replace(DESTINO)
 
-    ultimo = max(nuevos)
+    ultimo = max(valores)
 
     print(
         "Último periodo disponible:",
         f"{ultimo[0]}-{ultimo[1]:02d}",
+        flush=True,
     )
-    print("INPC:", nuevos[ultimo])
+
     print(
-        "Archivo inpc.json actualizado correctamente."
+        "INPC:",
+        valores[ultimo],
+        flush=True,
+    )
+
+    print(
+        "Archivo inpc.json actualizado correctamente.",
+        flush=True,
     )
 
 

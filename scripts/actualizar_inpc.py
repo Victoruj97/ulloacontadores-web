@@ -1,6 +1,6 @@
 
 #!/usr/bin/env python3
-"""Actualiza el INPC mensual desde la API oficial del INEGI."""
+"""Actualiza el INPC desde la API oficial del INEGI sin perder datos previos."""
 
 import json
 import os
@@ -20,31 +20,29 @@ TOKEN = os.environ.get("INEGI_TOKEN", "").strip()
 INDICADOR = os.environ.get("INEGI_INPC_INDICADOR", "").strip()
 FUENTE = os.environ.get("INEGI_INPC_FUENTE", "BIE-BISE").strip()
 
-SERIE_ANTERIOR = "865541"
-
 
 def consultar_inegi():
-    if not TOKEN:
-        raise RuntimeError("Falta INEGI_TOKEN")
-
-    if not INDICADOR:
-        raise RuntimeError("Falta INEGI_INPC_INDICADOR")
+    if not TOKEN or not INDICADOR:
+        raise RuntimeError(
+            "Falta INEGI_TOKEN o INEGI_INPC_INDICADOR"
+        )
 
     if FUENTE not in ("BISE", "BIE-BISE"):
-        raise RuntimeError("Fuente del INEGI no válida")
+        raise RuntimeError("Fuente INEGI no válida")
 
     url = (
         "https://www.inegi.org.mx/app/api/indicadores/"
-        "desarrolladores/jsonxml/INDICATOR/"
-        f"{quote(INDICADOR, safe='')}/es/00/false/"
-        f"{FUENTE}/2.0/{quote(TOKEN, safe='')}?type=json"
+        "desarrolladores/"
+        f"jsonxml/INDICATOR/{quote(INDICADOR, safe='')}"
+        f"/es/00/false/{FUENTE}/2.0/"
+        f"{quote(TOKEN, safe='')}?type=json"
     )
 
     solicitud = Request(
         url,
         headers={
-            "User-Agent": "UlloaContadores-INPC/1.0",
             "Accept": "application/json",
+            "User-Agent": "UlloaContadores-INPC/1.0",
         },
     )
 
@@ -64,29 +62,29 @@ def consultar_inegi():
         datos = json.loads(contenido.decode("utf-8-sig"))
     except (UnicodeError, ValueError) as error:
         raise RuntimeError(
-            "El INEGI no devolvió un JSON válido"
+            "El INEGI no devolvió JSON válido"
         ) from error
 
-    if not isinstance(datos, dict):
-        raise RuntimeError("Respuesta inesperada del INEGI")
+    series = (
+        datos.get("Series")
+        if isinstance(datos, dict)
+        else None
+    )
 
-    series = datos.get("Series")
-
-    if not isinstance(series, list) or not series:
+    if not isinstance(series, list):
         raise RuntimeError(
-            "La API no devolvió series. "
-            "Verifica indicador, fuente y token."
+            "Respuesta sin series; revisa indicador, fuente y token"
         )
 
     coincidencias = [
-        serie for serie in series
+        serie
+        for serie in series
         if str(serie.get("INDICADOR")) == INDICADOR
     ]
 
     if len(coincidencias) != 1:
         raise RuntimeError(
-            "No se encontró una serie única para "
-            "el indicador configurado"
+            "No se encontró una serie única del indicador configurado"
         )
 
     return coincidencias[0]
@@ -96,13 +94,13 @@ def extraer_indices(serie):
     observaciones = serie.get("OBSERVATIONS")
 
     if not isinstance(observaciones, list):
-        raise RuntimeError("No hay observaciones válidas")
+        raise RuntimeError("No hay observaciones")
 
     valores = {}
 
-    for observacion in observaciones:
+    for obs in observaciones:
         periodo = str(
-            observacion.get("TIME_PERIOD", "")
+            obs.get("TIME_PERIOD", "")
         ).strip()
 
         coincidencia = re.fullmatch(
@@ -113,27 +111,25 @@ def extraer_indices(serie):
         if not coincidencia:
             continue
 
-        anio = int(coincidencia.group(1))
-        mes = int(coincidencia.group(2))
-
-        bruto = str(
-            observacion.get("OBS_VALUE", "")
-        ).strip()
-
         try:
-            valor = Decimal(bruto)
+            valor = Decimal(
+                str(obs.get("OBS_VALUE", "")).strip()
+            )
         except InvalidOperation:
             continue
 
         if not valor.is_finite() or valor <= 0:
             continue
 
+        clave = (
+            int(coincidencia.group(1)),
+            int(coincidencia.group(2)),
+        )
+
         indice = valor.quantize(
             Decimal("0.001"),
             rounding=ROUND_HALF_UP,
         )
-
-        clave = (anio, mes)
 
         if clave in valores and valores[clave] != indice:
             raise RuntimeError(
@@ -142,10 +138,36 @@ def extraer_indices(serie):
 
         valores[clave] = indice
 
+    print(
+        "Indicador:", INDICADOR,
+        "Observaciones:", len(observaciones),
+        "Meses válidos:", len(valores),
+        flush=True,
+    )
+
+    print(
+        "Periodos 2026:",
+        [
+            f"{anio}-{mes:02d}"
+            for anio, mes in sorted(valores)
+            if anio == 2026
+        ],
+        flush=True,
+    )
+
+    print(
+        "Ejemplos de periodos originales:",
+        [
+            obs.get("TIME_PERIOD")
+            for obs in observaciones[:8]
+        ],
+        flush=True,
+    )
+
     if len(valores) < 100:
         raise RuntimeError(
-            "La API devolvió menos de 100 índices "
-            "mensuales válidos. Verifica el indicador."
+            "La API devolvió menos de 100 meses válidos; "
+            "verifica el indicador"
         )
 
     return valores
@@ -155,79 +177,44 @@ def leer_anteriores():
     if not DESTINO.exists():
         return {}, None
 
-    datos = json.loads(
+    documento = json.loads(
         DESTINO.read_text(encoding="utf-8")
     )
 
     anteriores = {}
 
-    for registro in datos.get("registros", []):
-        anio = int(registro["anio"])
-
+    for registro in documento.get("registros", []):
         for mes, valor in enumerate(
             registro["meses"], start=1
         ):
             if valor is not None:
-                anteriores[(anio, mes)] = Decimal(
-                    str(valor)
-                )
+                anteriores[
+                    (int(registro["anio"]), mes)
+                ] = Decimal(str(valor))
 
-    return anteriores, datos
+    return anteriores, documento
 
 
 def main():
-    print("Consultando API oficial del INEGI...", flush=True)
+    print(
+        "Consultando API oficial del INEGI...",
+        flush=True,
+    )
 
     serie = consultar_inegi()
-valores = extraer_indices(serie)
-
-print("Indicador consultado:", INDICADOR, flush=True)
-print("Observaciones recibidas:",
-      len(serie.get("OBSERVATIONS", [])), flush=True)
-print("Índices mensuales válidos:",
-      len(valores), flush=True)
-
-print("Periodos 2026:", [
-    f"{anio}-{mes:02d}"
-    for anio, mes in sorted(valores)
-    if anio == 2026
-], flush=True)
-
-print("Ejemplos de periodos originales:",
-      [
-          obs.get("TIME_PERIOD")
-          for obs in serie.get("OBSERVATIONS", [])[:10]
-      ], flush=True)
+    valores = extraer_indices(serie)
 
     hoy = date.today()
     inicio = hoy.year - 10
 
     anteriores, documento_anterior = leer_anteriores()
 
-    # No permitir cambiar silenciosamente de serie.
-    if documento_anterior:
-        indicador_previo = str(
-            documento_anterior.get("indicador", "")
-        )
-
-        if indicador_previo not in (
-            INDICADOR,
-            SERIE_ANTERIOR,
-        ):
-            raise RuntimeError(
-                "El indicador existente no coincide "
-                "con el configurado. Revisión necesaria."
-            )
-
-    # Verificar que los datos históricos publicados
-    # sean compatibles con la serie consultada.
-    for clave, anterior in anteriores.items():
-        anio, mes = clave
-
+    # No cambiar la serie ni perder datos históricos.
+    for (anio, mes), anterior in anteriores.items():
         if not inicio <= anio <= hoy.year:
             continue
 
-        nuevo = valores.get(clave)
+        nuevo = valores.get((anio, mes))
 
         if nuevo is None:
             raise RuntimeError(
@@ -237,30 +224,28 @@ print("Ejemplos de periodos originales:",
 
         if abs(nuevo - anterior) > Decimal("0.001"):
             raise RuntimeError(
-                f"Diferencia histórica en "
-                f"{anio}-{mes:02d}: "
+                f"Diferencia histórica en {anio}-{mes:02d}: "
                 f"publicado={anterior}, API={nuevo}. "
-                "Verifica que sea la misma serie "
-                "y base del INPC."
+                "Verifica la serie y la base; "
+                "no se modifica el archivo."
             )
 
     registros = []
 
     for anio in range(hoy.year, inicio - 1, -1):
-        meses = []
-
-        for mes in range(1, 13):
-            valor = valores.get((anio, mes))
-            meses.append(
-                float(valor) if valor is not None else None
-            )
+        meses = [
+            float(valores[(anio, mes)])
+            if (anio, mes) in valores
+            else None
+            for mes in range(1, 13)
+        ]
 
         if anio < hoy.year and any(
             valor is None for valor in meses
         ):
             raise RuntimeError(
-                f"Faltan índices del año {anio}. "
-                "Se conserva el archivo anterior."
+                f"Faltan índices del año {anio}; "
+                "no se modifica el archivo"
             )
 
         registros.append({
@@ -298,7 +283,8 @@ print("Ejemplos de periodos originales:",
     }
 
     DESTINO.parent.mkdir(
-        parents=True, exist_ok=True
+        parents=True,
+        exist_ok=True,
     )
 
     temporal = DESTINO.with_suffix(".json.tmp")
@@ -321,7 +307,9 @@ print("Ejemplos de periodos originales:",
         f"{ultimo[0]}-{ultimo[1]:02d}",
     )
     print("INPC:", nuevos[ultimo])
-    print("Archivo inpc.json actualizado correctamente.")
+    print(
+        "Archivo inpc.json actualizado correctamente."
+    )
 
 
 if __name__ == "__main__":
@@ -329,4 +317,3 @@ if __name__ == "__main__":
         main()
     except Exception as error:
         sys.exit(f"ERROR: {error}")
-

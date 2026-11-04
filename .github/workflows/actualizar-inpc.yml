@@ -38,12 +38,19 @@ jobs:
           fi
 
       
+    
       - name: Consultar INPC del INEGI
         env:
           INEGI_TOKEN: ${{ secrets.INEGI_TOKEN }}
           INEGI_INPC_INDICADOR: ${{ vars.INEGI_INPC_INDICADOR }}
           INEGI_INPC_FUENTE: BIE-BISE
-        run: python scripts/actualizar_inpc.py
+        run: |
+          python -m pip install --upgrade certifi
+          export SSL_CERT_FILE="$(python -m certifi)"
+          echo "Verificando certificados HTTPS..."
+          python -c "import ssl; print(ssl.get_default_verify_paths())"
+          python scripts/actualizar_inpc.py
+
 
 
       - name: Guardar datos actualizados

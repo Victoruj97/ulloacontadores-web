@@ -1056,6 +1056,33 @@
     });
 
     /* ============================================
+   COPIAR TABLA COMPLETA CON ENCABEZADOS
+   ============================================ */
+
+$("table").addEventListener("copy", function (event) {
+  const selection = window.getSelection();
+
+  if (!selection || selection.isCollapsed) {
+    return;
+  }
+
+  const table = $("table");
+
+  const rows = Array.from(table.rows).map(row =>
+    Array.from(row.cells).map(cell => cell.textContent.trim())
+  );
+
+  const text = rows
+    .map(row => row.join("\t"))
+    .join("\n");
+
+  const html = table.outerHTML;
+
+  event.clipboardData.setData("text/plain", text);
+  event.clipboardData.setData("text/html", html);
+  event.preventDefault();
+});
+    /* ============================================
        VALIDACIÓN DE ESTRUCTURA
        ============================================ */
 

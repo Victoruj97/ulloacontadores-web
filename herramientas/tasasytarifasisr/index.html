@@ -231,42 +231,43 @@ footer {
   .category span { font-size:11px; }
 }
 
-/* Cabecera y pie de página institucionales */
-.site-nav{background:var(--white);border-bottom:1px solid var(--ivory)}
-.site-nav-inner,.site-footer-inner{max-width:1160px;margin:auto;padding:0 20px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+/* Encabezado y pie idénticos a la calculadora de recargos */
+.site-nav{background:#fff;border-bottom:1px solid var(--light);position:sticky;top:0;z-index:10}
+.site-nav-inner,.site-footer-inner{width:min(1380px,94%);margin:auto;display:flex;align-items:center;justify-content:space-between;gap:34px}
 .site-nav-inner{min-height:100px}
-.brand{display:inline-flex;align-items:center;flex-shrink:0;text-decoration:none;min-width:145px}
-.brand img{width:145px;max-height:85px;object-fit:contain;object-position:left center}
-.brand-fallback{font-size:13px;letter-spacing:.16em;font-weight:700;color:var(--navy)}
-.site-links{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
-.site-links a{display:inline-block;text-decoration:none;font-weight:700;font-size:13px;padding:13px 15px;border-radius:9px}
-.site-links a:hover,.site-links a:focus-visible{background:var(--ivory)}
-.site-links a.selected{background:var(--navy);color:var(--white)}
-.hero{position:relative;overflow:hidden;padding:54px 20px 58px}
-.hero::after{content:"";position:absolute;width:350px;height:350px;border:1px solid var(--mid);border-radius:50%;right:-95px;top:-155px;opacity:.5;pointer-events:none}
-.hero-inner{max-width:1160px;margin:auto;position:relative;z-index:1}
-.hero small{font-size:11px;font-weight:700}
-.hero h1{font-size:clamp(30px,4vw,46px);letter-spacing:-.025em;margin:14px 0 12px}
-.hero p{max-width:650px}
-.site-footer{background:var(--navy);padding:34px 0;color:var(--light)}
-.site-footer-inner{min-height:105px}
-.footer-brand .brand-fallback{color:var(--ivory)}
-.footer-copy{text-align:right;line-height:1.9}
-@media(max-width:760px){.site-nav-inner{flex-direction:column;align-items:flex-start;padding-top:16px;padding-bottom:16px;gap:8px}.site-links{justify-content:flex-start;gap:2px}.site-links a{padding:9px;font-size:12px}.hero{padding:38px 20px}.hero::after{right:-220px}.site-footer-inner{align-items:flex-start;flex-direction:column}.footer-copy{text-align:left}}
+.brand{display:block;flex-shrink:0;text-decoration:none}
+.site-nav .brand img{display:block;width:198px;height:78px;object-fit:contain;object-position:left center}
+.site-links{display:flex;flex-wrap:wrap;align-items:center;gap:13px}
+.site-links a{display:inline-block;text-decoration:none;padding:11px 15px;border-radius:8px;font-size:14px;font-weight:650;transition:background .2s,color .2s}
+.site-links a:hover,.site-links a:focus-visible{background:var(--ivory);color:var(--mid)}
+.site-links a.selected{background:var(--navy);color:#fff}
+.hero{position:relative;overflow:hidden;padding:51px 20px 57px}
+.hero::after{content:"";position:absolute;right:-105px;top:-165px;width:440px;height:440px;border:1px solid var(--mid);border-radius:50%;opacity:.5;pointer-events:none}
+.hero-inner{width:min(1380px,94%);margin:auto;position:relative;z-index:1}
+.hero small{font-size:11px;letter-spacing:2.1px;font-weight:750}
+.hero h1{font-size:clamp(30px,4vw,46px);line-height:1.15;letter-spacing:-1px;margin:12px 0}
+.hero p{max-width:660px;font-size:16px}
+.site-footer{background:#293F56;color:#ECEBE8;padding:45px 0;border-top:1px solid #667F95;text-align:initial;font-size:13px}
+.site-footer-inner{gap:30px}
+.site-footer .brand img{display:block;width:175px;height:85px;object-fit:contain;object-position:left center}
+.footer-copy{color:#ABBCC6;font-size:13px;text-align:right;line-height:1.55}
+.footer-copy p{margin:4px 0;font-size:13px;color:#ABBCC6}
+@media(max-width:850px){.site-nav-inner{flex-direction:column;padding:10px 0 15px;gap:5px}.site-links{justify-content:center}}
+@media(max-width:600px){.site-footer-inner{flex-direction:column;align-items:flex-start}.footer-copy{text-align:left}.site-footer .brand img{width:160px;height:75px}}
+@media(max-width:550px){.site-nav .brand img{width:155px;height:60px}.site-links{gap:2px;justify-content:center}.site-links a{font-size:12px;padding:8px}.hero{padding:38px 20px}}
 </style>
 </head>
 
 <body>
 
 <div class="site-nav"><div class="site-nav-inner">
-  <a class="brand" href="/" aria-label="Ulloa Contadores, inicio">
-    <img src="/assets/logo-ulloa-contadores.png" alt="Ulloa Contadores" onerror="this.hidden=true;this.nextElementSibling.hidden=false">
-    <span class="brand-fallback" hidden>ULLOA CONTADORES</span>
-  </a>
+  <a class="brand" href="/" aria-label="Ulloa Contadores, ir al inicio"><img src="/PNG%20OBSCURO.png" alt="Ulloa Contadores"></a>
   <nav class="site-links" aria-label="Navegación principal">
-    <a href="/">Inicio</a><a href="/servicios/">Servicios</a>
-    <a class="selected" href="/herramientas/" aria-current="page">Herramientas</a>
-    <a href="/articulos/">Artículos</a><a href="/contacto/">Contacto</a>
+    <a href="/#inicio">Inicio</a>
+    <a href="/#servicios">Servicios</a>
+    <a class="selected" href="/#herramientas" aria-current="page">Herramientas</a>
+    <a href="/#articulos">Artículos</a>
+    <a href="/#contacto">Contacto</a>
   </nav>
 </div></div>
 <header class="hero">
@@ -398,11 +399,13 @@ footer {
 </main>
 
 <footer class="site-footer"><div class="site-footer-inner">
-  <a class="brand footer-brand" href="/" aria-label="Ulloa Contadores, inicio">
-    <img src="/assets/logo-ulloa-contadores-blanco.png" alt="Ulloa Contadores" onerror="this.hidden=true;this.nextElementSibling.hidden=false">
-    <span class="brand-fallback" hidden>ULLOA CONTADORES</span>
+  <a class="brand" href="/#inicio" aria-label="Volver al inicio de Ulloa Contadores">
+    <img src="/PNG%20CLARO.png" alt="Ulloa Contadores">
   </a>
-  <div class="footer-copy">© 2026 Ulloa Contadores. Todos los derechos reservados.<div>Soluciones contables, fiscales y financieras.</div></div>
+  <div class="footer-copy">
+    <p>© 2026 Ulloa Contadores. Todos los derechos reservados.</p>
+    <p>Soluciones contables, fiscales y financieras.</p>
+  </div>
 </div></footer>
 
 <script>

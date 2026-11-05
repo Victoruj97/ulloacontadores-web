@@ -249,9 +249,9 @@ footer {
 .site-links a{display:inline-block;text-decoration:none;padding:11px 15px;border-radius:8px;font-size:14px;font-weight:650;transition:background .2s,color .2s}
 .site-links a:hover,.site-links a:focus-visible{background:var(--ivory);color:var(--mid)}
 .site-links a.selected{background:var(--navy);color:#fff}
-.hero{position:relative;overflow:hidden;padding:51px 20px 57px}
+.hero{position:relative;overflow:hidden;padding:0}
 .hero::after{content:"";position:absolute;right:-105px;top:-165px;width:440px;height:440px;border:1px solid var(--mid);border-radius:50%;opacity:.5;pointer-events:none}
-.hero-inner{width:min(1380px,94%);margin:auto;position:relative;z-index:1}
+.hero-inner{width:min(1380px,94%);margin:auto;position:relative;z-index:1;padding:51px 0 57px}
 .hero small{font-size:11px;letter-spacing:2.1px;font-weight:750}
 .hero h1{font-size:clamp(30px,4vw,46px);line-height:1.15;letter-spacing:-1px;margin:12px 0}
 .hero p{max-width:660px;font-size:16px}
@@ -262,7 +262,7 @@ footer {
 .footer-copy p{margin:4px 0;font-size:13px;color:#ABBCC6}
 @media(max-width:850px){.site-nav-inner{flex-direction:column;padding:10px 0 15px;gap:5px}.site-links{justify-content:center}}
 @media(max-width:600px){.site-footer-inner{flex-direction:column;align-items:flex-start}.footer-copy{text-align:left}.site-footer .brand img{width:160px;height:75px}}
-@media(max-width:550px){.site-nav .brand img{width:155px;height:60px}.site-links{gap:2px;justify-content:center}.site-links a{font-size:12px;padding:8px}.hero{padding:38px 20px}}
+@media(max-width:550px){.site-nav .brand img{width:155px;height:60px}.site-links{gap:2px;justify-content:center}.site-links a{font-size:12px;padding:8px}.hero-inner{padding:38px 0}}
 </style>
 </head>
 

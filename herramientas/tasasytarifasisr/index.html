@@ -230,18 +230,51 @@ footer {
   .category strong { font-size:12px; }
   .category span { font-size:11px; }
 }
+
+/* Cabecera y pie de página institucionales */
+.site-nav{background:var(--white);border-bottom:1px solid var(--ivory)}
+.site-nav-inner,.site-footer-inner{max-width:1160px;margin:auto;padding:0 20px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.site-nav-inner{min-height:100px}
+.brand{display:inline-flex;align-items:center;flex-shrink:0;text-decoration:none;min-width:145px}
+.brand img{width:145px;max-height:85px;object-fit:contain;object-position:left center}
+.brand-fallback{font-size:13px;letter-spacing:.16em;font-weight:700;color:var(--navy)}
+.site-links{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.site-links a{display:inline-block;text-decoration:none;font-weight:700;font-size:13px;padding:13px 15px;border-radius:9px}
+.site-links a:hover,.site-links a:focus-visible{background:var(--ivory)}
+.site-links a.selected{background:var(--navy);color:var(--white)}
+.hero{position:relative;overflow:hidden;padding:54px 20px 58px}
+.hero::after{content:"";position:absolute;width:350px;height:350px;border:1px solid var(--mid);border-radius:50%;right:-95px;top:-155px;opacity:.5;pointer-events:none}
+.hero-inner{max-width:1160px;margin:auto;position:relative;z-index:1}
+.hero small{font-size:11px;font-weight:700}
+.hero h1{font-size:clamp(30px,4vw,46px);letter-spacing:-.025em;margin:14px 0 12px}
+.hero p{max-width:650px}
+.site-footer{background:var(--navy);padding:34px 0;color:var(--light)}
+.site-footer-inner{min-height:105px}
+.footer-brand .brand-fallback{color:var(--ivory)}
+.footer-copy{text-align:right;line-height:1.9}
+@media(max-width:760px){.site-nav-inner{flex-direction:column;align-items:flex-start;padding-top:16px;padding-bottom:16px;gap:8px}.site-links{justify-content:flex-start;gap:2px}.site-links a{padding:9px;font-size:12px}.hero{padding:38px 20px}.hero::after{right:-220px}.site-footer-inner{align-items:flex-start;flex-direction:column}.footer-copy{text-align:left}}
 </style>
 </head>
 
 <body>
 
+<div class="site-nav"><div class="site-nav-inner">
+  <a class="brand" href="/" aria-label="Ulloa Contadores, inicio">
+    <img src="/assets/logo-ulloa-contadores.png" alt="Ulloa Contadores" onerror="this.hidden=true;this.nextElementSibling.hidden=false">
+    <span class="brand-fallback" hidden>ULLOA CONTADORES</span>
+  </a>
+  <nav class="site-links" aria-label="Navegación principal">
+    <a href="/">Inicio</a><a href="/servicios/">Servicios</a>
+    <a class="selected" href="/herramientas/" aria-current="page">Herramientas</a>
+    <a href="/articulos/">Artículos</a><a href="/contacto/">Contacto</a>
+  </nav>
+</div></div>
 <header class="hero">
-  <small>Ulloa Contadores · Herramientas fiscales</small>
-  <h1>Tasas y tarifas de ISR 2026</h1>
-  <p>
-    Consulta las tarifas aplicables a pagos provisionales,
-    retenciones y cálculo del Impuesto sobre la Renta.
-  </p>
+  <div class="hero-inner">
+    <small>HERRAMIENTAS DIGITALES</small>
+    <h1>Tasas y tarifas de ISR 2026</h1>
+    <p>Consulta las tarifas aplicables a pagos provisionales, retenciones y cálculo del Impuesto sobre la Renta.</p>
+  </div>
 </header>
 
 <main>
@@ -250,9 +283,9 @@ footer {
   <span class="tag">ISR · Ejercicio 2026</span>
   <h2>Selecciona tu consulta</h2>
   <p class="muted">
-    Elige una categoría y después la tarifa que necesitas.
-    Para copiar una tabla completa a Excel, selecciona
-    su contenido y presiona ⌘ + C.
+    Elige una categoría y selecciona la tarifa que deseas consultar.
+    Para copiar una tabla a Excel, selecciona su contenido y utiliza
+    Ctrl + C (Windows) o ⌘ + C (Mac).
   </p>
 
   <nav class="categories" aria-label="Categorías de ISR">
@@ -364,9 +397,13 @@ footer {
 
 </main>
 
-<footer>
-  Ulloa Contadores · Información fiscal 2026
-</footer>
+<footer class="site-footer"><div class="site-footer-inner">
+  <a class="brand footer-brand" href="/" aria-label="Ulloa Contadores, inicio">
+    <img src="/assets/logo-ulloa-contadores-blanco.png" alt="Ulloa Contadores" onerror="this.hidden=true;this.nextElementSibling.hidden=false">
+    <span class="brand-fallback" hidden>ULLOA CONTADORES</span>
+  </a>
+  <div class="footer-copy">© 2026 Ulloa Contadores. Todos los derechos reservados.<div>Soluciones contables, fiscales y financieras.</div></div>
+</div></footer>
 
 <script>
 "use strict";

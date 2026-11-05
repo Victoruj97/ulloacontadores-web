@@ -199,6 +199,14 @@ select,input {
   text-align:right;
   white-space:normal;
 }
+.table-wrap.retenciones-table { overflow-x:auto; }
+.table-wrap.retenciones-table table { min-width:850px; width:100%; }
+.table-wrap.retenciones-table th,
+.table-wrap.retenciones-table td { text-align:left; white-space:normal; vertical-align:top; line-height:1.5; }
+.table-wrap.retenciones-table th:nth-child(1) { width:31%; }
+.table-wrap.retenciones-table th:nth-child(2) { width:17%; }
+.table-wrap.retenciones-table th:nth-child(3) { width:31%; }
+.table-wrap.retenciones-table th:nth-child(4) { width:21%; }
 .source {
   border-top:1px solid var(--light);
   margin-top:22px;
@@ -327,9 +335,15 @@ footer {
     </button>
 
     <button type="button" class="category"
+      data-cat="retenciones" aria-pressed="false">
+      <strong>Retenciones de ISR</strong>
+      <span>Operaciones habituales, plataformas e intereses</span>
+    </button>
+
+    <button type="button" class="category"
       data-cat="resico" aria-pressed="false">
       <strong>RESICO</strong>
-      <span>Tasas mensuales, retenciones y personas morales</span>
+      <span>Pagos mensuales y personas morales</span>
     </button>
   </nav>
 
@@ -813,30 +827,6 @@ addResico(
   "presenta declaración anual por estos ingresos."
 );
 
-addResico(
-  "RESICO personas físicas · retención por personas morales",
-  [
-    "Concepto",
-    "Tasa de retención (%)"
-  ],
-  ["text","rate"],
-  [
-    [
-      "Pagos de personas morales a personas físicas RESICO",
-      1.25
-    ]
-  ],
-  "Artículo 113-J LISR y disposiciones aplicables.",
-  "Cuando una persona moral paga a una persona " +
-  "física que tributa en RESICO, debe efectuar " +
-  "la retención del 1.25% sobre el importe " +
-  "efectivamente pagado, sin incluir IVA, " +
-  "conforme al artículo 113-J de la LISR. " +
-  "La retención puede disminuirse del ISR " +
-  "mensual en los términos legales. Deben " +
-  "considerarse las disposiciones especiales " +
-  "aplicables, entre otras, al sector primario."
-);
 
 addResico(
   "RESICO personas morales · tasa de ISR",
@@ -861,6 +851,78 @@ addResico(
   "no se aplica directamente al total de " +
   "ingresos cobrados."
 );
+
+
+/* ============================================
+   RETENCIONES ISR 2026 (sin salarios)
+   Referencias por operación, no calculadora.
+============================================ */
+const LIF_URL="https://www.diputados.gob.mx/LeyesBiblio/pdf/LIF_2026.pdf";
+
+function addRetencion(title, rows, legal, note, lif=false) {
+  items.push({
+    id:"retenciones-"+items.length,
+    cat:"retenciones",
+    title,
+    headers:["Operación / supuesto","Tasa ISR","Base de retención","Quién retiene"],
+    types:["text","text","text","text"],
+    rows,
+    legal,
+    note,
+    year:2026,
+    source:lif?LIF_URL:LISR_URL,
+    sourceLabel:lif?"Ley de Ingresos de la Federación 2026":"Ley del Impuesto sobre la Renta"
+  });
+}
+
+addRetencion("Operaciones habituales",[
+  ["Servicios profesionales de PF del régimen general a PM","10 %","Monto del pago, sin IVA","Persona moral pagadora"],
+  ["Arrendamiento de inmuebles de PF a PM","10 %","Monto del pago, sin IVA","Persona moral arrendataria"],
+  ["PF RESICO que recibe pagos de PM","1.25 %","Monto efectivamente pagado, sin IVA","Persona moral pagadora"]
+],"Arts. 106, 116 y 113-J LISR.",
+"No aplicar el 10 % de honorarios a cualquier actividad empresarial: corresponde a servicios profesionales bajo el supuesto legal. La retención RESICO requiere verificar que la persona física tribute en ese régimen; considerar disposiciones especiales, incluido el sector primario.");
+
+addRetencion("Plataformas tecnológicas · personas físicas",[
+  ["Transporte terrestre de pasajeros y entrega de bienes","2.1 %","Ingresos obtenidos mediante la plataforma, sin IVA","Plataforma tecnológica"],
+  ["Hospedaje","4 %","Ingresos obtenidos mediante la plataforma, sin IVA","Plataforma tecnológica"],
+  ["Enajenación de bienes y prestación de servicios","2.5 %","Ingresos obtenidos mediante la plataforma, sin IVA","Plataforma tecnológica"]
+],"Art. 113-A LISR; art. 25, fr. VI, LIF 2026.",
+"La LIF 2026 sustituye para enajenación de bienes y prestación de servicios la tasa de 1 % del art. 113-A, fr. III, por 2.5 %. La falta de RFC puede activar una retención distinta conforme a las reglas del art. 113-A. No confundir con retenciones de IVA.",true);
+
+addRetencion("Plataformas tecnológicas · personas morales",[
+  ["PM que proporciona RFC","2.5 %","Ingresos por enajenación de bienes y servicios a través de plataforma, sin deducciones","Plataforma tecnológica"],
+  ["PM que no proporciona RFC","20 %","Ingresos por enajenación de bienes y servicios a través de plataforma, sin deducciones","Plataforma tecnológica"]
+],"Art. 25, fr. VI, LIF 2026.",
+"El 20 % sustituye el 2.5 % cuando la persona moral no proporciona su RFC. La retención puede acreditarse en los términos de la Ley de Ingresos 2026.",true);
+
+addRetencion("Intereses e inversiones",[
+  ["Intereses: supuesto general 2026","0.90 % anual","Capital que genera los intereses, proporcional al plazo","Institución o pagador obligado"],
+  ["Intereses nominales: supuesto del art. 134, segundo párrafo","20 %","Intereses nominales","Pagador obligado"],
+  ["Financiamiento colectivo: intereses a residentes nacionales comprendidos en la disposición","20 %","Intereses nominales pagados","Institución de financiamiento colectivo"]
+],"Arts. 54, 134 y 135 LISR; arts. 24 y 25, fr. VIII, LIF 2026.",
+"La tasa del 0.90 % es ANUAL y se calcula sobre el capital, no sobre los intereses cobrados. Los supuestos de retención del 20 % tienen requisitos específicos; no son tasas alternativas de libre elección.",true);
+
+addRetencion("Dividendos y premios",[
+  ["Dividendos a PF residentes en México sujetos al ISR adicional","10 %","Dividendo o utilidad distribuida sujetos a la retención","Persona moral distribuidora"],
+  ["Premios: supuesto general federal","1 %","Valor del premio, sin deducción","Organizador obligado"],
+  ["Premios: supuesto con impuesto local que excede el umbral legal","21 %","Valor del premio, sin deducción","Organizador obligado"]
+],"Arts. 138 y 140 LISR.",
+"La tasa de premios depende del impuesto local y de los requisitos del artículo 138. El ISR adicional sobre dividendos no sustituye el impuesto corporativo y puede haber tratamientos transitorios.");
+
+addRetencion("Enajenación de bienes y acciones",[
+  ["Enajenación de ciertos bienes muebles por PF","20 % (general)","Monto de la operación, sujeto a excepciones","Adquirente obligado"],
+  ["Enajenación de acciones por PF","20 % (general)","Monto de la operación, con opciones legales","Adquirente obligado"],
+  ["Enajenación de inmuebles por PF","Cálculo especial","Ganancia determinada conforme a LISR","Fedatario, cuando corresponda"]
+],"Art. 126 LISR y disposiciones reglamentarias aplicables.",
+"Las retenciones del 20 % no son universales: existen montos mínimos, exenciones, reglas para adquisición y opciones de dictamen o determinación sobre ganancia. En inmuebles no se debe aplicar una tasa fija a toda la operación.");
+
+addRetencion("Pagos a residentes en el extranjero · consulta avanzada",[
+  ["Honorarios por servicios personales independientes","Variable","Según fuente de riqueza y supuesto legal","Pagador obligado"],
+  ["Regalías y asistencia técnica","Variable","Según naturaleza del pago y reglas aplicables","Pagador obligado"],
+  ["Intereses","4.9 %, 10 %, 15 %, 21 % o 35 % (según supuesto)","Intereses sujetos a retención","Pagador obligado"],
+  ["Dividendos sujetos a retención adicional","10 % (supuesto general)","Dividendos gravados","Distribuidor obligado"]
+],"Título V LISR, en particular arts. 156, 164, 166 y 167; tratados aplicables.",
+"APARTADO INFORMATIVO. No aplicar una tasa sin comprobar residencia fiscal, beneficiario efectivo, fuente de riqueza, establecimiento permanente, requisitos de tratado y naturaleza del pago. Las tasas de tratados pueden modificar las internas.");
 
 /* ============================================
    INTERFAZ
@@ -942,8 +1004,8 @@ function updateOptions() {
     matches.length+
     (
       matches.length===1
-        ?" tarifa disponible"
-        :" tarifas disponibles"
+        ?" tabla disponible"
+        :" tablas disponibles"
     );
 
   if(matches.length) {
@@ -963,7 +1025,9 @@ function showItem(item) {
   $("badge").textContent=
     item.cat==="resico"
       ?"Ley del ISR · RESICO"
-      :"Anexo 8 · RMF 2026";
+      :item.cat==="retenciones"
+        ?"Retenciones ISR · 2026"
+        :"Anexo 8 · RMF 2026";
 
   $("description").textContent=
     "Ejercicio fiscal "+item.year;
@@ -975,6 +1039,7 @@ function showItem(item) {
 
   const table=$("table");
   table.parentElement.classList.toggle("resico-table",item.cat==="resico");
+  table.parentElement.classList.toggle("retenciones-table",item.cat==="retenciones");
   const head=table.tHead;
   const body=table.tBodies[0];
 

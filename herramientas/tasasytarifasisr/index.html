@@ -2,1365 +2,1109 @@
 <!DOCTYPE html>
 <html lang="es-MX">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#293F56">
-<meta name="description" content="Consulta de tasas y tarifas de ISR 2026, Anexo 8 de la RMF y RESICO. Ulloa Contadores.">
-<title>Tasas y tarifas de ISR 2026 | Ulloa Contadores</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#293F56">
+  <meta name="description" content="Consulta de tasas y tarifas de ISR 2026, Anexo 8 de la RMF y RESICO. Ulloa Contadores.">
 
-<style>
-:root {
-  --navy: #293F56;
-  --mid: #667F95;
-  --light: #ABBCC6;
-  --ivory: #ECEBE8;
-  --white: #FFFFFF;
-}
+  <title>Tasas y tarifas de ISR 2026 | Ulloa Contadores</title>
 
-* { box-sizing: border-box; }
+  <style>
+    :root {
+      --navy: #293F56;
+      --mid: #667F95;
+      --light: #ABBCC6;
+      --ivory: #ECEBE8;
+      --white: #FFFFFF;
+    }
 
-html { scroll-behavior: smooth; }
+    * {
+      box-sizing: border-box;
+    }
 
-body {
-  margin: 0;
-  background: var(--ivory);
-  color: var(--navy);
-  font-family: Montserrat, Arial, sans-serif;
-  line-height: 1.55;
-}
+    html {
+      scroll-behavior: smooth;
+    }
 
-button, input, select { font: inherit; }
-button { cursor: pointer; }
-a { color: var(--navy); }
+    body {
+      margin: 0;
+      background: var(--ivory);
+      color: var(--navy);
+      font-family: Montserrat, Arial, sans-serif;
+      line-height: 1.55;
+    }
 
-.hero {
-  background: var(--navy);
-  color: var(--white);
-  padding: 55px max(20px, calc((100vw - 1160px) / 2));
-}
+    button,
+    input,
+    select {
+      font: inherit;
+    }
 
-.hero small {
-  color: var(--light);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-}
+    button {
+      cursor: pointer;
+    }
 
-.hero h1 {
-  font-size: clamp(30px, 4.5vw, 48px);
-  line-height: 1.18;
-  margin: 16px 0;
-}
+    a {
+      color: var(--navy);
+    }
 
-.hero p {
-  max-width: 700px;
-  color: var(--ivory);
-  margin: 0;
-}
+    .hero {
+      background: var(--navy);
+      color: var(--white);
+      padding: 55px max(20px, calc((100vw - 1160px) / 2));
+    }
 
-main {
-  max-width: 1160px;
-  margin: 32px auto;
-  padding: 0 20px;
-}
+    .hero small {
+      color: var(--light);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
 
-.panel {
-  background: var(--white);
-  border: 1px solid var(--light);
-  border-radius: 14px;
-  padding: 28px;
-  margin-bottom: 22px;
-}
+    .hero h1 {
+      font-size: clamp(30px, 4.5vw, 48px);
+      line-height: 1.18;
+      margin: 16px 0;
+    }
 
-h2 {
-  font-size: 23px;
-  margin: 0 0 10px;
-}
+    .hero p {
+      max-width: 700px;
+      color: var(--ivory);
+      margin: 0;
+    }
 
-.muted { color: var(--mid); }
-.small { font-size: 13px; }
+    main {
+      max-width: 1160px;
+      margin: 32px auto;
+      padding: 0 20px;
+    }
 
-.tag {
-  display: inline-block;
-  background: var(--ivory);
-  border: 1px solid var(--light);
-  border-radius: 20px;
-  padding: 5px 12px;
-  font-size: 12px;
-  margin-bottom: 14px;
-}
+    .panel {
+      background: var(--white);
+      border: 1px solid var(--light);
+      border-radius: 14px;
+      padding: 28px;
+      margin-bottom: 22px;
+    }
 
-.categories {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin: 23px 0;
-}
+    h2 {
+      font-size: 23px;
+      margin: 0 0 10px;
+    }
 
-.category {
-  border: 1px solid var(--light);
-  background: var(--white);
-  border-radius: 10px;
-  padding: 18px;
-  text-align: left;
-  color: var(--navy);
-  transition: background .15s, color .15s;
-}
+    .muted {
+      color: var(--mid);
+    }
 
-.category strong {
-  display: block;
-  font-size: 14px;
-}
+    .small {
+      font-size: 13px;
+    }
 
-.category span {
-  display: block;
-  font-size: 12px;
-  color: var(--mid);
-  margin-top: 4px;
-}
+    .tag {
+      display: inline-block;
+      background: var(--ivory);
+      border: 1px solid var(--light);
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 12px;
+      margin-bottom: 14px;
+    }
 
-.category.active {
-  background: var(--navy);
-  color: var(--white);
-  border-color: var(--navy);
-}
+    .categories {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 23px 0;
+    }
 
-.category.active span { color: var(--light); }
+    .category {
+      border: 1px solid var(--light);
+      background: var(--white);
+      border-radius: 10px;
+      padding: 18px;
+      text-align: left;
+      color: var(--navy);
+      transition: background .15s, color .15s;
+    }
 
-.category:focus-visible,
-.action:focus-visible,
-select:focus-visible,
-input:focus-visible {
-  outline: 3px solid var(--mid);
-  outline-offset: 2px;
-}
+    .category strong {
+      display: block;
+      font-size: 14px;
+    }
 
-.controls {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 18px;
-  margin: 18px 0;
-}
+    .category span {
+      display: block;
+      font-size: 12px;
+      color: var(--mid);
+      margin-top: 4px;
+    }
 
-label {
-  font-size: 13px;
-  font-weight: 600;
-}
+    .category.active {
+      background: var(--navy);
+      color: var(--white);
+      border-color: var(--navy);
+    }
 
-select, input {
-  display: block;
-  width: 100%;
-  padding: 13px;
-  margin-top: 7px;
-  border: 1px solid var(--light);
-  border-radius: 8px;
-  background: var(--white);
-  color: var(--navy);
-}
+    .category.active span {
+      color: var(--light);
+    }
 
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin: 22px 0;
-}
+    .category:focus-visible,
+    select:focus-visible,
+    input:focus-visible {
+      outline: 3px solid var(--mid);
+      outline-offset: 2px;
+    }
 
-.action {
-  background: var(--navy);
-  color: var(--white);
-  border: 1px solid var(--navy);
-  border-radius: 8px;
-  padding: 12px 18px;
-  font-size: 13px;
-}
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 18px;
+      margin: 18px 0;
+    }
 
-.action.alt {
-  background: var(--white);
-  color: var(--navy);
-}
+    label {
+      font-size: 13px;
+      font-weight: 600;
+    }
 
-.action:hover { opacity: .88; }
+    select,
+    input {
+      display: block;
+      width: 100%;
+      padding: 13px;
+      margin-top: 7px;
+      border: 1px solid var(--light);
+      border-radius: 8px;
+      background: var(--white);
+      color: var(--navy);
+    }
 
-.table-wrap {
-  overflow-x: auto;
-  border: 1px solid var(--light);
-  border-radius: 9px;
-}
-  .table-wrap,
-.table-wrap table,
-.table-wrap thead,
-.table-wrap tbody,
-.table-wrap tr,
-.table-wrap th,
-.table-wrap td {
-  -webkit-user-select: text;
-  user-select: text;
-}
+    /* ============================================
+       TABLAS Y SELECCIÓN MANUAL
+       ============================================ */
 
-table {
-  border-collapse: collapse;
-  width: 100%;
-  min-width: 640px;
-  font-variant-numeric: tabular-nums;
-}
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--light);
+      border-radius: 9px;
+      -webkit-user-select: text;
+      user-select: text;
+    }
 
-thead {
-  background: var(--navy);
-  color: var(--white);
-}
+    .table-wrap table {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 640px;
+      font-variant-numeric: tabular-nums;
+      -webkit-user-select: text;
+      user-select: text;
+    }
 
-th, td {
-  padding: 13px 15px;
-  border-bottom: 1px solid var(--light);
-  text-align: right;
-  white-space: nowrap;
-}
+    .table-wrap thead,
+    .table-wrap tbody,
+    .table-wrap tr,
+    .table-wrap th,
+    .table-wrap td {
+      -webkit-user-select: text !important;
+      user-select: text !important;
+    }
 
-th { font-size: 12px; }
+    .table-wrap th,
+    .table-wrap td {
+      cursor: text;
+    }
 
-tbody tr:nth-child(even) {
-  background: var(--ivory);
-}
+    .table-wrap thead {
+      background: var(--navy);
+      color: var(--white);
+    }
 
-tbody tr:hover { background: var(--light); }
+    .table-wrap th,
+    .table-wrap td {
+      padding: 13px 15px;
+      border-bottom: 1px solid var(--light);
+      text-align: right;
+      white-space: nowrap;
+    }
 
-.source {
-  border-top: 1px solid var(--light);
-  margin-top: 22px;
-  padding-top: 15px;
-  color: var(--mid);
-  font-size: 13px;
-}
+    .table-wrap th {
+      font-size: 12px;
+      font-weight: 600;
+    }
 
-.status {
-  font-size: 13px;
-  color: var(--mid);
-  min-height: 20px;
-}
+    .table-wrap tbody tr:nth-child(even) {
+      background: var(--ivory);
+    }
 
-.counter {
-  color: var(--mid);
-  font-size: 13px;
-}
+    .table-wrap tbody tr:hover {
+      background: var(--light);
+    }
 
-footer {
-  text-align: center;
-  background: var(--navy);
-  color: var(--light);
-  padding: 30px 20px;
-  font-size: 12px;
-}
+    .table-wrap ::selection {
+      background: var(--mid);
+      color: var(--white);
+    }
 
-[hidden] { display: none !important; }
+    .source {
+      border-top: 1px solid var(--light);
+      margin-top: 22px;
+      padding-top: 15px;
+      color: var(--mid);
+      font-size: 13px;
+    }
 
-@media (max-width: 760px) {
-  .hero { padding: 38px 20px; }
-  .panel { padding: 19px; }
-  .categories { grid-template-columns: repeat(2, 1fr); }
-  .controls { grid-template-columns: 1fr; }
-  .actions .action { flex: 1; }
-}
+    .counter {
+      color: var(--mid);
+      font-size: 13px;
+    }
 
-@media (max-width: 440px) {
-  .categories { gap: 8px; }
-  .category { padding: 12px; }
-  .category strong { font-size: 12px; }
-  .category span { font-size: 11px; }
-  .actions { flex-direction: column; }
-}
-</style>
+    footer {
+      text-align: center;
+      background: var(--navy);
+      color: var(--light);
+      padding: 30px 20px;
+      font-size: 12px;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    @media (max-width: 760px) {
+      .hero {
+        padding: 38px 20px;
+      }
+
+      .panel {
+        padding: 19px;
+      }
+
+      .categories {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .controls {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 440px) {
+      .categories {
+        gap: 8px;
+      }
+
+      .category {
+        padding: 12px;
+      }
+
+      .category strong {
+        font-size: 12px;
+      }
+
+      .category span {
+        font-size: 11px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<header class="hero">
-  <small>Ulloa Contadores · Herramientas fiscales</small>
-  <h1>Tasas y tarifas de ISR 2026</h1>
-  <p>
-    Consulta las tarifas aplicables a pagos provisionales,
-    retenciones y cálculo del Impuesto sobre la Renta.
-  </p>
-</header>
+  <header class="hero">
+    <small>Ulloa Contadores · Herramientas fiscales</small>
 
-<main>
+    <h1>Tasas y tarifas de ISR 2026</h1>
 
-<section class="panel">
-  <span class="tag">Anexo 8 · RMF 2026</span>
-  <h2>Selecciona tu consulta</h2>
-  <p class="muted">
-    Elige una categoría y después la tarifa que necesitas.
-    Puedes copiarla o exportarla a Excel.
-  </p>
+    <p>
+      Consulta las tarifas aplicables a pagos provisionales,
+      retenciones y cálculo del Impuesto sobre la Renta.
+    </p>
+  </header>
 
-  <nav class="categories" aria-label="Categorías de ISR">
+  <main>
 
-    <button type="button" class="category active"
-            data-cat="salarios" aria-pressed="true">
-      <strong>Sueldos y salarios</strong>
-      <span>Diaria, semanal, decenal, quincenal y mensual</span>
-    </button>
+    <section class="panel">
 
-    <button type="button" class="category"
-            data-cat="actividad" aria-pressed="false">
-      <strong>Actividad empresarial</strong>
-      <span>Servicios profesionales y actividades comerciales</span>
-    </button>
+      <span class="tag">Anexo 8 · RMF 2026</span>
 
-    <button type="button" class="category"
-            data-cat="arrendamiento" aria-pressed="false">
-      <strong>Arrendamiento</strong>
-      <span>Pagos mensuales y trimestrales</span>
-    </button>
+      <h2>Selecciona tu consulta</h2>
 
-    <button type="button" class="category"
-            data-cat="otros" aria-pressed="false">
-      <strong>Otros pagos</strong>
-      <span>Enajenación de inmuebles y sector primario</span>
-    </button>
+      <p class="muted">
+        Elige una categoría y después la tarifa que necesitas.
+        Puedes seleccionar y copiar manualmente los encabezados
+        y los datos de cada tabla.
+      </p>
 
-    <button type="button" class="category"
-            data-cat="rif" aria-pressed="false">
-      <strong>RIF</strong>
-      <span>Pagos bimestrales y coeficiente de utilidad</span>
-    </button>
+      <nav class="categories" aria-label="Categorías de ISR">
 
-    <button type="button" class="category"
-            data-cat="anual" aria-pressed="false">
-      <strong>Cálculo anual</strong>
-      <span>Tarifas de los ejercicios 2025 y 2026</span>
-    </button>
+        <button
+          type="button"
+          class="category active"
+          data-cat="salarios"
+          aria-pressed="true"
+        >
+          <strong>Sueldos y salarios</strong>
+          <span>Diaria, semanal, decenal, quincenal y mensual</span>
+        </button>
 
-    <button type="button" class="category"
-            data-cat="resico" aria-pressed="false">
-      <strong>RESICO</strong>
-      <span>Tasas mensuales, retenciones y personas morales</span>
-    </button>
+        <button
+          type="button"
+          class="category"
+          data-cat="actividad"
+          aria-pressed="false"
+        >
+          <strong>Actividad empresarial</strong>
+          <span>Servicios profesionales y actividades comerciales</span>
+        </button>
 
-  </nav>
+        <button
+          type="button"
+          class="category"
+          data-cat="arrendamiento"
+          aria-pressed="false"
+        >
+          <strong>Arrendamiento</strong>
+          <span>Pagos mensuales y trimestrales</span>
+        </button>
 
-  <div class="controls">
-    <label>
-      Buscar tarifa
-      <input
-        id="search"
-        type="search"
-        placeholder="Ej. mensual, arrendamiento, RIF"
-      >
-    </label>
+        <button
+          type="button"
+          class="category"
+          data-cat="otros"
+          aria-pressed="false"
+        >
+          <strong>Otros pagos</strong>
+          <span>Enajenación de inmuebles y sector primario</span>
+        </button>
 
-    <label>
-      Tarifa disponible
-      <select id="selector"></select>
-    </label>
-  </div>
+        <button
+          type="button"
+          class="category"
+          data-cat="rif"
+          aria-pressed="false"
+        >
+          <strong>RIF</strong>
+          <span>Pagos bimestrales y coeficiente de utilidad</span>
+        </button>
 
-  <p class="counter" id="counter"></p>
-</section>
+        <button
+          type="button"
+          class="category"
+          data-cat="anual"
+          aria-pressed="false"
+        >
+          <strong>Cálculo anual</strong>
+          <span>Tarifas de los ejercicios 2025 y 2026</span>
+        </button>
 
-<section class="panel" id="result">
+        <button
+          type="button"
+          class="category"
+          data-cat="resico"
+          aria-pressed="false"
+        >
+          <strong>RESICO</strong>
+          <span>Tasas mensuales, retenciones y personas morales</span>
+        </button>
 
-  <span class="tag" id="badge">Tarifa oficial</span>
+      </nav>
 
-  <h2 id="title"></h2>
+      <div class="controls">
 
-  <p class="muted small" id="description"></p>
-  <p class="small" id="legal"></p>
+        <label>
+          Buscar tarifa
 
-  <div class="actions">
-    <button type="button" class="action" id="copy">
-      Copiar tabla
-    </button>
+          <input
+            id="search"
+            type="search"
+            placeholder="Ej. mensual, arrendamiento, RIF"
+          >
+        </label>
 
-    <button type="button" class="action alt" id="download">
-      Descargar Excel
-    </button>
-  </div>
+        <label>
+          Tarifa disponible
 
-  <p class="status" id="status" role="status"></p>
+          <select id="selector"></select>
+        </label>
 
-  <div class="table-wrap">
-    <table id="table">
-      <thead></thead>
-      <tbody></tbody>
-    </table>
-  </div>
+      </div>
 
-  <p class="source" id="source"></p>
+      <p class="counter" id="counter"></p>
 
-</section>
+    </section>
 
-<section class="panel">
-  <h2>Fuentes y fundamentos</h2>
+    <section class="panel" id="result">
 
-  <p class="small">
-    <a
-      href="https://sidof.segob.gob.mx/notas/docFuente/5777219"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      Anexo 8 de la Resolución Miscelánea Fiscal para 2026 — DOF
-    </a>
-  </p>
+      <span class="tag" id="badge">Tarifa oficial</span>
 
-  <p class="small">
-    <a
-      href="https://www.diputados.gob.mx/LeyesBiblio/pdf/LISR.pdf"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      Ley del Impuesto sobre la Renta — Cámara de Diputados
-    </a>
-  </p>
+      <h2 id="title"></h2>
 
-  <p class="muted small">
-    Las tarifas se presentan con fines de consulta.
-    Para su aplicación, verifica las disposiciones vigentes
-    y las modificaciones publicadas posteriormente.
-  </p>
-</section>
+      <p class="muted small" id="description"></p>
 
-</main>
+      <p class="small" id="legal"></p>
 
-<footer>
-  Ulloa Contadores · Información fiscal 2026
-</footer>
+      <div class="table-wrap">
+        <table id="table">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+      </div>
 
-<script>
-"use strict";
+      <p class="source" id="source"></p>
 
-/* =====================================================
-   TASAS MARGINALES DEL ISR
-   ===================================================== */
+    </section>
 
-const RATES = [
-  1.92, 6.40, 10.88, 16, 17.92, 21.36,
-  23.52, 30, 32, 34, 35
-];
+    <section class="panel">
 
-/* =====================================================
-   DATOS DE TARIFAS
+      <h2>Fuentes y fundamentos</h2>
 
-   Cada fila contiene:
-   límite inferior | límite superior | cuota fija
+      <p class="small">
+        <a
+          href="https://sidof.segob.gob.mx/notas/docFuente/5777219"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Anexo 8 de la Resolución Miscelánea Fiscal para 2026 — DOF
+        </a>
+      </p>
 
-   La tasa marginal se incorpora según su posición.
-   ===================================================== */
+      <p class="small">
+        <a
+          href="https://www.diputados.gob.mx/LeyesBiblio/pdf/LISR.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Ley del Impuesto sobre la Renta — Cámara de Diputados
+        </a>
+      </p>
 
-const RAW = [
+      <p class="muted small">
+        Las tarifas se presentan con fines de consulta.
+        Para su aplicación, verifica las disposiciones vigentes
+        y las modificaciones publicadas posteriormente.
+      </p>
 
-`0.01|10135.11|0;10135.12|86022.11|194.59;86022.12|151176.19|5051.37;151176.20|175735.66|12140.13;175735.67|210403.69|16069.64;210403.70|424353.97|22282.14;424353.98|668840.14|67981.92;668840.15|1276925.98|125485.07;1276925.99|1702567.97|307910.81;1702567.98|5107703.92|444116.23;5107703.93||1601862.46`,
+    </section>
 
-`0.01|27.78|0;27.79|235.81|0.53;235.82|414.41|13.85;414.42|481.73|33.28;481.74|576.76|44.05;576.77|1163.25|61.08;1163.26|1833.44|186.35;1833.45|3500.35|343.98;3500.36|4667.13|844.05;4667.14|14001.38|1217.42;14001.39||4391.07`,
+  </main>
 
-`0.01|194.46|0;194.47|1650.67|3.71;1650.68|2900.87|96.95;2900.88|3372.11|232.96;3372.12|4037.32|308.35;4037.33|8142.75|427.56;8142.76|12834.08|1304.45;12834.09|24502.45|2407.86;24502.46|32669.91|5908.35;32669.92|98009.66|8521.94;98009.67||30737.49`,
+  <footer>
+    Ulloa Contadores · Información fiscal 2026
+  </footer>
 
-`0.01|277.80|0;277.81|2358.10|5.30;2358.11|4144.10|138.50;4144.11|4817.30|332.80;4817.31|5767.60|440.50;5767.61|11632.50|610.80;11632.51|18334.40|1863.50;18334.41|35003.50|3439.80;35003.51|46671.30|8440.50;46671.31|140013.80|12174.20;140013.81||43910.70`,
+  <script>
+    "use strict";
 
-`0.01|416.70|0;416.71|3537.15|7.95;3537.16|6216.15|207.75;6216.16|7225.95|499.20;7225.96|8651.40|660.75;8651.41|17448.75|916.20;17448.76|27501.60|2795.25;27501.61|52505.25|5159.70;52505.26|70006.95|12660.75;70006.96|210020.70|18261.30;210020.71||65866.05`,
+    /* ============================================
+       TASAS MARGINALES DEL ISR
+       ============================================ */
 
-`0.01|844.59|0;844.60|7168.51|16.22;7168.52|12598.02|420.95;12598.03|14644.64|1011.68;14644.65|17533.64|1339.14;17533.65|35362.83|1856.84;35362.84|55736.68|5665.16;55736.69|106410.50|10457.09;106410.51|141880.66|25659.23;141880.67|425641.99|37009.69;425642.00||133488.54`,
-
-`0.01|1689.18|0;1689.19|14337.02|32.44;14337.03|25196.04|841.90;25196.05|29289.28|2023.36;29289.29|35067.28|2678.28;35067.29|70725.66|3713.68;70725.67|111473.36|11330.32;111473.37|212821.00|20914.18;212821.01|283761.32|51318.46;283761.33|851283.98|74019.38;851283.99||266977.08`,
-
-`0.01|2533.77|0;2533.78|21505.53|48.66;21505.54|37794.06|1262.85;37794.07|43933.92|3035.04;43933.93|52600.92|4017.42;52600.93|106088.49|5570.52;106088.50|167210.04|16995.48;167210.05|319231.50|31371.27;319231.51|425641.98|76977.69;425641.99|1276925.97|111029.07;1276925.98||400465.62`,
-
-`0.01|3378.36|0;3378.37|28674.04|64.88;28674.05|50392.08|1683.80;50392.09|58578.56|4046.72;58578.57|70134.56|5356.56;70134.57|141451.32|7427.36;141451.33|222946.72|22660.64;222946.73|425642.00|41828.36;425642.01|567522.64|102636.92;567522.65|1702567.96|148038.76;1702567.97||533954.16`,
-
-`0.01|4222.95|0;4222.96|35842.55|81.10;35842.56|62990.10|2104.75;62990.11|73223.20|5058.40;73223.21|87668.20|6695.70;87668.21|176814.15|9284.20;176814.16|278683.40|28325.80;278683.41|532052.50|52285.45;532052.51|709403.30|128296.15;709403.31|2128209.95|185048.45;2128209.96||667442.70`,
-
-`0.01|5067.54|0;5067.55|43011.06|97.32;43011.07|75588.12|2525.70;75588.13|87867.84|6070.08;87867.85|105201.84|8034.84;105201.85|212176.98|11141.04;212176.99|334420.08|33990.96;334420.09|638463.00|62742.54;638463.01|851283.96|153955.38;851283.97|2553851.94|222058.14;2553851.95||800931.24`,
-
-`0.01|5912.13|0;5912.14|50179.57|113.54;50179.58|88186.14|2946.65;88186.15|102512.48|7081.76;102512.49|122735.48|9373.98;122735.49|247539.81|12997.88;247539.82|390156.76|39656.12;390156.77|744873.50|73199.63;744873.51|993164.62|179614.61;993164.63|2979493.93|259067.83;2979493.94||934419.78`,
-
-`0.01|6756.72|0;6756.73|57348.08|129.76;57348.09|100784.16|3367.60;100784.17|117157.12|8093.44;117157.13|140269.12|10713.12;140269.13|282902.64|14854.72;282902.65|445893.44|45321.28;445893.45|851284.00|83656.72;851284.01|1135045.28|205273.84;1135045.29|3405135.92|296077.52;3405135.93||1067908.32`,
-
-`0.01|7601.31|0;7601.32|64516.59|145.98;64516.60|113382.18|3788.55;113382.19|131801.76|9105.12;131801.77|157802.76|12052.26;157802.77|318265.47|16711.56;318265.48|501630.12|50986.44;501630.13|957694.50|94113.81;957694.51|1276925.94|230933.07;1276925.95|3830777.91|333087.21;3830777.92||1201396.86`,
-
-`0.01|8445.90|0;8445.91|71685.10|162.20;71685.11|125980.20|4209.50;125980.21|146446.40|10116.80;146446.41|175336.40|13391.40;175336.41|353628.30|18568.40;353628.31|557366.80|56651.60;557366.81|1064105.00|104570.90;1064105.01|1418806.60|256592.30;1418806.61|4256419.90|370096.90;4256419.91||1334885.40`,
-
-`0.01|9290.49|0;9290.50|78853.61|178.42;78853.62|138578.22|4630.45;138578.23|161091.04|11128.48;161091.05|192870.04|14730.54;192870.05|388991.13|20425.24;388991.14|613103.48|62316.76;613103.49|1170515.50|115027.99;1170515.51|1560687.26|282251.53;1560687.27|4682061.89|407106.59;4682061.90||1468373.94`,
-
-`0.01|8952.49|0;8952.50|75984.55|171.88;75984.56|133536.07|4461.94;133536.08|155229.80|10723.55;155229.81|185852.57|14194.54;185852.58|374837.88|19682.13;374837.89|590795.99|60049.40;590796.00|1127926.84|110842.74;1127926.85|1503902.46|271981.99;1503902.47|4511707.37|392294.17;4511707.38||1414947.85`
-
-];
-
-/* Convertir tablas a números */
-
-const TABLES = RAW.map(text =>
-  text.split(";").map((line, index) => {
-    const values = line.split("|");
-
-    return [
-      Number(values[0]),
-      values[1] === "" ? null : Number(values[1]),
-      Number(values[2]),
-      RATES[index]
+    const RATES = [
+      1.92,
+      6.40,
+      10.88,
+      16,
+      17.92,
+      21.36,
+      23.52,
+      30,
+      32,
+      34,
+      35
     ];
-  })
-);
-
-/* =====================================================
-   CATÁLOGO DE TARIFAS
-   ===================================================== */
-
-const items = [];
-
-const ISR_HEADERS = [
-  "Límite inferior ($)",
-  "Límite superior ($)",
-  "Cuota fija ($)",
-  "Tasa marginal (%)"
-];
-
-const ISR_TYPES = ["money", "money", "money", "rate"];
-
-function add(cat, title, tableIndex, legal, year = 2026) {
-  items.push({
-    id: "tarifa-" + items.length,
-    cat,
-    title,
-    headers: ISR_HEADERS,
-    types: ISR_TYPES,
-    rows: TABLES[tableIndex],
-    legal,
-    year,
-    note: "Tarifa contenida en el Anexo 8 de la RMF 2026. Importes expresados en pesos mexicanos."
-  });
-}
-
-/* Enajenación de inmuebles */
-
-add(
-  "otros",
-  "Enajenación de inmuebles · pago provisional",
-  0,
-  "Artículo 126 LISR; regla 3.15.4."
-);
-
-/* Sueldos y salarios */
-
-add(
-  "salarios",
-  "Retención diaria · trabajo realizado",
-  1,
-  "Artículo 96 LISR; artículo 175 del Reglamento de la LISR."
-);
-
-add(
-  "salarios",
-  "Retención semanal · 7 días",
-  2,
-  "Artículo 96 LISR; artículo 175 del Reglamento de la LISR."
-);
-
-add(
-  "salarios",
-  "Retención decenal · 10 días",
-  3,
-  "Artículo 96 LISR; artículo 175 del Reglamento de la LISR."
-);
-
-add(
-  "salarios",
-  "Retención quincenal · 15 días",
-  4,
-  "Artículo 96 LISR; artículo 175 del Reglamento de la LISR."
-);
-
-add(
-  "salarios",
-  "Retención mensual · salarios",
-  5,
-  "Artículo 96 LISR."
-);
-
-/* Actividad empresarial y profesional */
-
-const MONTHS = [
-  "enero", "febrero", "marzo", "abril",
-  "mayo", "junio", "julio", "agosto",
-  "septiembre", "octubre", "noviembre", "diciembre"
-];
-
-const MONTH_INDEXES = [
-  5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0
-];
-
-MONTHS.forEach((month, index) => {
-  add(
-    "actividad",
-    "Actividad empresarial y profesional · " + month,
-    MONTH_INDEXES[index],
-    "Artículo 106 LISR."
-  );
-});
-
-/* Arrendamiento */
-
-add(
-  "arrendamiento",
-  "Arrendamiento · pago mensual",
-  5,
-  "Artículo 116 LISR."
-);
-
-add(
-  "arrendamiento",
-  "Arrendamiento · pago trimestral",
-  7,
-  "Artículo 116 LISR."
-);
-
-/* Sector primario */
-
-add(
-  "otros",
-  "Sector primario · primer semestre (opcional)",
-  10,
-  "Artículo 74 LISR."
-);
-
-add(
-  "otros",
-  "Sector primario · segundo semestre (opcional)",
-  0,
-  "Artículo 74 LISR."
-);
-
-/* Régimen de Incorporación Fiscal */
-
-const RIF_LEGAL =
-  "Artículo 111 de la LISR vigente hasta 2021 y disposiciones transitorias aplicables.";
-
-add(
-  "rif",
-  "RIF · pago bimestral definitivo",
-  6,
-  RIF_LEGAL
-);
-
-const BIMESTERS = [
-  "enero-febrero",
-  "marzo-abril",
-  "mayo-junio",
-  "julio-agosto",
-  "septiembre-octubre",
-  "noviembre-diciembre"
-];
-
-const RIF_INDEXES = [6, 8, 10, 12, 14, 0];
-
-BIMESTERS.forEach((period, index) => {
-  add(
-    "rif",
-    "RIF · coeficiente de utilidad · " + period,
-    RIF_INDEXES[index],
-    RIF_LEGAL
-  );
-});
-
-/* Cálculo anual del régimen general */
-
-add(
-  "anual",
-  "Tarifa anual · ejercicio 2025",
-  16,
-  "Artículos 97 y 152 LISR.",
-  2025
-);
-
-add(
-  "anual",
-  "Tarifa anual · ejercicio 2026",
-  0,
-  "Artículos 97 y 152 LISR.",
-  2026
-);
-
-/* =====================================================
-   RESICO
-
-   Se elimina la tabla anual de personas físicas.
-
-   Se conservan:
-   - Tasas mensuales PF
-   - Retención 1.25% PF
-   - Tasa general 30% PM
-   ===================================================== */
-
-function addResico(title, headers, types, rows, legal, note) {
-  items.push({
-    id: "resico-" + items.length,
-    cat: "resico",
-    title,
-    headers,
-    types,
-    rows,
-    legal,
-    note,
-    year: 2026
-  });
-}
-
-addResico(
-  "RESICO personas físicas · pagos mensuales",
-  [
-    "Ingresos mensuales cobrados ($)",
-    "Tasa ISR (%)"
-  ],
-  ["text", "rate"],
-  [
-    ["Hasta $25,000.00", 1.00],
-    ["Hasta $50,000.00", 1.10],
-    ["Hasta $83,333.33", 1.50],
-    ["Hasta $208,333.33", 2.00],
-    ["Más de $208,333.33", 2.50]
-  ],
-  "Artículo 113-E LISR.",
-  "Tasas aplicables sobre los ingresos efectivamente cobrados, sin incluir IVA. La aplicación del régimen está sujeta a los requisitos y límites legales."
-);
-
-addResico(
-  "RESICO personas físicas · retención por personas morales",
-  [
-    "Concepto",
-    "Tasa de retención (%)"
-  ],
-  ["text", "rate"],
-  [
-    [
-      "Pagos de personas morales a personas físicas RESICO",
-      1.25
-    ]
-  ],
-  "Artículo 113-J LISR.",
-  "Las personas morales efectúan la retención del 1.25% sobre el importe pagado, sin incluir IVA, cuando resulte aplicable."
-);
-
-addResico(
-  "RESICO personas morales · tasa de ISR",
-  [
-    "Concepto",
-    "Tasa ISR (%)"
-  ],
-  ["text", "rate"],
-  [
-    ["Tasa general de ISR de personas morales", 30]
-  ],
-  "Artículos 9 y 206 a 215 LISR.",
-  "RESICO personas morales aplica la tasa general del 30%. La determinación de pagos provisionales y del impuesto anual se realiza conforme a las disposiciones específicas del régimen."
-);
-
-/* =====================================================
-   INTERFAZ
-   ===================================================== */
-
-const $ = id => document.getElementById(id);
-
-const numberFormat = new Intl.NumberFormat("es-MX", {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2
-});
-
-let category = "salarios";
-let current = null;
-
-function displayValue(value, type) {
-  if (value === null) return "En adelante";
-
-  if (type === "rate") {
-    return numberFormat.format(value) + " %";
-  }
-
-  if (type === "money") {
-    return numberFormat.format(value);
-  }
-
-  return String(value);
-}
-
-function setCategory(cat) {
-  category = cat;
-
-  document.querySelectorAll(".category").forEach(button => {
-    const active = button.dataset.cat === cat;
-
-    button.classList.toggle("active", active);
-    button.setAttribute("aria-pressed", String(active));
-  });
-
-  $("search").value = "";
-  updateOptions();
-}
-
-function updateOptions() {
-  const query = $("search").value
-    .trim()
-    .toLocaleLowerCase("es");
-
-  const matches = items.filter(item =>
-    item.cat === category &&
-    (item.title + " " + item.legal)
-      .toLocaleLowerCase("es")
-      .includes(query)
-  );
-
-  const selector = $("selector");
-  selector.replaceChildren();
-
-  matches.forEach(item => {
-    const option = document.createElement("option");
-    option.value = item.id;
-    option.textContent = item.title;
-    selector.appendChild(option);
-  });
-
-  $("counter").textContent =
-    matches.length +
-    (matches.length === 1
-      ? " tarifa disponible"
-      : " tarifas disponibles");
-
-  if (matches.length) {
-    $("result").hidden = false;
-    showItem(matches[0]);
-  } else {
-    $("result").hidden = true;
-    current = null;
-  }
-}
-
-function showItem(item) {
-  current = item;
-
-  $("selector").value = item.id;
-  $("title").textContent = item.title;
-
-  $("badge").textContent =
-    item.cat === "resico"
-      ? "Ley del ISR · RESICO"
-      : "Anexo 8 · RMF 2026";
-
-  $("description").textContent =
-    "Ejercicio fiscal " + item.year;
-
-  $("legal").textContent =
-    "Fundamento: " + item.legal;
-
-  $("source").textContent = item.note;
-  $("status").textContent = "";
-
-  const table = $("table");
-  const head = table.tHead;
-  const body = table.tBodies[0];
-
-  head.replaceChildren();
-  body.replaceChildren();
-
-  const headerRow = document.createElement("tr");
-
-  item.headers.forEach(header => {
-    const th = document.createElement("th");
-    th.textContent = header;
-    headerRow.appendChild(th);
-  });
-
-  head.appendChild(headerRow);
-
-  item.rows.forEach(row => {
-    const tr = document.createElement("tr");
-
-    row.forEach((value, index) => {
-      const td = document.createElement("td");
-      td.textContent = displayValue(value, item.types[index]);
-      tr.appendChild(td);
-    });
-
-    body.appendChild(tr);
-  });
-}
-
-document.querySelectorAll(".category").forEach(button => {
-  button.addEventListener("click", () => {
-    setCategory(button.dataset.cat);
-  });
-});
-
-$("search").addEventListener("input", updateOptions);
-
-$("selector").addEventListener("change", () => {
-  const selected = items.find(
-    item => item.id === $("selector").value
-  );
-
-  if (selected) showItem(selected);
-});
-
-/* =====================================================
-   COPIAR TABLAS A EXCEL O NUMBERS
-   ===================================================== */
-
-function escapeXML(value) {
-  return String(value).replace(/[&<>"']/g, char => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
-  })[char]);
-}
-
-function clipboardHTML(item) {
-  let html =
-    '<table style="border-collapse:collapse;font-family:Arial">';
-
-  html += "<thead><tr>";
-
-  item.headers.forEach(header => {
-    html +=
-      '<th style="background:#293F56;color:#FFFFFF;' +
-      'border:1px solid #ABBCC6;padding:9px">' +
-      escapeXML(header) +
-      "</th>";
-  });
-
-  html += "</tr></thead><tbody>";
-
-  item.rows.forEach((row, rowIndex) => {
-    html += "<tr>";
-
-    row.forEach((value, columnIndex) => {
-      const displayed = displayValue(
-        value,
-        item.types[columnIndex]
-      );
-
-      const background =
-        rowIndex % 2 ? "#ECEBE8" : "#FFFFFF";
-
-      html +=
-        '<td style="border:1px solid #ABBCC6;' +
-        'padding:8px;background:' + background + '">' +
-        escapeXML(displayed) +
-        "</td>";
-    });
-
-    html += "</tr>";
-  });
-
-  return html + "</tbody></table>";
-}
-
-function clipboardTSV(item) {
-  const rows = [
-    item.headers,
-    ...item.rows.map(row =>
-      row.map((value, index) => {
-        if (value === null) return "En adelante";
-
-        if (item.types[index] === "rate") {
-          return String(value) + "%";
-        }
-
-        return String(value);
+
+    /* ============================================
+       DATOS DE TARIFAS
+
+       Cada fila contiene:
+       límite inferior | límite superior | cuota fija
+       ============================================ */
+
+    const RAW = [
+
+      `0.01|10135.11|0;10135.12|86022.11|194.59;86022.12|151176.19|5051.37;151176.20|175735.66|12140.13;175735.67|210403.69|16069.64;210403.70|424353.97|22282.14;424353.98|668840.14|67981.92;668840.15|1276925.98|125485.07;1276925.99|1702567.97|307910.81;1702567.98|5107703.92|444116.23;5107703.93||1601862.46`,
+
+      `0.01|27.78|0;27.79|235.81|0.53;235.82|414.41|13.85;414.42|481.73|33.28;481.74|576.76|44.05;576.77|1163.25|61.08;1163.26|1833.44|186.35;1833.45|3500.35|343.98;3500.36|4667.13|844.05;4667.14|14001.38|1217.42;14001.39||4391.07`,
+
+      `0.01|194.46|0;194.47|1650.67|3.71;1650.68|2900.87|96.95;2900.88|3372.11|232.96;3372.12|4037.32|308.35;4037.33|8142.75|427.56;8142.76|12834.08|1304.45;12834.09|24502.45|2407.86;24502.46|32669.91|5908.35;32669.92|98009.66|8521.94;98009.67||30737.49`,
+
+      `0.01|277.80|0;277.81|2358.10|5.30;2358.11|4144.10|138.50;4144.11|4817.30|332.80;4817.31|5767.60|440.50;5767.61|11632.50|610.80;11632.51|18334.40|1863.50;18334.41|35003.50|3439.80;35003.51|46671.30|8440.50;46671.31|140013.80|12174.20;140013.81||43910.70`,
+
+      `0.01|416.70|0;416.71|3537.15|7.95;3537.16|6216.15|207.75;6216.16|7225.95|499.20;7225.96|8651.40|660.75;8651.41|17448.75|916.20;17448.76|27501.60|2795.25;27501.61|52505.25|5159.70;52505.26|70006.95|12660.75;70006.96|210020.70|18261.30;210020.71||65866.05`,
+
+      `0.01|844.59|0;844.60|7168.51|16.22;7168.52|12598.02|420.95;12598.03|14644.64|1011.68;14644.65|17533.64|1339.14;17533.65|35362.83|1856.84;35362.84|55736.68|5665.16;55736.69|106410.50|10457.09;106410.51|141880.66|25659.23;141880.67|425641.99|37009.69;425642.00||133488.54`,
+
+      `0.01|1689.18|0;1689.19|14337.02|32.44;14337.03|25196.04|841.90;25196.05|29289.28|2023.36;29289.29|35067.28|2678.28;35067.29|70725.66|3713.68;70725.67|111473.36|11330.32;111473.37|212821.00|20914.18;212821.01|283761.32|51318.46;283761.33|851283.98|74019.38;851283.99||266977.08`,
+
+      `0.01|2533.77|0;2533.78|21505.53|48.66;21505.54|37794.06|1262.85;37794.07|43933.92|3035.04;43933.93|52600.92|4017.42;52600.93|106088.49|5570.52;106088.50|167210.04|16995.48;167210.05|319231.50|31371.27;319231.51|425641.98|76977.69;425641.99|1276925.97|111029.07;1276925.98||400465.62`,
+
+      `0.01|3378.36|0;3378.37|28674.04|64.88;28674.05|50392.08|1683.80;50392.09|58578.56|4046.72;58578.57|70134.56|5356.56;70134.57|141451.32|7427.36;141451.33|222946.72|22660.64;222946.73|425642.00|41828.36;425642.01|567522.64|102636.92;567522.65|1702567.96|148038.76;1702567.97||533954.16`,
+
+      `0.01|4222.95|0;4222.96|35842.55|81.10;35842.56|62990.10|2104.75;62990.11|73223.20|5058.40;73223.21|87668.20|6695.70;87668.21|176814.15|9284.20;176814.16|278683.40|28325.80;278683.41|532052.50|52285.45;532052.51|709403.30|128296.15;709403.31|2128209.95|185048.45;2128209.96||667442.70`,
+
+      `0.01|5067.54|0;5067.55|43011.06|97.32;43011.07|75588.12|2525.70;75588.13|87867.84|6070.08;87867.85|105201.84|8034.84;105201.85|212176.98|11141.04;212176.99|334420.08|33990.96;334420.09|638463.00|62742.54;638463.01|851283.96|153955.38;851283.97|2553851.94|222058.14;2553851.95||800931.24`,
+
+      `0.01|5912.13|0;5912.14|50179.57|113.54;50179.58|88186.14|2946.65;88186.15|102512.48|7081.76;102512.49|122735.48|9373.98;122735.49|247539.81|12997.88;247539.82|390156.76|39656.12;390156.77|744873.50|73199.63;744873.51|993164.62|179614.61;993164.63|2979493.93|259067.83;2979493.94||934419.78`,
+
+      `0.01|6756.72|0;6756.73|57348.08|129.76;57348.09|100784.16|3367.60;100784.17|117157.12|8093.44;117157.13|140269.12|10713.12;140269.13|282902.64|14854.72;282902.65|445893.44|45321.28;445893.45|851284.00|83656.72;851284.01|1135045.28|205273.84;1135045.29|3405135.92|296077.52;3405135.93||1067908.32`,
+
+      `0.01|7601.31|0;7601.32|64516.59|145.98;64516.60|113382.18|3788.55;113382.19|131801.76|9105.12;131801.77|157802.76|12052.26;157802.77|318265.47|16711.56;318265.48|501630.12|50986.44;501630.13|957694.50|94113.81;957694.51|1276925.94|230933.07;1276925.95|3830777.91|333087.21;3830777.92||1201396.86`,
+
+      `0.01|8445.90|0;8445.91|71685.10|162.20;71685.11|125980.20|4209.50;125980.21|146446.40|10116.80;146446.41|175336.40|13391.40;175336.41|353628.30|18568.40;353628.31|557366.80|56651.60;557366.81|1064105.00|104570.90;1064105.01|1418806.60|256592.30;1418806.61|4256419.90|370096.90;4256419.91||1334885.40`,
+
+      `0.01|9290.49|0;9290.50|78853.61|178.42;78853.62|138578.22|4630.45;138578.23|161091.04|11128.48;161091.05|192870.04|14730.54;192870.05|388991.13|20425.24;388991.14|613103.48|62316.76;613103.49|1170515.50|115027.99;1170515.51|1560687.26|282251.53;1560687.27|4682061.89|407106.59;4682061.90||1468373.94`,
+
+      `0.01|8952.49|0;8952.50|75984.55|171.88;75984.56|133536.07|4461.94;133536.08|155229.80|10723.55;155229.81|185852.57|14194.54;185852.58|374837.88|19682.13;374837.89|590795.99|60049.40;590796.00|1127926.84|110842.74;1127926.85|1503902.46|271981.99;1503902.47|4511707.37|392294.17;4511707.38||1414947.85`
+
+    ];
+
+    /* ============================================
+       CONVERSIÓN DE DATOS
+       ============================================ */
+
+    const TABLES = RAW.map(text =>
+      text.split(";").map((line, index) => {
+        const values = line.split("|");
+
+        return [
+          Number(values[0]),
+          values[1] === "" ? null : Number(values[1]),
+          Number(values[2]),
+          RATES[index]
+        ];
       })
-    )
-  ];
-
-  return rows.map(row => row.join("\t")).join("\n");
-}
-
-async function copyCurrent() {
-  if (!current) return;
-
-  try {
-    const html = clipboardHTML(current);
-    const plain = clipboardTSV(current);
-
-    if (navigator.clipboard?.write && window.ClipboardItem) {
-      await navigator.clipboard.write([
-        new ClipboardItem({
-          "text/html": new Blob(
-            [html],
-            { type: "text/html" }
-          ),
-          "text/plain": new Blob(
-            [plain],
-            { type: "text/plain" }
-          )
-        })
-      ]);
-    } else if (navigator.clipboard?.writeText) {
-      await navigator.clipboard.writeText(plain);
-    } else {
-      throw new Error("Portapapeles no disponible");
-    }
-
-    $("status").textContent =
-      "Tabla copiada. Puedes pegarla en Excel o Numbers.";
-
-  } catch (error) {
-    $("status").textContent =
-      "No fue posible copiar. Utiliza Descargar Excel.";
-  }
-}
-
-$("copy").addEventListener("click", copyCurrent);
-
-/* =====================================================
-   EXPORTACIÓN XLSX SIN DEPENDENCIAS EXTERNAS
-   ===================================================== */
-
-const utf8 = new TextEncoder();
-
-const U16 = n => [
-  n & 255,
-  (n >>> 8) & 255
-];
-
-const U32 = n => [
-  n & 255,
-  (n >>> 8) & 255,
-  (n >>> 16) & 255,
-  (n >>> 24) & 255
-];
-
-function crc32(bytes) {
-  let crc = 0xFFFFFFFF;
-
-  for (const byte of bytes) {
-    crc ^= byte;
-
-    for (let i = 0; i < 8; i++) {
-      crc = (crc >>> 1) ^
-        ((crc & 1) ? 0xEDB88320 : 0);
-    }
-  }
-
-  return (crc ^ 0xFFFFFFFF) >>> 0;
-}
-
-function createZIP(files) {
-  const localParts = [];
-  const centralParts = [];
-
-  let offset = 0;
-
-  for (const [name, content] of Object.entries(files)) {
-    const nameBytes = utf8.encode(name);
-    const data = utf8.encode(content);
-    const crc = crc32(data);
-
-    const localHeader = new Uint8Array([
-      ...U32(0x04034b50),
-      ...U16(20),
-      ...U16(0),
-      ...U16(0),
-      ...U16(0),
-      ...U16(0),
-      ...U32(crc),
-      ...U32(data.length),
-      ...U32(data.length),
-      ...U16(nameBytes.length),
-      ...U16(0)
-    ]);
-
-    localParts.push(localHeader, nameBytes, data);
-
-    centralParts.push(
-      new Uint8Array([
-        ...U32(0x02014b50),
-        ...U16(20),
-        ...U16(20),
-        ...U16(0),
-        ...U16(0),
-        ...U16(0),
-        ...U16(0),
-        ...U32(crc),
-        ...U32(data.length),
-        ...U32(data.length),
-        ...U16(nameBytes.length),
-        ...U16(0),
-        ...U16(0),
-        ...U16(0),
-        ...U16(0),
-        ...U32(offset)
-      ]),
-      nameBytes
     );
 
-    offset +=
-      localHeader.length +
-      nameBytes.length +
-      data.length;
-  }
+    /* ============================================
+       CATÁLOGO DE TARIFAS
+       ============================================ */
 
-  const directorySize = centralParts.reduce(
-    (sum, part) => sum + part.length,
-    0
-  );
+    const items = [];
 
-  const count = Object.keys(files).length;
+    const ISR_HEADERS = [
+      "Límite inferior ($)",
+      "Límite superior ($)",
+      "Cuota fija ($)",
+      "Tasa marginal (%)"
+    ];
 
-  const endRecord = new Uint8Array([
-    ...U32(0x06054b50),
-    ...U16(0),
-    ...U16(0),
-    ...U16(count),
-    ...U16(count),
-    ...U32(directorySize),
-    ...U32(offset),
-    ...U16(0)
-  ]);
+    const ISR_TYPES = [
+      "money",
+      "money",
+      "money",
+      "rate"
+    ];
 
-  return new Blob(
-    [...localParts, ...centralParts, endRecord],
-    {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    function add(cat, title, tableIndex, legal, year = 2026) {
+      items.push({
+        id: "tarifa-" + items.length,
+        cat,
+        title,
+        headers: ISR_HEADERS,
+        types: ISR_TYPES,
+        rows: TABLES[tableIndex],
+        legal,
+        year,
+        note:
+          "Tarifa contenida en el Anexo 8 de la RMF 2026. " +
+          "Importes expresados en pesos mexicanos."
+      });
     }
-  );
-}
 
-function columnName(index) {
-  let result = "";
-  let number = index + 1;
+    /* ============================================
+       ENAJENACIÓN DE INMUEBLES
+       ============================================ */
 
-  while (number > 0) {
-    number--;
+    add(
+      "otros",
+      "Enajenación de inmuebles · pago provisional",
+      0,
+      "Artículo 126 LISR; regla 3.15.4."
+    );
 
-    result =
-      String.fromCharCode(65 + number % 26) +
-      result;
+    /* ============================================
+       SUELDOS Y SALARIOS
+       ============================================ */
 
-    number = Math.floor(number / 26);
-  }
+    add(
+      "salarios",
+      "Retención diaria · trabajo realizado",
+      1,
+      "Artículo 96 LISR; artículo 175 del Reglamento de la LISR."
+    );
 
-  return result;
-}
+    add(
+      "salarios",
+      "Retención semanal · 7 días",
+      2,
+      "Artículo 96 LISR; artículo 175 del Reglamento de la LISR."
+    );
 
-function buildXLSX(item) {
-  const rows = [item.headers, ...item.rows];
+    add(
+      "salarios",
+      "Retención decenal · 10 días",
+      3,
+      "Artículo 96 LISR; artículo 175 del Reglamento de la LISR."
+    );
 
-  let sheet =
-    '<?xml version="1.0" encoding="UTF-8"?>' +
-    '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
-    '<sheetViews><sheetView workbookViewId="0">' +
-    '<pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/>' +
-    '</sheetView></sheetViews><cols>';
+    add(
+      "salarios",
+      "Retención quincenal · 15 días",
+      4,
+      "Artículo 96 LISR; artículo 175 del Reglamento de la LISR."
+    );
 
-  item.headers.forEach((_, index) => {
-    const width =
-      item.types[index] === "text" ? 62 : 27;
+    add(
+      "salarios",
+      "Retención mensual · salarios",
+      5,
+      "Artículo 96 LISR."
+    );
 
-    sheet +=
-      '<col min="' + (index + 1) +
-      '" max="' + (index + 1) +
-      '" width="' + width +
-      '" customWidth="1"/>';
-  });
+    /* ============================================
+       ACTIVIDAD EMPRESARIAL Y PROFESIONAL
+       ============================================ */
 
-  sheet += "</cols><sheetData>";
+    const MONTHS = [
+      "enero",
+      "febrero",
+      "marzo",
+      "abril",
+      "mayo",
+      "junio",
+      "julio",
+      "agosto",
+      "septiembre",
+      "octubre",
+      "noviembre",
+      "diciembre"
+    ];
 
-  rows.forEach((row, rowIndex) => {
-    sheet += '<row r="' + (rowIndex + 1) + '">';
+    const MONTH_INDEXES = [
+      5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0
+    ];
 
-    row.forEach((value, columnIndex) => {
-      const address =
-        columnName(columnIndex) + (rowIndex + 1);
+    MONTHS.forEach((month, index) => {
+      add(
+        "actividad",
+        "Actividad empresarial y profesional · " + month,
+        MONTH_INDEXES[index],
+        "Artículo 106 LISR."
+      );
+    });
 
-      const type = item.types[columnIndex];
+    /* ============================================
+       ARRENDAMIENTO
+       ============================================ */
 
-      const style =
-        rowIndex === 0 ? 1 :
-        type === "rate" ? 3 :
-        type === "money" ? 2 : 4;
+    add(
+      "arrendamiento",
+      "Arrendamiento · pago mensual",
+      5,
+      "Artículo 116 LISR."
+    );
 
-      if (
-        rowIndex > 0 &&
-        typeof value === "number"
-      ) {
-        const numeric =
-          type === "rate" ? value / 100 : value;
+    add(
+      "arrendamiento",
+      "Arrendamiento · pago trimestral",
+      7,
+      "Artículo 116 LISR."
+    );
 
-        sheet +=
-          '<c r="' + address +
-          '" s="' + style +
-          '"><v>' + numeric +
-          "</v></c>";
+    /* ============================================
+       SECTOR PRIMARIO
+       ============================================ */
 
+    add(
+      "otros",
+      "Sector primario · primer semestre (opcional)",
+      10,
+      "Artículo 74 LISR."
+    );
+
+    add(
+      "otros",
+      "Sector primario · segundo semestre (opcional)",
+      0,
+      "Artículo 74 LISR."
+    );
+
+    /* ============================================
+       RÉGIMEN DE INCORPORACIÓN FISCAL
+       ============================================ */
+
+    const RIF_LEGAL =
+      "Artículo 111 de la LISR vigente hasta 2021 " +
+      "y disposiciones transitorias aplicables.";
+
+    add(
+      "rif",
+      "RIF · pago bimestral definitivo",
+      6,
+      RIF_LEGAL
+    );
+
+    const BIMESTERS = [
+      "enero-febrero",
+      "marzo-abril",
+      "mayo-junio",
+      "julio-agosto",
+      "septiembre-octubre",
+      "noviembre-diciembre"
+    ];
+
+    const RIF_INDEXES = [
+      6, 8, 10, 12, 14, 0
+    ];
+
+    BIMESTERS.forEach((period, index) => {
+      add(
+        "rif",
+        "RIF · coeficiente de utilidad · " + period,
+        RIF_INDEXES[index],
+        RIF_LEGAL
+      );
+    });
+
+    /* ============================================
+       CÁLCULO ANUAL DEL RÉGIMEN GENERAL
+       ============================================ */
+
+    add(
+      "anual",
+      "Tarifa anual · ejercicio 2025",
+      16,
+      "Artículos 97 y 152 LISR.",
+      2025
+    );
+
+    add(
+      "anual",
+      "Tarifa anual · ejercicio 2026",
+      0,
+      "Artículos 97 y 152 LISR.",
+      2026
+    );
+
+    /* ============================================
+       RESICO
+
+       Se excluye la tabla anual de personas físicas.
+       ============================================ */
+
+    function addResico(
+      title,
+      headers,
+      types,
+      rows,
+      legal,
+      note
+    ) {
+      items.push({
+        id: "resico-" + items.length,
+        cat: "resico",
+        title,
+        headers,
+        types,
+        rows,
+        legal,
+        note,
+        year: 2026
+      });
+    }
+
+    addResico(
+      "RESICO personas físicas · pagos mensuales",
+      [
+        "Ingresos mensuales cobrados ($)",
+        "Tasa ISR (%)"
+      ],
+      [
+        "text",
+        "rate"
+      ],
+      [
+        ["Hasta $25,000.00", 1.00],
+        ["Hasta $50,000.00", 1.10],
+        ["Hasta $83,333.33", 1.50],
+        ["Hasta $208,333.33", 2.00],
+        ["Más de $208,333.33", 2.50]
+      ],
+      "Artículo 113-E LISR.",
+      "Tasas aplicables sobre los ingresos efectivamente " +
+      "cobrados, sin incluir IVA. La aplicación del régimen " +
+      "está sujeta a los requisitos y límites legales."
+    );
+
+    addResico(
+      "RESICO personas físicas · retención por personas morales",
+      [
+        "Concepto",
+        "Tasa de retención (%)"
+      ],
+      [
+        "text",
+        "rate"
+      ],
+      [
+        [
+          "Pagos de personas morales a personas físicas RESICO",
+          1.25
+        ]
+      ],
+      "Artículo 113-J LISR.",
+      "Las personas morales efectúan la retención del 1.25% " +
+      "sobre el importe pagado, sin incluir IVA, " +
+      "cuando resulte aplicable."
+    );
+
+    addResico(
+      "RESICO personas morales · tasa de ISR",
+      [
+        "Concepto",
+        "Tasa ISR (%)"
+      ],
+      [
+        "text",
+        "rate"
+      ],
+      [
+        [
+          "Tasa general de ISR de personas morales",
+          30
+        ]
+      ],
+      "Artículos 9 y 206 a 215 LISR.",
+      "RESICO personas morales aplica la tasa general del 30%. " +
+      "La determinación de pagos provisionales y del impuesto " +
+      "anual se realiza conforme a las disposiciones específicas " +
+      "del régimen."
+    );
+
+    /* ============================================
+       INTERFAZ
+       ============================================ */
+
+    const $ = id => document.getElementById(id);
+
+    const numberFormat = new Intl.NumberFormat("es-MX", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+
+    let category = "salarios";
+    let current = null;
+
+    function displayValue(value, type) {
+      if (value === null) {
+        return "En adelante";
+      }
+
+      if (type === "rate") {
+        return numberFormat.format(value) + " %";
+      }
+
+      if (type === "money") {
+        return numberFormat.format(value);
+      }
+
+      return String(value);
+    }
+
+    function setCategory(cat) {
+      category = cat;
+
+      document.querySelectorAll(".category").forEach(button => {
+        const active = button.dataset.cat === cat;
+
+        button.classList.toggle("active", active);
+        button.setAttribute("aria-pressed", String(active));
+      });
+
+      $("search").value = "";
+
+      updateOptions();
+    }
+
+    function updateOptions() {
+      const query = $("search").value
+        .trim()
+        .toLocaleLowerCase("es");
+
+      const matches = items.filter(item =>
+        item.cat === category &&
+        (item.title + " " + item.legal)
+          .toLocaleLowerCase("es")
+          .includes(query)
+      );
+
+      const selector = $("selector");
+
+      selector.replaceChildren();
+
+      matches.forEach(item => {
+        const option = document.createElement("option");
+
+        option.value = item.id;
+        option.textContent = item.title;
+
+        selector.appendChild(option);
+      });
+
+      $("counter").textContent =
+        matches.length +
+        (
+          matches.length === 1
+            ? " tarifa disponible"
+            : " tarifas disponibles"
+        );
+
+      if (matches.length) {
+        $("result").hidden = false;
+        showItem(matches[0]);
       } else {
-        const text =
-          value === null
-            ? "En adelante"
-            : String(value);
+        $("result").hidden = true;
+        current = null;
+      }
+    }
 
-        sheet +=
-          '<c r="' + address +
-          '" s="' + style +
-          '" t="inlineStr"><is><t>' +
-          escapeXML(text) +
-          "</t></is></c>";
+    function showItem(item) {
+      current = item;
+
+      $("selector").value = item.id;
+
+      $("title").textContent = item.title;
+
+      $("badge").textContent =
+        item.cat === "resico"
+          ? "Ley del ISR · RESICO"
+          : "Anexo 8 · RMF 2026";
+
+      $("description").textContent =
+        "Ejercicio fiscal " + item.year;
+
+      $("legal").textContent =
+        "Fundamento: " + item.legal;
+
+      $("source").textContent = item.note;
+
+      const table = $("table");
+      const head = table.tHead;
+      const body = table.tBodies[0];
+
+      head.replaceChildren();
+      body.replaceChildren();
+
+      /* Encabezados seleccionables */
+
+      const headerRow = document.createElement("tr");
+
+      item.headers.forEach(header => {
+        const th = document.createElement("th");
+
+        th.textContent = header;
+        th.setAttribute("scope", "col");
+
+        headerRow.appendChild(th);
+      });
+
+      head.appendChild(headerRow);
+
+      /* Filas y valores seleccionables */
+
+      item.rows.forEach(row => {
+        const tr = document.createElement("tr");
+
+        row.forEach((value, index) => {
+          const td = document.createElement("td");
+
+          td.textContent = displayValue(
+            value,
+            item.types[index]
+          );
+
+          tr.appendChild(td);
+        });
+
+        body.appendChild(tr);
+      });
+    }
+
+    /* ============================================
+       EVENTOS DE NAVEGACIÓN
+       ============================================ */
+
+    document.querySelectorAll(".category").forEach(button => {
+      button.addEventListener("click", () => {
+        setCategory(button.dataset.cat);
+      });
+    });
+
+    $("search").addEventListener(
+      "input",
+      updateOptions
+    );
+
+    $("selector").addEventListener("change", () => {
+      const selected = items.find(
+        item => item.id === $("selector").value
+      );
+
+      if (selected) {
+        showItem(selected);
       }
     });
 
-    sheet += "</row>";
-  });
+    /* ============================================
+       VALIDACIÓN DE ESTRUCTURA
+       ============================================ */
 
-  sheet +=
-    '</sheetData><autoFilter ref="A1:' +
-    columnName(item.headers.length - 1) +
-    rows.length +
-    '"/></worksheet>';
-
-  const styles =
-    '<?xml version="1.0" encoding="UTF-8"?>' +
-    '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
-
-    '<numFmts count="2">' +
-    '<numFmt numFmtId="164" formatCode="#,##0.00"/>' +
-    '<numFmt numFmtId="165" formatCode="0.00%"/>' +
-    '</numFmts>' +
-
-    '<fonts count="2">' +
-    '<font><sz val="11"/><name val="Arial"/></font>' +
-    '<font><b/><sz val="11"/><name val="Arial"/><color rgb="FFFFFFFF"/></font>' +
-    '</fonts>' +
-
-    '<fills count="3">' +
-    '<fill><patternFill patternType="none"/></fill>' +
-    '<fill><patternFill patternType="gray125"/></fill>' +
-    '<fill><patternFill patternType="solid">' +
-    '<fgColor rgb="FF293F56"/>' +
-    '<bgColor indexed="64"/>' +
-    '</patternFill></fill>' +
-    '</fills>' +
-
-    '<borders count="1">' +
-    '<border><left/><right/><top/><bottom/><diagonal/></border>' +
-    '</borders>' +
-
-    '<cellStyleXfs count="1">' +
-    '<xf numFmtId="0" fontId="0" fillId="0" borderId="0"/>' +
-    '</cellStyleXfs>' +
-
-    '<cellXfs count="5">' +
-    '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>' +
-    '<xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/>' +
-    '<xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>' +
-    '<xf numFmtId="165" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>' +
-    '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>' +
-    '</cellXfs>' +
-
-    '</styleSheet>';
-
-  return createZIP({
-
-    "[Content_Types].xml":
-      '<?xml version="1.0" encoding="UTF-8"?>' +
-      '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
-      '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
-      '<Default Extension="xml" ContentType="application/xml"/>' +
-      '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>' +
-      '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>' +
-      '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>' +
-      '</Types>',
-
-    "_rels/.rels":
-      '<?xml version="1.0" encoding="UTF-8"?>' +
-      '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
-      '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>' +
-      '</Relationships>',
-
-    "xl/workbook.xml":
-      '<?xml version="1.0" encoding="UTF-8"?>' +
-      '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' +
-      '<sheets><sheet name="Tarifa ISR" sheetId="1" r:id="rId1"/></sheets>' +
-      '</workbook>',
-
-    "xl/_rels/workbook.xml.rels":
-      '<?xml version="1.0" encoding="UTF-8"?>' +
-      '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
-      '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>' +
-      '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>' +
-      '</Relationships>',
-
-    "xl/worksheets/sheet1.xml": sheet,
-    "xl/styles.xml": styles
-
-  });
-}
-
-function downloadCurrent() {
-  if (!current) return;
-
-  const blob = buildXLSX(current);
-  const url = URL.createObjectURL(blob);
-
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = current.id + ".xlsx";
-
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-
-  setTimeout(() => URL.revokeObjectURL(url), 10000);
-
-  $("status").textContent =
-    "Se ha iniciado la descarga del archivo Excel.";
-}
-
-$("download").addEventListener(
-  "click",
-  downloadCurrent
-);
-
-/* =====================================================
-   VALIDACIÓN DE ESTRUCTURA
-   ===================================================== */
-
-function validateData() {
-  if (TABLES.length !== 17) {
-    throw new Error(
-      "Número incorrecto de conjuntos de tarifas."
-    );
-  }
-
-  TABLES.forEach((table, index) => {
-    if (table.length !== 11) {
-      throw new Error(
-        "Tarifa incompleta en el conjunto " + index
-      );
-    }
-
-    table.forEach((row, rowIndex) => {
-      if (
-        row.length !== 4 ||
-        row[3] !== RATES[rowIndex] ||
-        !Number.isFinite(row[0]) ||
-        !Number.isFinite(row[2])
-      ) {
+    function validateData() {
+      if (TABLES.length !== 17) {
         throw new Error(
-          "Error de estructura en la tarifa " + index
+          "Número incorrecto de conjuntos de tarifas."
         );
       }
-    });
-  });
-}
 
-/* =====================================================
-   INICIALIZACIÓN
-   ===================================================== */
+      TABLES.forEach((table, index) => {
+        if (table.length !== 11) {
+          throw new Error(
+            "Tarifa incompleta en el conjunto " + index
+          );
+        }
 
-try {
-  validateData();
-  setCategory("salarios");
-} catch (error) {
-  console.error(error);
-  $("result").hidden = true;
-  $("counter").textContent =
-    "No fue posible cargar las tarifas.";
-}
+        table.forEach((row, rowIndex) => {
+          if (
+            row.length !== 4 ||
+            row[3] !== RATES[rowIndex] ||
+            !Number.isFinite(row[0]) ||
+            !Number.isFinite(row[2])
+          ) {
+            throw new Error(
+              "Error de estructura en la tarifa " + index
+            );
+          }
+        });
+      });
+    }
 
-</script>
+    /* ============================================
+       INICIALIZACIÓN
+       ============================================ */
+
+    try {
+      validateData();
+      setCategory("salarios");
+    } catch (error) {
+      console.error(error);
+
+      $("result").hidden = true;
+
+      $("counter").textContent =
+        "No fue posible cargar las tarifas.";
+    }
+
+  </script>
+
 </body>
 </html>

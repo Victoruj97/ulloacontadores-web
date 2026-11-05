@@ -378,6 +378,12 @@ background 0.2s ease;
       font-weight: 700;
       border-radius: 4px;
     }
+    /* Cuadrícula de cuatro herramientas */
+    #herramientas .cuadricula { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    @media (max-width: 600px) {
+      #herramientas .cuadricula { grid-template-columns: 1fr; }
+    }
+
     /* =========================================
        ARTÍCULOS
     ========================================= */
@@ -732,6 +738,20 @@ background 0.2s ease;
   <p>
     Consulta de índices nacionales de precios
     al consumidor y datos históricos.
+  </p>
+  <span class="etiqueta-estado">
+    Consultar herramienta →
+  </span>
+</a>
+
+<a href="/herramientas/tasas-tarifas-isr/"
+   class="tarjeta"
+   style="text-decoration: none; color: inherit; display: block;">
+  <div class="tarjeta-icono">%</div>
+  <h3>Tasas y Tarifas ISR 2026</h3>
+  <p>
+    Consulta las tarifas de ISR, tasas de retención y disposiciones
+    aplicables al ejercicio fiscal 2026.
   </p>
   <span class="etiqueta-estado">
     Consultar herramienta →

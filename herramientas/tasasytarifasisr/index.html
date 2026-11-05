@@ -178,6 +178,27 @@ select,input {
   background:var(--mid);
   color:var(--white);
 }
+/* RESICO: columnas proporcionadas y textos legibles en cualquier pantalla. */
+.table-wrap.resico-table {
+  max-width:760px;
+}
+.table-wrap.resico-table table {
+  min-width:0;
+  table-layout:fixed;
+}
+.table-wrap.resico-table th:first-child,
+.table-wrap.resico-table td:first-child {
+  width:66%;
+  text-align:left;
+  white-space:normal;
+  overflow-wrap:break-word;
+}
+.table-wrap.resico-table th:last-child,
+.table-wrap.resico-table td:last-child {
+  width:34%;
+  text-align:right;
+  white-space:normal;
+}
 .source {
   border-top:1px solid var(--light);
   margin-top:22px;
@@ -736,18 +757,20 @@ addResico(
     ["Hasta $3,500,000.00",2.50]
   ],
   "Artículo 113-E LISR.",
-  "La tasa se aplica al total de ingresos " +
-  "efectivamente cobrados en el mes, " +
+  "La tasa se aplica al total de los ingresos " +
+  "efectivamente cobrados durante el mes, " +
   "sin incluir IVA y sin deducciones. " +
   "No es una tarifa marginal por tramos. " +
-  "El límite general de permanencia " +
+  "El límite general de ingresos para tributar " +
   "en RESICO personas físicas es de " +
-  "$3,500,000.00 de ingresos anuales, " +
-  "sujeto a los requisitos legales. " +
-  "La última fila reproduce el límite " +
-  "de la tabla mensual del artículo 113-E; " +
-  "no debe interpretarse como autorización " +
-  "para exceder el límite anual del régimen."
+  "$3,500,000.00 anuales, sujeto a los demás " +
+  "requisitos legales. El último renglón de la " +
+  "tabla reproduce el límite publicado en el " +
+  "artículo 113-E y no sustituye el límite anual. " +
+  "Conforme a la regla 3.13.7 de la RMF 2026, " +
+  "los pagos mensuales tienen carácter definitivo " +
+  "y, en los términos de dicha regla, no se " +
+  "presenta declaración anual por estos ingresos."
 );
 
 addResico(
@@ -764,12 +787,15 @@ addResico(
     ]
   ],
   "Artículo 113-J LISR y disposiciones aplicables.",
-  "La retención general es del 1.25% " +
-  "sobre el importe pagado, sin incluir IVA. " +
-  "Deben considerarse las excepciones " +
-  "previstas en las disposiciones fiscales, " +
-  "incluidas las relativas a determinados " +
-  "ingresos exentos del sector primario."
+  "Cuando una persona moral paga a una persona " +
+  "física que tributa en RESICO, debe efectuar " +
+  "la retención del 1.25% sobre el importe " +
+  "efectivamente pagado, sin incluir IVA, " +
+  "conforme al artículo 113-J de la LISR. " +
+  "La retención puede disminuirse del ISR " +
+  "mensual en los términos legales. Deben " +
+  "considerarse las disposiciones especiales " +
+  "aplicables, entre otras, al sector primario."
 );
 
 addResico(
@@ -786,14 +812,14 @@ addResico(
     ]
   ],
   "Artículos 9 y 206 a 215 LISR.",
-  "Las personas morales del RESICO " +
-  "aplican la tasa general del 30%. " +
-  "La determinación de pagos provisionales " +
-  "y del impuesto anual debe realizarse " +
-  "conforme a las disposiciones específicas " +
-  "del régimen. No se aplica esta tasa " +
-  "directamente sobre todos los ingresos " +
-  "sin efectuar el cálculo correspondiente."
+  "Las personas morales del RESICO determinan " +
+  "el ISR anual aplicando la tasa general del " +
+  "30% al resultado fiscal, conforme a los " +
+  "artículos 9 y 212 de la LISR. Los pagos " +
+  "provisionales se determinan conforme a las " +
+  "reglas específicas del régimen. La tasa " +
+  "no se aplica directamente al total de " +
+  "ingresos cobrados."
 );
 
 /* ============================================
@@ -860,7 +886,15 @@ function updateOptions() {
   matches.forEach(item=>{
     const option=document.createElement("option");
     option.value=item.id;
-    option.textContent=item.title;
+    option.textContent=item.cat==="salarios"
+      ? ({
+          "Retención diaria · cantidad de trabajo realizado":"Diaria",
+          "Retención semanal · periodo de 7 días":"Semanal (7 días)",
+          "Retención decenal · periodo de 10 días":"Decenal (10 días)",
+          "Retención quincenal · periodo de 15 días":"Quincenal (15 días)",
+          "Retención mensual · salarios":"Mensual"
+        }[item.title] || item.title)
+      : item.title;
     selector.appendChild(option);
   });
 
@@ -900,6 +934,7 @@ function showItem(item) {
   $("source").textContent=item.note;
 
   const table=$("table");
+  table.parentElement.classList.toggle("resico-table",item.cat==="resico");
   const head=table.tHead;
   const body=table.tBodies[0];
 

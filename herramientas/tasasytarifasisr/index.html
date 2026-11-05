@@ -885,9 +885,10 @@ addRetencion("Operaciones habituales",[
 addRetencion("Plataformas tecnológicas · personas físicas",[
   ["Transporte terrestre de pasajeros y entrega de bienes","2.1 %","Ingresos obtenidos mediante la plataforma, sin IVA","Plataforma tecnológica"],
   ["Hospedaje","4 %","Ingresos obtenidos mediante la plataforma, sin IVA","Plataforma tecnológica"],
-  ["Enajenación de bienes y prestación de servicios","2.5 %","Ingresos obtenidos mediante la plataforma, sin IVA","Plataforma tecnológica"]
-],"Art. 113-A LISR; art. 25, fr. VI, LIF 2026.",
-"La LIF 2026 sustituye para enajenación de bienes y prestación de servicios la tasa de 1 % del art. 113-A, fr. III, por 2.5 %. La falta de RFC puede activar una retención distinta conforme a las reglas del art. 113-A. No confundir con retenciones de IVA.",true);
+  ["Enajenación de bienes y prestación de servicios (con RFC)","2.5 %","Ingresos efectivamente percibidos mediante la plataforma, sin IVA","Plataforma tecnológica"],
+  ["Persona física que no proporciona RFC a la plataforma","20 %","Ingresos comprendidos en el art. 113-A, sin IVA","Plataforma tecnológica"]
+],"Arts. 113-A y 113-C, fr. IV, LISR; art. 25, fr. VI, LIF 2026.",
+"La LIF 2026 sustituye para enajenación de bienes y prestación de servicios la tasa de 1 % del art. 113-A, fr. III, por 2.5 %. Si la persona física no proporciona RFC, se retiene 20 % conforme al art. 113-C, fr. IV, LISR. No confundir con retenciones de IVA.",true);
 
 addRetencion("Plataformas tecnológicas · personas morales",[
   ["PM que proporciona RFC","2.5 %","Ingresos por enajenación de bienes y servicios a través de plataforma, sin deducciones","Plataforma tecnológica"],
@@ -898,31 +899,32 @@ addRetencion("Plataformas tecnológicas · personas morales",[
 addRetencion("Intereses e inversiones",[
   ["Intereses: supuesto general 2026","0.90 % anual","Capital que genera los intereses, proporcional al plazo","Institución o pagador obligado"],
   ["Intereses nominales: supuesto del art. 134, segundo párrafo","20 %","Intereses nominales","Pagador obligado"],
-  ["Financiamiento colectivo: intereses a residentes nacionales comprendidos en la disposición","20 %","Intereses nominales pagados","Institución de financiamiento colectivo"]
-],"Arts. 54, 134 y 135 LISR; arts. 24 y 25, fr. VIII, LIF 2026.",
-"La tasa del 0.90 % es ANUAL y se calcula sobre el capital, no sobre los intereses cobrados. Los supuestos de retención del 20 % tienen requisitos específicos; no son tasas alternativas de libre elección.",true);
+  ["Financiamiento colectivo: intereses pagados a PF y PM de los títulos II y III LISR que aportaron recursos","20 %","Intereses nominales pagados","Institución de financiamiento colectivo"],
+  ["Préstamo de títulos o valores con intermediación financiera (supuesto especial)","9 %","Intereses nominales definidos como premio convenido","Institución financiera intermediaria"]
+],"Arts. 54, 134 y 135 LISR; arts. 24 y 25, frs. VIII y X, LIF 2026.",
+"La tasa del 0.90 % es ANUAL y se calcula sobre el capital, no sobre los intereses cobrados. Las tasas de 20 % y 9 % corresponden a supuestos específicos con bases distintas; no son tasas alternativas de libre elección.",true);
 
 addRetencion("Dividendos y premios",[
   ["Dividendos a PF residentes en México sujetos al ISR adicional","10 %","Dividendo o utilidad distribuida sujetos a la retención","Persona moral distribuidora"],
-  ["Premios: supuesto general federal","1 %","Valor del premio, sin deducción","Organizador obligado"],
-  ["Premios: supuesto con impuesto local que excede el umbral legal","21 %","Valor del premio, sin deducción","Organizador obligado"]
+  ["Premios gravados con impuesto local de hasta 6 %","1 %","Valor del premio, sin deducción","Organizador obligado"],
+  ["Premios gravados con impuesto local superior a 6 %","21 %","Valor del premio, sin deducción","Organizador obligado"]
 ],"Arts. 138 y 140 LISR.",
-"La tasa de premios depende del impuesto local y de los requisitos del artículo 138. El ISR adicional sobre dividendos no sustituye el impuesto corporativo y puede haber tratamientos transitorios.");
+"En premios, el artículo 138 distingue si el impuesto local excede 6 %; verificar también exenciones y supuestos particulares. El ISR adicional sobre dividendos no sustituye el impuesto corporativo y puede haber tratamientos transitorios.");
 
 addRetencion("Enajenación de bienes y acciones",[
-  ["Enajenación de ciertos bienes muebles por PF","20 % (general)","Monto de la operación, sujeto a excepciones","Adquirente obligado"],
-  ["Enajenación de acciones por PF","20 % (general)","Monto de la operación, con opciones legales","Adquirente obligado"],
-  ["Enajenación de inmuebles por PF","Cálculo especial","Ganancia determinada conforme a LISR","Fedatario, cuando corresponda"]
+  ["Enajenación de bienes muebles por PF (cuando procede retener)","20 % (regla general)","Monto de la operación; verificar umbral, exenciones y excepciones","Adquirente obligado"],
+  ["Enajenación de acciones fuera de bolsa por PF (cuando procede)","20 % (regla general)","Monto de la operación; puede proceder cálculo sobre ganancia con requisitos","Adquirente obligado"],
+  ["Enajenación de inmuebles por PF","Cálculo especial (no tasa única)","Ganancia y pagos provisionales según arts. 126 y 127 LISR","Fedatario cuando intervenga, o contribuyente según el caso"]
 ],"Art. 126 LISR y disposiciones reglamentarias aplicables.",
-"Las retenciones del 20 % no son universales: existen montos mínimos, exenciones, reglas para adquisición y opciones de dictamen o determinación sobre ganancia. En inmuebles no se debe aplicar una tasa fija a toda la operación.");
+"Las retenciones del 20 % no son universales: existen umbrales, exenciones, reglas especiales y opciones para determinar el impuesto sobre ganancia. Las operaciones bursátiles tienen tratamiento distinto (art. 129 LISR). En inmuebles no se debe aplicar una tasa fija a toda la operación.");
 
 addRetencion("Pagos a residentes en el extranjero · consulta avanzada",[
-  ["Honorarios por servicios personales independientes","Variable","Según fuente de riqueza y supuesto legal","Pagador obligado"],
-  ["Regalías y asistencia técnica","Variable","Según naturaleza del pago y reglas aplicables","Pagador obligado"],
-  ["Intereses","4.9 %, 10 %, 15 %, 21 % o 35 % (según supuesto)","Intereses sujetos a retención","Pagador obligado"],
-  ["Dividendos sujetos a retención adicional","10 % (supuesto general)","Dividendos gravados","Distribuidor obligado"]
-],"Título V LISR, en particular arts. 156, 164, 166 y 167; tratados aplicables.",
-"APARTADO INFORMATIVO. No aplicar una tasa sin comprobar residencia fiscal, beneficiario efectivo, fuente de riqueza, establecimiento permanente, requisitos de tratado y naturaleza del pago. Las tasas de tratados pueden modificar las internas.");
+  ["Servicios personales independientes","Verificar caso","Depende de fuente de riqueza, presencia en México y excepciones","Retenedor obligado según art. 156 LISR"],
+  ["Regalías y asistencia técnica","Verificar caso","Depende de naturaleza jurídica del pago y del beneficiario","Retenedor obligado según art. 167 LISR"],
+  ["Intereses","Tasa variable","Depende del tipo de interés, acreedor, requisitos y tratado","Retenedor obligado según art. 166 LISR"],
+  ["Dividendos sujetos a impuesto adicional","10 % como regla interna","Dividendos comprendidos en el art. 164 LISR; verificar excepciones y tratados","Distribuidor obligado"]
+],"Título V LISR, especialmente arts. 156, 164, 166 y 167; convenios fiscales aplicables.",
+"CONSULTA AVANZADA: las operaciones transfronterizas no tienen una tasa única. Verificar residencia fiscal, fuente de riqueza, beneficiario efectivo, establecimiento permanente, requisitos del convenio y naturaleza del pago antes de calcular o retener.");
 
 /* ============================================
    INTERFAZ

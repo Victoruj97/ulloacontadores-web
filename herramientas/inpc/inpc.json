@@ -1,8 +1,8 @@
 {
   "fuente": "INEGI",
   "indicador": "865541",
-  "descripcion": "INPC general mensual, base segunda quincena de julio de 2018 = 100",
-  "actualizado": "2026-10-18",
+  "descripcion": "Índice Nacional de Precios al Consumidor",
+  "actualizado": "2026-11-09",
   "registros": [
     {
       "anio": 2026,
@@ -16,7 +16,7 @@
         145.169,
         145.462,
         146.075,
-        null,
+        147.026,
         null,
         null
       ]
